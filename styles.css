@@ -1,0 +1,572 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f6f8fa;
+  color: #1f2328;
+}
+
+.container {
+  width: min(1024px, 95%);
+  margin: 0 auto;
+}
+
+header {
+  padding: 1.5rem 0 1rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding-bottom: 2rem;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+input,
+select {
+  padding: 0.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.top-actions {
+  margin-top: 0.8rem;
+}
+
+button {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #1f6feb;
+  border-radius: 6px;
+  background: #1f6feb;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.hint,
+.meta {
+  color: #57606a;
+}
+
+.question {
+  margin-top: 0.8rem;
+}
+
+.choice {
+  margin-bottom: 0.4rem;
+}
+
+.feedback {
+  margin-top: 0.8rem;
+  font-weight: 600;
+  min-height: 1.2rem;
+}
+
+.correct {
+  color: #1a7f37;
+}
+
+.wrong {
+  color: #cf222e;
+}
+
+.hidden {
+  display: none;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1300;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay-card {
+  width: min(560px, 92%);
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.2rem;
+  border: 1px solid #d0d7de;
+}
+
+.overlay-card h2 {
+  margin-top: 0;
+}
+
+#dashboard ul {
+  margin: 0.5rem 0 0;
+}
+
+@media (max-width: 820px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+body.game-active {
+  overflow: hidden;
+}
+
+.game-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: #f6f8fa;
+  overflow: auto;
+  padding: 1rem;
+}
+
+.game-fullscreen-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.round-result-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.94);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+}
+
+.round-result-overlay.hidden {
+  display: none;
+}
+
+.recovery-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 160;
+  background: rgba(246, 248, 250, 0.97);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.recovery-overlay.hidden {
+  display: none;
+}
+
+.recovery-card {
+  max-width: 420px;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 8px 24px rgba(31, 35, 40, 0.12);
+}
+
+.recovery-card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+}
+
+.recovery-text {
+  margin: 0 0 1rem;
+  color: #57606a;
+  line-height: 1.5;
+}
+
+.recovery-actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.recovery-actions button {
+  width: 100%;
+}
+
+.game-abort-row {
+  margin-top: 0.5rem;
+}
+
+.round-result-big {
+  margin: 0;
+  font-size: clamp(3rem, 14vw, 5.5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+}
+
+.round-result-big.is-correct {
+  color: #1a7f37;
+}
+
+.round-result-big.is-wrong,
+.round-result-big.is-timeout {
+  color: #cf222e;
+}
+
+.round-result-sub {
+  margin: 1rem 0 0;
+  font-size: clamp(1.1rem, 3.5vw, 1.75rem);
+  font-weight: 700;
+  color: #57606a;
+}
+
+.end-score-line {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.end-accuracy-big {
+  margin: 0.25rem 0;
+  font-size: clamp(2.25rem, 8vw, 3.75rem);
+  font-weight: 900;
+  color: #1f2328;
+}
+
+.end-detail-line {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  color: #57606a;
+}
+
+.end-actions {
+  margin-bottom: 0.5rem;
+}
+
+.save-log-status {
+  margin: 0.5rem 0 0;
+}
+
+.game-top-compact {
+  margin-bottom: 1rem;
+}
+
+.game-status {
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.level-line {
+  margin-top: 0.35rem;
+  font-size: 0.95rem;
+}
+
+.rpg-big {
+  margin: 0.5rem 0 0.25rem;
+}
+
+.rpg-big-name {
+  font-size: clamp(1.4rem, 5vw, 2.1rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: #1f2328;
+  line-height: 1.1;
+}
+
+.rpg-next-goals {
+  margin-top: 0.35rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #57606a;
+  line-height: 1.35;
+}
+
+.game-main {
+  display: grid;
+  grid-template-columns: 1fr minmax(240px, 320px);
+  gap: 1rem;
+  align-items: start;
+}
+
+.game-intro-hero {
+  text-align: center;
+  padding: 2rem 1.25rem;
+  border: 2px solid #1f6feb;
+  background: #fff;
+}
+
+.intro-label {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #57606a;
+  letter-spacing: 0.02em;
+}
+
+.intro-huge {
+  margin: 0;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #1f2328;
+}
+
+.intro-unit {
+  font-size: 0.55em;
+  font-weight: 700;
+  color: #57606a;
+}
+
+.intro-drug-line {
+  font-size: clamp(1.35rem, 5vw, 2.25rem);
+  font-weight: 800;
+}
+
+.intro-hint {
+  margin: 1.25rem 0 1rem;
+  font-size: 0.9rem;
+  color: #57606a;
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.go-btn {
+  font-size: 1.35rem;
+  padding: 0.85rem 2.75rem;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.game-main--intro-only {
+  grid-template-columns: 1fr;
+}
+
+.game-main--intro-only .game-question,
+.game-main--intro-only .game-calculator {
+  display: none;
+}
+
+.question-context {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f6feb;
+}
+
+.instruction-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #57606a;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.instruction-text {
+  margin: 0 0 1rem;
+  font-size: clamp(1.35rem, 4vw, 2rem);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.card-block {
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.game-calculator h3 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.calc-display {
+  background: #1f2328;
+  color: #e6edf3;
+  font-family: ui-monospace, monospace;
+  font-size: 1.25rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  text-align: right;
+  margin-bottom: 0.75rem;
+  min-height: 2.5rem;
+  word-break: break-all;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.35rem;
+}
+
+.calc-btn {
+  padding: 0.55rem;
+  border-radius: 6px;
+  border: 1px solid #d0d7de;
+  background: #fff;
+  color: #1f2328;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.calc-btn:hover {
+  background: #f6f8fa;
+}
+
+.calc-tall {
+  grid-row: span 2;
+}
+
+.calc-wide {
+  grid-column: span 2;
+}
+
+.calc-actions {
+  margin-top: 0.75rem;
+}
+
+button.secondary {
+  background: #fff;
+  color: #1f292e;
+  border-color: #d0d7de;
+}
+
+button.secondary:hover {
+  background: #f6f8fa;
+}
+
+.game-footer {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-top: 1px solid #d0d7de;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .game-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* γ計算ゲーム：DQ風 冒険の記録 */
+.dq-rpg-box {
+  margin: 0.75rem 0 1rem;
+  border: 4px solid #c9a227;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #1a2b5c 0%, #0d1838 100%);
+  box-shadow:
+    inset 0 0 0 2px #2a3f7a,
+    0 4px 0 #5c4a12;
+  color: #f0e6c8;
+  font-family: "Courier New", Courier, monospace;
+  overflow: hidden;
+}
+
+.game-footer .dq-rpg-box.game-end-rpg-summary {
+  margin: 0 auto 1rem;
+  max-width: 560px;
+  text-align: left;
+}
+
+.dq-end-session {
+  margin: 0 0 0.35rem !important;
+  color: #dbe4ff !important;
+}
+
+.dq-end-next {
+  margin: 0 !important;
+  color: #ffe082 !important;
+  font-weight: 800 !important;
+}
+
+.dq-rpg-box__title {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  background: #243a78;
+  border-bottom: 2px solid #c9a227;
+  text-shadow: 1px 1px 0 #0a1028;
+}
+
+.dq-rpg-box__body {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.65rem 0.75rem 0.75rem;
+}
+
+.dq-rpg-sprite {
+  flex: 0 0 72px;
+  width: 72px;
+  height: 72px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border: 3px solid #c9a227;
+  background: #0a1028;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.45);
+}
+
+.dq-rpg-sprite svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.dq-rpg-box__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.dq-rpg-tier-line {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 900;
+  text-shadow: 2px 2px 0 #0a1028;
+  line-height: 1.2;
+}
+
+.dq-rpg-lv {
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  color: #ffd54a;
+}
+
+.dq-rpg-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #b8c4e8;
+  font-weight: 600;
+}

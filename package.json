@@ -1,0 +1,9 @@
+{
+  "name": "masui-introduction",
+  "private": true,
+  "version": "1.0.0",
+  "description": "麻酔科研修医ドリル（静的サイト・Vercel 想定）",
+  "engines": {
+    "node": ">=18"
+  }
+}
