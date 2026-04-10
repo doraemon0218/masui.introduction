@@ -619,6 +619,64 @@ button.secondary:hover {
   }
 }
 
+/* スマホ運用向け: 開始時に画面調整なしで使えるよう最適化 */
+@media (max-width: 640px) {
+  button,
+  input,
+  select {
+    font-size: 16px; /* iOSの自動ズーム回避 */
+  }
+
+  button {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  .container {
+    width: min(100%, 96%);
+  }
+
+  .game-fullscreen {
+    min-height: 100dvh;
+    padding:
+      max(0.5rem, env(safe-area-inset-top))
+      max(0.5rem, env(safe-area-inset-right))
+      max(0.75rem, env(safe-area-inset-bottom))
+      max(0.5rem, env(safe-area-inset-left));
+  }
+
+  .game-top {
+    margin-bottom: 0.6rem;
+  }
+
+  .level-line {
+    line-height: 1.45;
+  }
+
+  .card-block {
+    padding: 0.8rem;
+  }
+
+  .instruction-text {
+    font-size: clamp(1.2rem, 6vw, 1.6rem);
+    line-height: 1.3;
+  }
+
+  .question-preparation {
+    font-size: 0.9rem;
+  }
+
+  .calc-display {
+    font-size: 1.2rem;
+    min-height: 2.75rem;
+  }
+
+  .calc-btn {
+    min-height: 46px;
+    font-size: 1.05rem;
+  }
+}
+
 /* γ計算ゲーム：DQ風 冒険の記録 */
 .dq-rpg-box {
   margin: 0.75rem 0 1rem;
