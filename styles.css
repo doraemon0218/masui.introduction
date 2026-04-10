@@ -57,6 +57,58 @@ select {
   margin-top: 0.8rem;
 }
 
+/* γゲーム：モードボタンとチュートリアル（チュートリアルを目立たせる配置・配色） */
+.gamma-start-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.35rem;
+}
+
+.gamma-start-actions__row--modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gamma-start-actions__row--modes button {
+  flex: 1 1 140px;
+  min-width: 0;
+}
+
+.btn-tutorial-prominent {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  font-size: 1.02rem;
+  letter-spacing: 0.02em;
+  border: 2px solid #8b6914;
+  border-radius: 8px;
+  color: #1f1404;
+  background: linear-gradient(180deg, #f5e6a8 0%, #d4a82a 45%, #b8891a 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 2px 0 #6b5210,
+    0 4px 12px rgba(139, 105, 20, 0.35);
+  cursor: pointer;
+}
+
+.btn-tutorial-prominent:hover {
+  filter: brightness(1.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    0 2px 0 #6b5210,
+    0 6px 16px rgba(139, 105, 20, 0.42);
+}
+
+.btn-tutorial-prominent:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 1px 0 #6b5210,
+    0 2px 8px rgba(139, 105, 20, 0.3);
+}
+
 button {
   padding: 0.6rem 0.8rem;
   border: 1px solid #1f6feb;
@@ -223,6 +275,81 @@ body.game-active {
   margin-top: 0.5rem;
 }
 
+/* 親の高さが低いと absolute では画面を覆えないため、全画面固定にする */
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1250;
+  background: linear-gradient(165deg, #0d1838 0%, #1a2b5c 45%, #0f2347 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow: auto;
+}
+
+.tutorial-overlay.hidden {
+  display: none;
+}
+
+.tutorial-card {
+  width: min(720px, 100%);
+  background: #fff;
+  border: 4px solid #c9a227;
+  border-radius: 12px;
+  padding: clamp(1rem, 4vw, 1.75rem);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.tutorial-progress {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #57606a;
+  letter-spacing: 0.06em;
+}
+
+.tutorial-title {
+  margin: 0 0 1rem;
+  font-size: clamp(1.35rem, 5vw, 2.1rem);
+  font-weight: 900;
+  line-height: 1.25;
+  color: #1f2328;
+  letter-spacing: 0.02em;
+}
+
+.tutorial-body {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.05rem, 3.2vw, 1.45rem);
+  font-weight: 700;
+  line-height: 1.65;
+  color: #24292f;
+  text-align: left;
+}
+
+.tutorial-body p {
+  margin: 0 0 0.85em;
+}
+
+.tutorial-body p:last-child {
+  margin-bottom: 0;
+}
+
+.tutorial-body .tutorial-em {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: clamp(1.2rem, 3.8vw, 1.75rem);
+  font-weight: 900;
+  color: #0969da;
+  line-height: 1.35;
+}
+
+.tutorial-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
 .round-result-big {
   margin: 0;
   font-size: clamp(3rem, 14vw, 5.5rem);
@@ -381,6 +508,19 @@ body.game-active {
   font-size: 1rem;
   font-weight: 600;
   color: #1f6feb;
+}
+
+.question-preparation {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #1f2328;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-left: 4px solid #0969da;
+  border-radius: 6px;
 }
 
 .instruction-label {

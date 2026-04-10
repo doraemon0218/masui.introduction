@@ -40,7 +40,7 @@
       </section>
 
       <section class="panel gamma-game-panel">
-        <h3>コンテンツ1: γ計算ゲーム（持続投与）</h3>
+        <h3>コンテンツ1: 無限γ計算トレーニング</h3>
         <div id="gammaRpgStatus" class="dq-rpg-box" aria-live="polite">
           <div class="dq-rpg-box__title">冒険の記録</div>
           <div class="dq-rpg-box__body">
@@ -54,10 +54,16 @@
             </div>
           </div>
         </div>
-        <div class="actions">
-          <button id="startStudyBtn">ゲーム開始（基本編）</button>
-          <button id="startChallengeBtn">ゲーム開始（応用編）</button>
+        <div class="gamma-start-actions">
+          <div class="gamma-start-actions__row gamma-start-actions__row--modes">
+            <button id="startStudyBtn" type="button">ゲーム開始（基本編）</button>
+            <button id="startChallengeBtn" type="button">ゲーム開始（応用編）</button>
+          </div>
+          <button id="openTutorialOnlyBtn" type="button" class="btn-tutorial-prominent">γ計算チュートリアル</button>
         </div>
+        <p class="hint">
+          <strong>基本編</strong>は問題数を選んだあと、「チュートリアルをもう一度」か「このまま進む」を選べます。<strong>応用編</strong>にはチュートリアルはありません。横のボタンからはチュートリアルだけ閲覧できます。
+        </p>
         <p class="hint">
           応用編は制限時間あり。ランキングは応用編のみ反映されます。
         </p>
@@ -75,7 +81,7 @@
 
       <section class="panel full">
         <h2>3. プレイ中</h2>
-        <p class="hint">γ計算ゲームは全画面です。ゲーム開始を押すと表示されます。</p>
+        <p class="hint">無限γ計算トレーニングは全画面です。ゲーム開始を押すと表示されます。</p>
       </section>
 
       <section class="panel">
@@ -99,6 +105,20 @@
         </div>
         <div class="actions">
           <button id="sessionLenCancelBtn" type="button" class="secondary">キャンセル</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="studyTutorialChoiceOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="studyTutorialChoiceTitle">
+      <div class="overlay-card">
+        <h2 id="studyTutorialChoiceTitle">基本編の開始</h2>
+        <p class="hint">γ計算のチュートリアル（4ステップ）を表示しますか？</p>
+        <div class="actions">
+          <button id="studyWithTutorialBtn" type="button">チュートリアルをもう一度</button>
+          <button id="studySkipTutorialBtn" type="button" class="secondary">このまま進む</button>
+        </div>
+        <div class="actions">
+          <button id="studyTutorialCancelBtn" type="button" class="secondary">戻って問題数を選び直す</button>
         </div>
       </div>
     </div>
@@ -129,7 +149,7 @@
             <p class="intro-label">薬剤（組成）</p>
             <p class="intro-huge intro-drug-line" id="introDrug">—</p>
             <p class="intro-hint">
-              残り <span id="introRemainQuestions">—</span> 問。GO（または Enter）で指導医の指示。ml/h で速答。
+              残り <span id="introRemainQuestions">—</span> 問。GO（または Enter）で指導医の指示。ml/h は小数第1位まで（第2位は切り捨て・繰り上げどちらでも正解）。
             </p>
             <button id="goBtn" type="button" class="go-btn">GO</button>
           </section>
@@ -137,13 +157,15 @@
           <section class="game-question card-block">
             <div id="questionArea" class="question hidden">
               <p class="question-context" id="questionContextWeight"></p>
+              <p class="instruction-label">規格・溶解</p>
+              <p id="questionPreparation" class="question-preparation"></p>
               <p class="instruction-label">指導医の指示</p>
               <p id="questionText" class="instruction-text"></p>
               <label>
                 回答（ml/h）
                 <input id="answerInput" type="number" step="0.1" min="0" placeholder="例: 8.4" />
               </label>
-              <div class="hint">Enterで回答確定できます。</div>
+              <div class="hint">小数第1位まで。第2位の扱いは切り捨て・繰り上げどちらでも正解。Enterで回答確定。</div>
               <div class="actions">
                 <button id="submitAnswerBtn" type="button">回答を確定</button>
               </div>
@@ -213,6 +235,19 @@
             <div class="actions recovery-actions">
               <button id="recoveryEasierBtn" type="button">Lvを1段階下げる（制限時間を延ばす）</button>
               <button id="recoveryContinueBtn" type="button" class="secondary">このままもう少し頑張る</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="tutorialOverlay" class="tutorial-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
+          <div class="tutorial-card">
+            <p class="tutorial-progress" id="tutorialProgress" aria-live="polite">1 / 4</p>
+            <h2 id="tutorialTitle" class="tutorial-title">γ計算チュートリアル</h2>
+            <div id="tutorialBody" class="tutorial-body"></div>
+            <div class="actions tutorial-actions">
+              <button id="tutorialSkipBtn" type="button" class="secondary">スキップ</button>
+              <button id="tutorialPrevBtn" type="button" class="secondary">戻る</button>
+              <button id="tutorialNextBtn" type="button">次へ</button>
             </div>
           </div>
         </div>

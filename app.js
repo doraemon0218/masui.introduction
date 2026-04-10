@@ -13,6 +13,40 @@ const BLOCK_SECONDS_SHRINK = 0.84;
 const EASIER_SECONDS_BONUS = 12;
 const ROUND_RESULT_MS = 1400;
 
+/** ゲーム開始前チュートリアル（コマ送りスライド） */
+const TUTORIAL_SLIDES = [
+  {
+    title: "γ（ガンマ）とは？　どんな単位？",
+    paragraphs: [
+      { text: "γ の単位は μg/kg/min（マイクログラム／キログラム／分）。" },
+      { text: "＝ 体重 1kg あたり、1分間あたりに何 μg 流す速さ、という意味です。" }
+    ]
+  },
+  {
+    title: "分母に注目：/kg と /min",
+    paragraphs: [
+      {
+        text: "「体重あたり」「毎分」が分母にあります。1時間（60分）分・体重（例：50kg）でまとめると、係数がはっきりします。"
+      },
+      { em: "/50kg・/60min のイメージ → 50×60＝3000 → ×3000" }
+    ]
+  },
+  {
+    title: "μg → mg と必要投与量",
+    paragraphs: [
+      { text: "μg を mg に変換します（÷1000）。" },
+      { text: "そのうえで ×3 などの関係を掛け合わせると、必要な投与量（mg）が求まります（溶解濃度・手順に合わせる）。" }
+    ]
+  },
+  {
+    title: "溶解液の組成を振り返り → 1h あたりの ml",
+    paragraphs: [
+      { text: "主薬を何 mg / 50ml に溶かしたかで、濃度（μg/ml）が決まります。" },
+      { text: "1時間に必要な mg( or μg) ÷ mg/ml( or μg/ml) ＝ その1時間に投与する ml。これが ml/h の考え方です。" }
+    ]
+  }
+];
+
 const RPG_TIERS = ["村人", "戦士", "魔法戦士", "勇者"];
 
 /** コンテンツ選択画面用：DQ風ピクセル風SVG（村人〜勇者） */
@@ -45,6 +79,7 @@ const WEIGHTS_BY_TIER = [
 ];
 
 let pendingGameMode = null;
+let pendingStudyTotalQuestions = null;
 let roundResultTimerId = null;
 
 const state = {
@@ -75,7 +110,11 @@ const state = {
   consecutiveBelowHalfAcc: 0,
   recoveryOpen: false,
   pendingSetQuestionSeconds: null,
-  pendingAddQuestionSecondsSec: 0
+  pendingAddQuestionSecondsSec: 0,
+  tutorialOpen: false,
+  tutorialSlideIndex: 0,
+  /** ゲーム開始せずチュートリアルだけ全画面表示 */
+  tutorialOnlyPreview: false
 };
 
 const calc = {
@@ -104,6 +143,7 @@ const els = {
   introDrug: document.getElementById("introDrug"),
   goBtn: document.getElementById("goBtn"),
   questionContextWeight: document.getElementById("questionContextWeight"),
+  questionPreparation: document.getElementById("questionPreparation"),
   questionText: document.getElementById("questionText"),
   answerInput: document.getElementById("answerInput"),
   submitAnswerBtn: document.getElementById("submitAnswerBtn"),
@@ -130,12 +170,24 @@ const els = {
   sessionLen5Btn: document.getElementById("sessionLen5Btn"),
   sessionLen10Btn: document.getElementById("sessionLen10Btn"),
   sessionLenCancelBtn: document.getElementById("sessionLenCancelBtn"),
+  studyTutorialChoiceOverlay: document.getElementById("studyTutorialChoiceOverlay"),
+  studyWithTutorialBtn: document.getElementById("studyWithTutorialBtn"),
+  studySkipTutorialBtn: document.getElementById("studySkipTutorialBtn"),
+  studyTutorialCancelBtn: document.getElementById("studyTutorialCancelBtn"),
+  openTutorialOnlyBtn: document.getElementById("openTutorialOnlyBtn"),
   remainQuestionCount: document.getElementById("remainQuestionCount"),
   introRemainQuestions: document.getElementById("introRemainQuestions"),
   abortSessionBtn: document.getElementById("abortSessionBtn"),
   recoveryOverlay: document.getElementById("recoveryOverlay"),
   recoveryEasierBtn: document.getElementById("recoveryEasierBtn"),
   recoveryContinueBtn: document.getElementById("recoveryContinueBtn"),
+  tutorialOverlay: document.getElementById("tutorialOverlay"),
+  tutorialProgress: document.getElementById("tutorialProgress"),
+  tutorialTitle: document.getElementById("tutorialTitle"),
+  tutorialBody: document.getElementById("tutorialBody"),
+  tutorialPrevBtn: document.getElementById("tutorialPrevBtn"),
+  tutorialNextBtn: document.getElementById("tutorialNextBtn"),
+  tutorialSkipBtn: document.getElementById("tutorialSkipBtn"),
   gammaRpgSprite: document.getElementById("gammaRpgSprite"),
   gammaRpgTierName: document.getElementById("gammaRpgTierName"),
   gammaRpgTierLevel: document.getElementById("gammaRpgTierLevel"),
@@ -456,6 +508,96 @@ function showRecoveryOverlay() {
   if (els.recoveryOverlay) els.recoveryOverlay.classList.remove("hidden");
 }
 
+function hideTutorialOverlay() {
+  state.tutorialOpen = false;
+  if (els.tutorialOverlay) els.tutorialOverlay.classList.add("hidden");
+}
+
+function renderTutorialSlide() {
+  if (!els.tutorialBody || !els.tutorialTitle || !els.tutorialProgress) return;
+  const n = TUTORIAL_SLIDES.length;
+  const idx = Math.max(0, Math.min(state.tutorialSlideIndex, n - 1));
+  state.tutorialSlideIndex = idx;
+  const slide = TUTORIAL_SLIDES[idx];
+  els.tutorialTitle.textContent = slide.title;
+  els.tutorialProgress.textContent = `${idx + 1} / ${n}`;
+  els.tutorialBody.replaceChildren();
+  slide.paragraphs.forEach((para) => {
+    if (para.text) {
+      const p = document.createElement("p");
+      p.textContent = para.text;
+      els.tutorialBody.appendChild(p);
+    }
+    if (para.em) {
+      const em = document.createElement("span");
+      em.className = "tutorial-em";
+      em.textContent = para.em;
+      els.tutorialBody.appendChild(em);
+    }
+  });
+  if (els.tutorialPrevBtn) els.tutorialPrevBtn.disabled = idx === 0;
+  if (els.tutorialNextBtn) {
+    if (idx >= n - 1) {
+      els.tutorialNextBtn.textContent = state.tutorialOnlyPreview ? "閉じる" : "ゲームを始める";
+    } else {
+      els.tutorialNextBtn.textContent = "次へ";
+    }
+  }
+  if (els.tutorialSkipBtn) {
+    els.tutorialSkipBtn.textContent = state.tutorialOnlyPreview ? "閉じる" : "スキップ";
+  }
+}
+
+function showTutorialBeforeGame() {
+  state.tutorialOpen = true;
+  state.tutorialSlideIndex = 0;
+  if (els.tutorialOverlay) els.tutorialOverlay.classList.remove("hidden");
+  els.questionTimer.textContent = "チュートリアル";
+  renderTutorialSlide();
+  renderMeta();
+}
+
+function tutorialGoNext() {
+  if (!state.tutorialOpen) return;
+  if (state.tutorialSlideIndex >= TUTORIAL_SLIDES.length - 1) {
+    finishTutorialAndBeginGame();
+    return;
+  }
+  state.tutorialSlideIndex += 1;
+  renderTutorialSlide();
+}
+
+function tutorialGoPrev() {
+  if (!state.tutorialOpen || state.tutorialSlideIndex <= 0) return;
+  state.tutorialSlideIndex -= 1;
+  renderTutorialSlide();
+}
+
+function beginSessionTimersAndIntro() {
+  state.startAt = Date.now();
+  clearInterval(state.sessionTimerId);
+  state.sessionTimerId = setInterval(tickSession, 1000);
+  els.gameIntro.classList.remove("hidden");
+  els.gameMain.classList.add("game-main--intro-only");
+  prepareIntroAndWaitGo();
+  renderMeta();
+  updateRpgUi();
+}
+
+function finishTutorialAndBeginGame() {
+  hideTutorialOverlay();
+  if (state.tutorialOnlyPreview) {
+    state.tutorialOnlyPreview = false;
+    state.tutorialSlideIndex = 0;
+    closeGameFullscreen();
+    els.questionTimer.textContent = "—";
+    renderGammaRpgOnContentPage();
+    renderMeta();
+    return;
+  }
+  beginSessionTimersAndIntro();
+}
+
 function applyConsecutiveLowAccuracyCheck() {
   const n = state.answers.length;
   if (n === 0) return false;
@@ -497,6 +639,48 @@ function closeSessionLengthPicker() {
   pendingGameMode = null;
 }
 
+function showStudyTutorialChoiceOverlay() {
+  if (els.studyTutorialChoiceOverlay) els.studyTutorialChoiceOverlay.classList.remove("hidden");
+}
+
+function hideStudyTutorialChoiceOverlay() {
+  if (els.studyTutorialChoiceOverlay) els.studyTutorialChoiceOverlay.classList.add("hidden");
+  pendingStudyTotalQuestions = null;
+}
+
+function openTutorialPreviewOnly() {
+  const name = state.playerName || (els.playerName && els.playerName.value);
+  if (!name) {
+    alert("先に入室してください。");
+    return;
+  }
+  state.playerName = name;
+  clearInterval(state.sessionTimerId);
+  clearInterval(state.questionTimerId);
+  hideRoundResultOverlay();
+  hideRecoveryOverlay();
+  hideTutorialOverlay();
+  state.tutorialOnlyPreview = true;
+  state.status = "idle";
+  state.mode = null;
+  state.tutorialSlideIndex = 0;
+  state.sessionTimerId = null;
+  els.saveLogBtn.disabled = false;
+  els.saveLogStatus.classList.add("hidden");
+  els.saveLogStatus.textContent = "";
+  els.answerInput.value = "";
+  els.submitAnswerBtn.disabled = true;
+  els.questionArea.classList.add("hidden");
+  els.gameIntro.classList.add("hidden");
+  els.gameMain.classList.add("game-main--intro-only");
+  els.gameEndFooter.classList.add("hidden");
+  calcReset();
+  openGameFullscreen();
+  els.questionTimer.textContent = "チュートリアル";
+  showTutorialBeforeGame();
+  renderMeta();
+}
+
 function openGameFullscreen() {
   els.gameFullscreen.classList.remove("hidden");
   els.gameFullscreen.setAttribute("aria-hidden", "false");
@@ -510,11 +694,14 @@ function closeGameFullscreen() {
   document.body.classList.remove("game-active");
 }
 
-function startMode(mode, totalQuestions) {
+function startMode(mode, totalQuestions, opts = {}) {
+  const showTutorial = mode === "study" && opts.showTutorial === true;
   clearInterval(state.sessionTimerId);
   clearInterval(state.questionTimerId);
   hideRoundResultOverlay();
   hideRecoveryOverlay();
+  hideTutorialOverlay();
+  state.tutorialOnlyPreview = false;
 
   const name = state.playerName;
   state.playerName = name;
@@ -539,9 +726,10 @@ function startMode(mode, totalQuestions) {
   state.consecutiveBelowHalfAcc = 0;
   state.pendingSetQuestionSeconds = null;
   state.pendingAddQuestionSecondsSec = 0;
-  state.startAt = Date.now();
+  state.startAt = null;
   state.remainSec = SESSION_SECONDS[mode];
-  state.sessionTimerId = setInterval(tickSession, 1000);
+  clearInterval(state.sessionTimerId);
+  state.sessionTimerId = null;
 
   els.saveLogBtn.disabled = false;
   els.saveLogStatus.classList.add("hidden");
@@ -549,19 +737,23 @@ function startMode(mode, totalQuestions) {
   els.answerInput.value = "";
   els.submitAnswerBtn.disabled = true;
   els.questionArea.classList.add("hidden");
-  els.gameIntro.classList.remove("hidden");
+  els.gameIntro.classList.add("hidden");
   els.gameMain.classList.add("game-main--intro-only");
 
   calcReset();
   openGameFullscreen();
   updateRemainQuestionsUi();
-  renderMeta();
   updateRpgUi();
-  prepareIntroAndWaitGo();
+
+  if (showTutorial) {
+    showTutorialBeforeGame();
+  } else {
+    beginSessionTimersAndIntro();
+  }
 }
 
 function tickSession() {
-  if (state.status !== "running" || state.recoveryOpen) return;
+  if (state.status !== "running" || state.recoveryOpen || state.tutorialOpen) return;
   state.remainSec -= 1;
   renderMeta();
   if (state.remainSec <= 0) finishSession();
@@ -581,11 +773,19 @@ function updateRemainQuestionsUi() {
 }
 
 function renderMeta() {
+  if (state.tutorialOpen && state.tutorialOnlyPreview) {
+    els.sessionMeta.textContent = "γ計算チュートリアル（閲覧のみ）";
+    return;
+  }
   const modeText = state.mode === "challenge" ? "応用編" : "基本編";
   const total = state.totalQuestionCount || 0;
   const current = Math.min(state.questionIndex + 1, total);
   const left = Math.max(0, state.totalQuestionCount - state.questionIndex);
   updateRemainQuestionsUi();
+  if (state.tutorialOpen) {
+    els.sessionMeta.textContent = `${modeText} | チュートリアル（${total}問） | コマ送りで確認`;
+    return;
+  }
   els.sessionMeta.textContent = `${modeText} | ${current}/${total} | 残り${left}問 | ${state.score}点 | セッション残り${state.remainSec}秒`;
 }
 
@@ -657,6 +857,9 @@ function renderQuestion() {
   if (!q) return;
   els.gameLimitPerQuestion.textContent = String(state.currentQuestionLimit);
   els.questionContextWeight.textContent = `体重 ${state.blockWeightKg} kg（このブロック共通）`;
+  if (els.questionPreparation) {
+    els.questionPreparation.textContent = q.preparationLine || "";
+  }
   els.questionText.textContent = q.text;
   els.answerInput.value = "";
   els.answerInput.focus();
@@ -709,8 +912,7 @@ function evaluateAnswer({ forcedTimeout }) {
   }
   const roundedAnswer = round1(q.answerMlPerHour);
   if (!forcedTimeout) {
-    const delta = Math.abs(roundedInput - roundedAnswer);
-    correct = delta <= 0.1;
+    correct = isCorrectMlPerHourAnswer(roundedInput, q.answerMlPerHour);
   }
 
   if (correct) {
@@ -730,7 +932,7 @@ function evaluateAnswer({ forcedTimeout }) {
 
   clearInterval(state.questionTimerId);
 
-  const subline = `正答 ${roundedAnswer.toFixed(1)} ml/h`;
+  const subline = formatCorrectMlSubline(q.answerMlPerHour);
   let headline;
   let resultClass;
   if (correct) {
@@ -751,6 +953,8 @@ function evaluateAnswer({ forcedTimeout }) {
     weightKg: q.weightKg,
     orderGamma: q.orderGamma,
     answerMlPerHour: roundedAnswer,
+    answerTrunc1ml: trunc1ml(q.answerMlPerHour),
+    answerCeil1ml: ceil1ml(q.answerMlPerHour),
     inputMlPerHour: roundedInput,
     timeout: forcedTimeout,
     correct,
@@ -784,7 +988,11 @@ function finishSession() {
   clearInterval(state.questionTimerId);
   hideRoundResultOverlay();
   hideRecoveryOverlay();
-  const elapsedSec = Math.max(1, Math.round((Date.now() - state.startAt) / 1000));
+  hideTutorialOverlay();
+  const elapsedSec =
+    state.startAt != null
+      ? Math.max(1, Math.round((Date.now() - state.startAt) / 1000))
+      : 1;
   const timeFactor = state.mode === "challenge" ? Math.max(0.7, 1 - elapsedSec / 1000) : 1;
   const finalScore = Math.round(state.score * timeFactor);
   const passText = finalScore >= 70 ? "到達基準クリア" : "再受講推奨";
@@ -852,7 +1060,11 @@ function abortSession() {
   clearInterval(state.questionTimerId);
   hideRoundResultOverlay();
   hideRecoveryOverlay();
-  const elapsedSec = Math.max(1, Math.round((Date.now() - state.startAt) / 1000));
+  hideTutorialOverlay();
+  const elapsedSec =
+    state.startAt != null
+      ? Math.max(1, Math.round((Date.now() - state.startAt) / 1000))
+      : 1;
   const timeFactor = state.mode === "challenge" ? Math.max(0.7, 1 - elapsedSec / 1000) : 1;
   const provisionalScore = Math.round(state.score * timeFactor);
   const totalQ = state.totalQuestionCount;
@@ -937,10 +1149,20 @@ function makeNoraQuestion(seq, weightKg) {
   });
 }
 
+function preparationLineForQuestion(drug, mgPer50ml) {
+  if (drug === "レミフェンタニル") {
+    return "レミフェンタニル 5mg／50ml total。主薬5mgを希釈液に溶解し、全量50mlで調製。";
+  }
+  if (drug === "ノルアドレナリン") {
+    return `ノルアドレナリン ${mgPer50ml}mg／50ml total。主薬${mgPer50ml}mgを希釈液に溶解し、全量50mlで調製。`;
+  }
+  return `主薬 ${mgPer50ml}mg／50ml total。希釈液に溶解し、全量50mlで調製。`;
+}
+
 function makeQuestion({ seq, category, drug, mgPer50ml, weightKg, orderGamma }) {
   const concentrationMcgPerMl = (mgPer50ml * 1000) / 50;
   const answerMlPerHour = (orderGamma * weightKg * 60) / concentrationMcgPerMl;
-  const text = `「${orderGamma}γ（μg/kg/min）で持続しろ」。何 ml/h？`;
+  const text = `「${orderGamma}γ（μg/kg/min）で持続しろ」。何 ml/h？（小数第1位まで。第2位は切り捨て・繰り上げどちらでも正解）`;
   return {
     id: `q${seq}`,
     category,
@@ -950,6 +1172,7 @@ function makeQuestion({ seq, category, drug, mgPer50ml, weightKg, orderGamma }) 
     orderGamma,
     answerMlPerHour,
     text,
+    preparationLine: preparationLineForQuestion(drug, mgPer50ml),
     explanation: "式: ml/h = γ(μg/kg/min) × 体重(kg) × 60 ÷ 濃度(μg/ml)"
   };
 }
@@ -960,6 +1183,37 @@ function pick(list) {
 
 function round1(value) {
   return Math.round(value * 10) / 10;
+}
+
+const MLH_1DEC_EPS = 1e-9;
+
+function trunc1ml(x) {
+  const v = Number(x);
+  if (!Number.isFinite(v) || v < 0) return NaN;
+  return Math.floor(v * 10 + MLH_1DEC_EPS) / 10;
+}
+
+function ceil1ml(x) {
+  const v = Number(x);
+  if (!Number.isFinite(v) || v < 0) return NaN;
+  return Math.ceil(v * 10 - MLH_1DEC_EPS) / 10;
+}
+
+function isCorrectMlPerHourAnswer(userRounded1, trueMlPerHour) {
+  const t = trunc1ml(trueMlPerHour);
+  const c = ceil1ml(trueMlPerHour);
+  const u = userRounded1;
+  const match1 = (a, b) => Math.abs(a - b) < 0.05;
+  return match1(u, t) || match1(u, c);
+}
+
+function formatCorrectMlSubline(trueMlPerHour) {
+  const t = trunc1ml(trueMlPerHour);
+  const c = ceil1ml(trueMlPerHour);
+  if (Math.abs(t - c) < 0.05) {
+    return `正答 ${t.toFixed(1)} ml/h`;
+  }
+  return `正答 ${t.toFixed(1)} ml/h（第2位切り捨て）または ${c.toFixed(1)} ml/h（第2位繰り上げ）`;
 }
 
 function calcRender() {
@@ -1028,7 +1282,7 @@ function calcToAnswer() {
 }
 
 function startQuestionFromIntro() {
-  if (state.status !== "running" || state.recoveryOpen) return;
+  if (state.status !== "running" || state.recoveryOpen || state.tutorialOpen) return;
   els.gameIntro.classList.add("hidden");
   els.gameMain.classList.remove("game-main--intro-only");
   els.questionArea.classList.remove("hidden");
@@ -1063,20 +1317,56 @@ els.goBtn.addEventListener("click", startQuestionFromIntro);
 els.enterBtn.addEventListener("click", enterTopPage);
 els.startStudyBtn.addEventListener("click", () => openSessionLengthPicker("study"));
 els.startChallengeBtn.addEventListener("click", () => openSessionLengthPicker("challenge"));
+if (els.openTutorialOnlyBtn) {
+  els.openTutorialOnlyBtn.addEventListener("click", () => openTutorialPreviewOnly());
+}
 
 els.sessionLen5Btn.addEventListener("click", () => {
   const m = pendingGameMode;
   if (!m) return;
   closeSessionLengthPicker();
-  startMode(m, 5);
+  if (m === "study") {
+    pendingStudyTotalQuestions = 5;
+    showStudyTutorialChoiceOverlay();
+  } else {
+    startMode(m, 5);
+  }
 });
 
 els.sessionLen10Btn.addEventListener("click", () => {
   const m = pendingGameMode;
   if (!m) return;
   closeSessionLengthPicker();
-  startMode(m, 10);
+  if (m === "study") {
+    pendingStudyTotalQuestions = 10;
+    showStudyTutorialChoiceOverlay();
+  } else {
+    startMode(m, 10);
+  }
 });
+
+if (els.studyWithTutorialBtn) {
+  els.studyWithTutorialBtn.addEventListener("click", () => {
+    const n = pendingStudyTotalQuestions;
+    if (n == null) return;
+    hideStudyTutorialChoiceOverlay();
+    startMode("study", n, { showTutorial: true });
+  });
+}
+if (els.studySkipTutorialBtn) {
+  els.studySkipTutorialBtn.addEventListener("click", () => {
+    const n = pendingStudyTotalQuestions;
+    if (n == null) return;
+    hideStudyTutorialChoiceOverlay();
+    startMode("study", n, { showTutorial: false });
+  });
+}
+if (els.studyTutorialCancelBtn) {
+  els.studyTutorialCancelBtn.addEventListener("click", () => {
+    hideStudyTutorialChoiceOverlay();
+    openSessionLengthPicker("study");
+  });
+}
 
 els.sessionLenCancelBtn.addEventListener("click", () => {
   closeSessionLengthPicker();
@@ -1116,8 +1406,18 @@ els.saveLogBtn.addEventListener("click", () => {
 });
 
 els.gameFullscreen.addEventListener("keydown", (e) => {
-  if (e.key !== "Enter") return;
   if (els.gameFullscreen.classList.contains("hidden")) return;
+  if (els.tutorialOverlay && !els.tutorialOverlay.classList.contains("hidden")) {
+    if (e.key === "Enter" || e.key === "ArrowRight") {
+      e.preventDefault();
+      tutorialGoNext();
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      tutorialGoPrev();
+    }
+    return;
+  }
+  if (e.key !== "Enter") return;
   if (!els.gameEndFooter.classList.contains("hidden")) return;
   if (!els.roundResultOverlay.classList.contains("hidden")) return;
   if (els.recoveryOverlay && !els.recoveryOverlay.classList.contains("hidden")) return;
@@ -1126,6 +1426,10 @@ els.gameFullscreen.addEventListener("keydown", (e) => {
     startQuestionFromIntro();
   }
 });
+
+if (els.tutorialPrevBtn) els.tutorialPrevBtn.addEventListener("click", tutorialGoPrev);
+if (els.tutorialNextBtn) els.tutorialNextBtn.addEventListener("click", tutorialGoNext);
+if (els.tutorialSkipBtn) els.tutorialSkipBtn.addEventListener("click", finishTutorialAndBeginGame);
 
 els.recoveryEasierBtn.addEventListener("click", () => {
   if (state.status !== "running") return;
@@ -1137,16 +1441,27 @@ els.recoveryContinueBtn.addEventListener("click", () => {
 });
 
 els.abortSessionBtn.addEventListener("click", () => {
+  if (state.tutorialOnlyPreview) {
+    finishTutorialAndBeginGame();
+    return;
+  }
   if (state.status !== "running") return;
   if (!window.confirm("セッションを中止しますか？（入力済みの回答はログ保存まで保持されます）")) return;
   abortSession();
 });
 
 els.gameCloseBtn.addEventListener("click", () => {
+  if (state.tutorialOnlyPreview) {
+    finishTutorialAndBeginGame();
+    return;
+  }
   state.status = "idle";
   state.pendingAttempt = null;
   hideRoundResultOverlay();
   hideRecoveryOverlay();
+  hideTutorialOverlay();
+  clearInterval(state.sessionTimerId);
+  state.sessionTimerId = null;
   closeGameFullscreen();
   els.questionArea.classList.add("hidden");
   els.gameIntro.classList.add("hidden");
