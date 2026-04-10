@@ -1,10 +1,65 @@
-const REMI_ORDER_GAMMA = [0.05, 0.1, 0.15, 0.2, 0.25];
-const NORA_ORDER_GAMMA = [0.03, 0.05, 0.08, 0.1, 0.15];
-const WEIGHTS = [45, 50, 55, 60, 65, 70, 75, 80];
+const STUDY_WEIGHTS = [50, 60, 70];
+const STUDY_REMI_ORDER_GAMMA = [0.025, 0.05, 0.125, 0.25, 0.5];
+const CHALLENGE_WEIGHTS = [50, 55, 60, 65, 70, 75, 80];
+const ADVANCED_WEIGHTS = [5, 10, 12.5, 25, 50];
+const CHALLENGE_DRUG_POOL = [
+  {
+    key: "remi",
+    category: "基本編",
+    drug: "レミフェンタニル",
+    mgPer50ml: 5,
+    orderGammaList: [0.05, 0.1, 0.15, 0.2, 0.25]
+  },
+  {
+    key: "nora",
+    category: "応用編",
+    drug: "ノルアドレナリン",
+    mgPer50ml: [3, 5],
+    orderGammaList: [0.03, 0.05, 0.08, 0.1, 0.15]
+  },
+  {
+    key: "dobutamine",
+    category: "応用編",
+    drug: "ドブタミン",
+    mgPer50ml: 150,
+    orderGammaList: [2, 3, 5, 7, 10]
+  },
+  {
+    key: "hanp",
+    category: "応用編",
+    drug: "hANP",
+    mgPer50ml: 2,
+    orderGammaList: [0.01, 0.02, 0.03, 0.05, 0.1]
+  }
+];
+const ADVANCED_DRUG_POOL = [
+  {
+    key: "dobutamine",
+    category: "発展編",
+    drug: "ドブタミン",
+    mgPer50ml: 150,
+    orderGammaList: [2, 3, 5, 7, 10]
+  },
+  {
+    key: "milrinone",
+    category: "発展編",
+    drug: "ミルリノン",
+    mgPer50ml: 10,
+    orderGammaList: [0.2, 0.3, 0.5, 0.75]
+  },
+  {
+    key: "hanp",
+    category: "発展編",
+    drug: "hANP",
+    mgPer50ml: 2,
+    orderGammaList: [0.01, 0.02, 0.03, 0.05]
+  }
+];
 const BLOCK_SIZE = 5;
 const SESSION_SECONDS = {
   study: 9999,
-  challenge: 240
+  challenge: 240,
+  advanced: 240
 };
 const LEVEL_1_SECONDS = 45;
 const MIN_QUESTION_SECONDS = 5;
@@ -71,12 +126,6 @@ const RPG_PROGRESS_W_ACC = 0.45;
 const RPG_PROGRESS_W_SPEED = 0.35;
 const RPG_PROGRESS_W_DIFFICULTY = 0.2;
 const RPG_ADVANCED_PROB_BY_TIER = [0.35, 0.45, 0.6, 0.75];
-const WEIGHTS_BY_TIER = [
-  WEIGHTS,
-  [55, 60, 65, 70, 75, 80],
-  [60, 65, 70, 75, 80],
-  [65, 70, 75, 80]
-];
 
 let pendingGameMode = null;
 let pendingStudyTotalQuestions = null;
@@ -129,6 +178,7 @@ const els = {
   welcomeName: document.getElementById("welcomeName"),
   startStudyBtn: document.getElementById("startStudyBtn"),
   startChallengeBtn: document.getElementById("startChallengeBtn"),
+  startAdvancedBtn: document.getElementById("startAdvancedBtn"),
   gameFullscreen: document.getElementById("gameFullscreen"),
   gameMain: document.getElementById("gameMain"),
   gameLevel: document.getElementById("gameLevel"),
@@ -772,12 +822,18 @@ function updateRemainQuestionsUi() {
   }
 }
 
+function modeLabel(mode) {
+  if (mode === "challenge") return "応用編";
+  if (mode === "advanced") return "発展編";
+  return "基本編";
+}
+
 function renderMeta() {
   if (state.tutorialOpen && state.tutorialOnlyPreview) {
     els.sessionMeta.textContent = "γ計算チュートリアル（閲覧のみ）";
     return;
   }
-  const modeText = state.mode === "challenge" ? "応用編" : "基本編";
+  const modeText = modeLabel(state.mode);
   const total = state.totalQuestionCount || 0;
   const current = Math.min(state.questionIndex + 1, total);
   const left = Math.max(0, state.totalQuestionCount - state.questionIndex);
@@ -810,7 +866,12 @@ function prepareIntroAndWaitGo() {
   }
   state.currentQuestion = makeQuestionForSlot(state.questionIndex, state.blockWeightKg, state.mode);
   els.introWeight.textContent = String(state.blockWeightKg);
-  els.introDrug.textContent = `${state.currentQuestion.drug}　${state.currentQuestion.mgPer50ml}mg／50ml`;
+  const introUnit = state.currentQuestion.drug === "hANP" ? "μg" : "mg";
+  const introDose =
+    state.currentQuestion.drug === "hANP"
+      ? state.currentQuestion.mgPer50ml * 1000
+      : state.currentQuestion.mgPer50ml;
+  els.introDrug.textContent = `${state.currentQuestion.drug}　${introDose}${introUnit}／50ml`;
   updateLevelLine();
   updateRpgUi();
   updateRemainQuestionsUi();
@@ -830,8 +891,13 @@ function ensureBlockForCurrentIndex() {
   }
   state.lastBlockIndex = blockIdx;
 
-  const weightPool = WEIGHTS_BY_TIER[state.rpgTierIdx] || WEIGHTS;
-  state.blockWeightKg = pick(weightPool);
+  if (state.mode === "study") {
+    state.blockWeightKg = pick(STUDY_WEIGHTS);
+  } else if (state.mode === "advanced") {
+    state.blockWeightKg = pick(ADVANCED_WEIGHTS);
+  } else {
+    state.blockWeightKg = pick(CHALLENGE_WEIGHTS);
+  }
 
   if (blockIdx === 0) {
     state.level = 1;
@@ -1108,15 +1174,38 @@ function abortSession() {
 
 function makeQuestionForSlot(index, weightKg, mode) {
   if (mode === "study") {
-    return makeRemiQuestion(index + 1, weightKg);
+    return makeQuestionBySpec({
+      seq: index + 1,
+      weightKg,
+      category: "基本編",
+      drug: "レミフェンタニル",
+      mgPer50ml: 5,
+      orderGammaList: STUDY_REMI_ORDER_GAMMA
+    });
   }
-  // RPGのtierに応じて「応用（nora）」が出やすくなる
+  if (mode === "advanced") {
+    const spec = pick(ADVANCED_DRUG_POOL);
+    return makeQuestionBySpec({ seq: index + 1, weightKg, ...spec });
+  }
+  // tierに応じて、応用モードで「成人カテコラミン薬」の出題割合を上げる
   const tier = state.rpgTierIdx;
   const prob = RPG_ADVANCED_PROB_BY_TIER[tier] || RPG_ADVANCED_PROB_BY_TIER[0];
   const x = Math.sin((index + 1) * 999 + tier * 1234) * 10000;
   const frac = Math.abs(x) % 1;
   const advanced = frac < prob;
-  return advanced ? makeNoraQuestion(index + 1, weightKg) : makeRemiQuestion(index + 1, weightKg);
+  if (!advanced) {
+    return makeQuestionBySpec({
+      seq: index + 1,
+      weightKg,
+      category: "基本編",
+      drug: "レミフェンタニル",
+      mgPer50ml: 5,
+      orderGammaList: CHALLENGE_DRUG_POOL[0].orderGammaList
+    });
+  }
+  const catecholaminePool = CHALLENGE_DRUG_POOL.slice(1);
+  const spec = pick(catecholaminePool);
+  return makeQuestionBySpec({ seq: index + 1, weightKg, ...spec });
 }
 
 function pickGammaForTier(list, tier) {
@@ -1124,26 +1213,14 @@ function pickGammaForTier(list, tier) {
   return pick(list.slice(startIdx));
 }
 
-function makeRemiQuestion(seq, weightKg) {
-  const orderGamma = pickGammaForTier(REMI_ORDER_GAMMA, state.rpgTierIdx);
+function makeQuestionBySpec({ seq, category, drug, mgPer50ml, weightKg, orderGammaList }) {
+  const selectedMgPer50ml = Array.isArray(mgPer50ml) ? pick(mgPer50ml) : mgPer50ml;
+  const orderGamma = pickGammaForTier(orderGammaList, state.rpgTierIdx);
   return makeQuestion({
     seq,
-    category: "基本編",
-    drug: "レミフェンタニル",
-    mgPer50ml: 5,
-    weightKg,
-    orderGamma
-  });
-}
-
-function makeNoraQuestion(seq, weightKg) {
-  const orderGamma = pickGammaForTier(NORA_ORDER_GAMMA, state.rpgTierIdx);
-  const mgPer50ml = Math.random() < 0.5 ? 3 : 5;
-  return makeQuestion({
-    seq,
-    category: "応用編",
-    drug: "ノルアドレナリン",
-    mgPer50ml,
+    category,
+    drug,
+    mgPer50ml: selectedMgPer50ml,
     weightKg,
     orderGamma
   });
@@ -1155,6 +1232,16 @@ function preparationLineForQuestion(drug, mgPer50ml) {
   }
   if (drug === "ノルアドレナリン") {
     return `ノルアドレナリン ${mgPer50ml}mg／50ml total。主薬${mgPer50ml}mgを希釈液に溶解し、全量50mlで調製。`;
+  }
+  if (drug === "ドブタミン") {
+    return `ドブタミン ${mgPer50ml}mg／50ml total。主薬${mgPer50ml}mgを希釈液に溶解し、全量50mlで調製。`;
+  }
+  if (drug === "ミルリノン") {
+    return `ミルリノン ${mgPer50ml}mg／50ml total。主薬${mgPer50ml}mgを希釈液に溶解し、全量50mlで調製。`;
+  }
+  if (drug === "hANP") {
+    const mcgPer50ml = mgPer50ml * 1000;
+    return `hANP ${mcgPer50ml}μg／50ml total。主薬${mcgPer50ml}μgを希釈液に溶解し、全量50mlで調製。`;
   }
   return `主薬 ${mgPer50ml}mg／50ml total。希釈液に溶解し、全量50mlで調製。`;
 }
@@ -1317,6 +1404,9 @@ els.goBtn.addEventListener("click", startQuestionFromIntro);
 els.enterBtn.addEventListener("click", enterTopPage);
 els.startStudyBtn.addEventListener("click", () => openSessionLengthPicker("study"));
 els.startChallengeBtn.addEventListener("click", () => openSessionLengthPicker("challenge"));
+if (els.startAdvancedBtn) {
+  els.startAdvancedBtn.addEventListener("click", () => openSessionLengthPicker("advanced"));
+}
 if (els.openTutorialOnlyBtn) {
   els.openTutorialOnlyBtn.addEventListener("click", () => openTutorialPreviewOnly());
 }
@@ -1384,7 +1474,7 @@ els.saveLogBtn.addEventListener("click", () => {
   const attempt = state.pendingAttempt;
   if (!attempt || !state.playerName) return;
   saveAttemptForPlayer(state.playerName, attempt);
-  if (attempt.mode === "challenge") {
+  if (attempt.mode === "challenge" || attempt.mode === "advanced") {
     const leaders = loadLeaderboardForPlayer(state.playerName);
     leaders.push({
       score: attempt.score,
