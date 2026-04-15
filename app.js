@@ -1,7 +1,8 @@
-const STUDY_WEIGHTS = [50, 60, 70];
+/** 50kg基準の暗算と相性のよい体重（主に5刻み・25の倍数） */
+const STUDY_WEIGHTS = [40, 45, 50, 55, 60, 65, 70];
 const STUDY_REMI_ORDER_GAMMA = [0.025, 0.05, 0.125, 0.25, 0.5];
-const CHALLENGE_WEIGHTS = [50, 55, 60, 65, 70, 75, 80];
-const ADVANCED_WEIGHTS = [5, 10, 12.5, 25, 50];
+const CHALLENGE_WEIGHTS = [40, 45, 50, 55, 60, 65, 70, 75, 80];
+const ADVANCED_WEIGHTS = [5, 10, 12.5, 25, 40, 45, 50];
 const CHALLENGE_DRUG_POOL = [
   {
     key: "remi",
@@ -55,6 +56,40 @@ const ADVANCED_DRUG_POOL = [
     orderGammaList: [0.01, 0.02, 0.03, 0.05]
   }
 ];
+const PRACTICAL_DILUTION_OPTIONS = {
+  hANP: [
+    { label: "hANP 1000μg/50ml（20μg/ml）", mgPer50ml: 1, source: "公開例A" },
+    { label: "hANP 2000μg/50ml（40μg/ml）", mgPer50ml: 2, source: "公開例B" }
+  ],
+  nora: [
+    { label: "ノルアドレナリン 1mg/50ml（20μg/ml）", mgPer50ml: 1, source: "公開例A" },
+    { label: "ノルアドレナリン 3mg/50ml（60μg/ml）", mgPer50ml: 3, source: "公開例B" },
+    { label: "ノルアドレナリン 5mg/50ml（100μg/ml）", mgPer50ml: 5, source: "公開例C" }
+  ]
+};
+const ADVANCED_PRACTICAL_DRUG_POOL = [
+  {
+    key: "hanp",
+    category: "発展編（本番）",
+    drug: "hANP",
+    orderGammaList: [0.01, 0.02, 0.03, 0.05],
+    dilutionOptions: PRACTICAL_DILUTION_OPTIONS.hANP
+  },
+  {
+    key: "nora",
+    category: "発展編（本番）",
+    drug: "ノルアドレナリン",
+    orderGammaList: [0.03, 0.05, 0.08, 0.1],
+    dilutionOptions: PRACTICAL_DILUTION_OPTIONS.nora
+  },
+  {
+    key: "dobutamine",
+    category: "発展編（本番）",
+    drug: "ドブタミン",
+    orderGammaList: [2, 3, 5, 7, 10],
+    dilutionOptions: [{ label: "ドブタミン 150mg/50ml（固定）", mgPer50ml: 150, source: "院内標準" }]
+  }
+];
 const BLOCK_SIZE = 5;
 const SESSION_SECONDS = {
   study: 9999,
@@ -66,7 +101,10 @@ const MIN_QUESTION_SECONDS = 5;
 const TARGET_BLOCK_ACCURACY = 0.8;
 const BLOCK_SECONDS_SHRINK = 0.84;
 const EASIER_SECONDS_BONUS = 12;
-const ROUND_RESULT_MS = 1400;
+/** 正解かつ残り時間がこの割合以上なら速答ボーナス（制限時間の45%以内に回答） */
+const SPEED_BONUS_TIME_RATIO = 0.45;
+const SPEED_BONUS_POINTS = 15;
+const ROUND_RESULT_MS = 2000;
 
 /** ゲーム開始前チュートリアル（コマ送りスライド） */
 const TUTORIAL_SLIDES = [
@@ -102,6 +140,221 @@ const TUTORIAL_SLIDES = [
   }
 ];
 
+const AIRWAY_SCENARIOS = [
+  {
+    title: "症例A: RSIを要する困難気道ハイリスク",
+    patient: "56歳男性、170cm 98kg。胃内容残留リスクあり。Mallampati III、開口2横指、頸部伸展制限。",
+    steps: [
+      {
+        prompt: "Step1: 迅速導入（RSI）を行う。ロクロニウム投与量として推奨される action を選択してください。",
+        options: [
+          {
+            text: "ロクロニウム 1.0-1.2mg/kg（実体重を基準に過不足を再評価）で迅速な筋弛緩を狙う",
+            correct: true,
+            rationale: "RSIで挿管条件を早く作るため、高用量ロクロニウムは標準的選択肢です。"
+          },
+          {
+            text: "低用量（0.3mg/kg）で反応を見てから追加する",
+            correct: false,
+            rationale: "作用発現が遅くなり、RSIの意図と合いません。"
+          },
+          {
+            text: "投与前に禁忌や術後遷延リスク（神経筋疾患、肝腎機能、拮抗薬準備）を確認する",
+            correct: true,
+            rationale: "投与量だけでなく安全確認が前提です。"
+          },
+          {
+            text: "筋弛緩薬を使わず鎮静のみでRSIを完遂する",
+            correct: false,
+            rationale: "条件不良で挿管失敗率が上がります。"
+          }
+        ]
+      },
+      {
+        prompt: "Step2: ロクロニウム投与後。作用発現〜挿管開始タイミングとして選ぶべき action は？",
+        options: [
+          {
+            text: "無呼吸許容時間を意識しつつ、十分な弛緩発現（目安60-90秒）後に挿管を開始する",
+            correct: true,
+            rationale: "早すぎる挿管開始は視野不良・失敗を増やします。"
+          },
+          {
+            text: "作用発現を待つ間も高品質プレオキシジェネーション継続を指示する",
+            correct: true,
+            rationale: "この時間の酸素化管理がその後の余裕を左右します。"
+          },
+          {
+            text: "薬剤投与直後にすぐ喉頭展開して時間短縮する",
+            correct: false,
+            rationale: "弛緩不十分で失敗が増え、結果として時間損失になります。"
+          },
+          {
+            text: "作用発現確認なしで複数回の展開を許容する",
+            correct: false,
+            rationale: "試行回数の増加は損傷と低酸素化リスクを上げます。"
+          }
+        ]
+      },
+      {
+        prompt: "Step3: 相関困難（挿管困難）で1回目失敗。次に取るべき action は？",
+        options: [
+          {
+            text: "同一手技の惰性反復を避け、デバイス/術者変更や体位最適化で次の一手を再構築する",
+            correct: true,
+            rationale: "DAMは反復ではなく、計画変更で成功率を上げます。"
+          },
+          {
+            text: "試行回数の上限を明示し、酸素化が崩れる前に救済ルートへ移行する",
+            correct: true,
+            rationale: "“いつ切り替えるか”を先に決めるのが安全です。"
+          },
+          {
+            text: "同じ喉頭鏡・同じ角度で成功するまで繰り返す",
+            correct: false,
+            rationale: "改善戦略がない反復は有害です。"
+          },
+          {
+            text: "酸素化が保てていても救済器具準備は不要と判断する",
+            correct: false,
+            rationale: "急変時に間に合わなくなります。"
+          }
+        ]
+      },
+      {
+        prompt: "Step4: 換気困難へ移行。最優先で選ぶべき action は？",
+        options: [
+          {
+            text: "直ちに“酸素化回復”を最優先にし、声門上器具や二人法マスク換気へ移行する",
+            correct: true,
+            rationale: "CICV回避には酸素化再開が最優先です。"
+          },
+          {
+            text: "ヘルプコールと前頸部アクセス準備を並行して開始する",
+            correct: true,
+            rationale: "悪化時に即移行できる準備を同時進行します。"
+          },
+          {
+            text: "挿管成功にこだわり、酸素化が戻らなくても展開を継続する",
+            correct: false,
+            rationale: "低酸素障害リスクが急増します。"
+          },
+          {
+            text: "チームへの状況共有は不要で、術者のみで継続判断する",
+            correct: false,
+            rationale: "チーム連携の欠如は対応遅延を招きます。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    title: "症例B: 頸椎可動制限症例の導入判断",
+    patient: "68歳女性、145cm 46kg。開口2横指、thyromental短、頸部伸展困難。誤嚥高リスク。",
+    steps: [
+      {
+        prompt: "この症例での初期方針として適切なのは？",
+        options: [
+          {
+            text: "覚醒下挿管の適応を検討し、困難気道宣言を行ってチームで共有する",
+            correct: true,
+            rationale: "可動制限・開口制限・誤嚥リスクがあり、覚醒下戦略の検討が妥当です。"
+          },
+          {
+            text: "導入失敗時の中止基準（試行回数・SpO2閾値）を先に合意する",
+            correct: true,
+            rationale: "判断基準を先に明文化すると、緊急時でも迷いにくくなります。"
+          },
+          {
+            text: "通常導入で問題なければそのまま進める",
+            correct: false,
+            rationale: "予測因子が多い症例で通常導入のみは危険です。"
+          },
+          {
+            text: "導入直前に評価を再確認すれば十分",
+            correct: false,
+            rationale: "準備と人的配置は前倒しで必要です。"
+          }
+        ]
+      },
+      {
+        prompt: "準備として優先度が高い組み合わせは？",
+        options: [
+          {
+            text: "ファイバー/ビデオ喉頭鏡、吸引、局所麻酔セット、挿管後確認手段（ETCO2）",
+            correct: true,
+            rationale: "覚醒下を含む複数プランを実行可能なセットを先に整えます。"
+          },
+          {
+            text: "誤嚥対策（十分な吸引、頭高位、補助者配置）を導入前チェックに組み込む",
+            correct: true,
+            rationale: "誤嚥高リスク症例では器材だけでなく体位と役割を含めた準備が必要です。"
+          },
+          {
+            text: "ETチューブのみ複数サイズ準備し、他は必要時対応",
+            correct: false,
+            rationale: "器材不足で失敗時のリカバリーが遅れます。"
+          },
+          {
+            text: "輪状軟骨圧のみ徹底し器具準備は省略",
+            correct: false,
+            rationale: "単一手段依存は不適切です。"
+          }
+        ]
+      },
+      {
+        prompt: "導入薬剤の考え方として適切なのは？",
+        options: [
+          {
+            text: "血行動態を見ながら少量漸増（例: フェンタニル + 低用量プロポフォール）し、換気確認後に次段階へ",
+            correct: true,
+            rationale: "高齢・小柄症例では過鎮静を避け、換気確認を優先します。"
+          },
+          {
+            text: "効果発現待ちの観察時間を確保し、追加投与は反応を見て最小限にする",
+            correct: true,
+            rationale: "反応前の連続投与は過量化しやすく、循環抑制を招きます。"
+          },
+          {
+            text: "標準成人量を一律で投与し、反応を見ない",
+            correct: false,
+            rationale: "過量投与リスクが高く危険です。"
+          },
+          {
+            text: "薬剤は使わず手技のみで短時間に終える",
+            correct: false,
+            rationale: "苦痛・反射亢進・失敗増加の要因になります。"
+          }
+        ]
+      },
+      {
+        prompt: "CICVに近い状況で取るべき行動は？",
+        options: [
+          {
+            text: "早期にヘルプコールし、アルゴリズムに従って緊急前頸部アクセスへ移行判断する",
+            correct: true,
+            rationale: "CICVは時間勝負で、躊躇なく次段階へ進むことが重要です。"
+          },
+          {
+            text: "酸素化再開を最優先に、チームで次手順を声に出して同期する",
+            correct: true,
+            rationale: "手順同期は混乱を減らし、必要手技への移行速度を上げます。"
+          },
+          {
+            text: "SpO2が保てなくても同じ手技を続ける",
+            correct: false,
+            rationale: "低酸素障害リスクが急速に上昇します。"
+          },
+          {
+            text: "いったん手術を開始して時間を稼ぐ",
+            correct: false,
+            rationale: "気道未確保での手術開始は不可能です。"
+          }
+        ]
+      }
+    ]
+  }
+];
+
 const RPG_TIERS = ["村人", "戦士", "魔法戦士", "勇者"];
 
 /** コンテンツ選択画面用：DQ風ピクセル風SVG（村人〜勇者） */
@@ -129,11 +382,13 @@ const RPG_ADVANCED_PROB_BY_TIER = [0.35, 0.45, 0.6, 0.75];
 
 let pendingGameMode = null;
 let pendingStudyTotalQuestions = null;
+let pendingAdvancedTotalQuestions = null;
 let roundResultTimerId = null;
 
 const state = {
   playerName: "",
   mode: null,
+  advancedVariant: "standard",
   status: "idle",
   questionIndex: 0,
   totalQuestionCount: 0,
@@ -163,7 +418,18 @@ const state = {
   tutorialOpen: false,
   tutorialSlideIndex: 0,
   /** ゲーム開始せずチュートリアルだけ全画面表示 */
-  tutorialOnlyPreview: false
+  tutorialOnlyPreview: false,
+  airway: {
+    scenarioIdx: -1,
+    stepIdx: 0,
+    score: 0,
+    answered: false,
+    selectedOptionIndexes: [],
+    stepSelectedTexts: [],
+    durationMin: 0,
+    remainSec: 0,
+    timerId: null
+  }
 };
 
 const calc = {
@@ -194,6 +460,11 @@ const els = {
   goBtn: document.getElementById("goBtn"),
   questionContextWeight: document.getElementById("questionContextWeight"),
   questionPreparation: document.getElementById("questionPreparation"),
+  questionConcentration: document.getElementById("questionConcentration"),
+  questionGammaHint: document.getElementById("questionGammaHint"),
+  dilutionChooser: document.getElementById("dilutionChooser"),
+  dilutionSelect: document.getElementById("dilutionSelect"),
+  dilutionSourceHint: document.getElementById("dilutionSourceHint"),
   questionText: document.getElementById("questionText"),
   answerInput: document.getElementById("answerInput"),
   submitAnswerBtn: document.getElementById("submitAnswerBtn"),
@@ -220,11 +491,32 @@ const els = {
   sessionLen5Btn: document.getElementById("sessionLen5Btn"),
   sessionLen10Btn: document.getElementById("sessionLen10Btn"),
   sessionLenCancelBtn: document.getElementById("sessionLenCancelBtn"),
+  advancedModeOverlay: document.getElementById("advancedModeOverlay"),
+  advancedModeStandardBtn: document.getElementById("advancedModeStandardBtn"),
+  advancedModePracticalBtn: document.getElementById("advancedModePracticalBtn"),
+  advancedModeCancelBtn: document.getElementById("advancedModeCancelBtn"),
+  airwayDurationOverlay: document.getElementById("airwayDurationOverlay"),
+  airwayDur3Btn: document.getElementById("airwayDur3Btn"),
+  airwayDur5Btn: document.getElementById("airwayDur5Btn"),
+  airwayDur10Btn: document.getElementById("airwayDur10Btn"),
+  airwayDurCancelBtn: document.getElementById("airwayDurCancelBtn"),
   studyTutorialChoiceOverlay: document.getElementById("studyTutorialChoiceOverlay"),
   studyWithTutorialBtn: document.getElementById("studyWithTutorialBtn"),
   studySkipTutorialBtn: document.getElementById("studySkipTutorialBtn"),
   studyTutorialCancelBtn: document.getElementById("studyTutorialCancelBtn"),
   openTutorialOnlyBtn: document.getElementById("openTutorialOnlyBtn"),
+  startAirwayScenarioBtn: document.getElementById("startAirwayScenarioBtn"),
+  airwayFullscreen: document.getElementById("airwayFullscreen"),
+  airwayCloseBtn: document.getElementById("airwayCloseBtn"),
+  airwayScenarioTitle: document.getElementById("airwayScenarioTitle"),
+  airwayScenarioMeta: document.getElementById("airwayScenarioMeta"),
+  airwayScenarioPatient: document.getElementById("airwayScenarioPatient"),
+  airwayStepPrompt: document.getElementById("airwayStepPrompt"),
+  airwayOptions: document.getElementById("airwayOptions"),
+  airwayFeedback: document.getElementById("airwayFeedback"),
+  airwaySubmitStepBtn: document.getElementById("airwaySubmitStepBtn"),
+  airwayNextStepBtn: document.getElementById("airwayNextStepBtn"),
+  airwayRestartBtn: document.getElementById("airwayRestartBtn"),
   remainQuestionCount: document.getElementById("remainQuestionCount"),
   introRemainQuestions: document.getElementById("introRemainQuestions"),
   abortSessionBtn: document.getElementById("abortSessionBtn"),
@@ -414,6 +706,220 @@ function renderGammaRpgOnContentPage() {
   if (els.gammaRpgSprite) {
     els.gammaRpgSprite.innerHTML = GAMMA_RPG_SPRITES_SVG[maxIdx] || GAMMA_RPG_SPRITES_SVG[0];
   }
+}
+
+function openAirwayFullscreen() {
+  if (!els.airwayFullscreen) return;
+  els.airwayFullscreen.classList.remove("hidden");
+  els.airwayFullscreen.setAttribute("aria-hidden", "false");
+  document.body.classList.add("airway-active");
+}
+
+function closeAirwayFullscreen() {
+  if (!els.airwayFullscreen) return;
+  clearInterval(state.airway.timerId);
+  state.airway.timerId = null;
+  els.airwayFullscreen.classList.add("hidden");
+  els.airwayFullscreen.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("airway-active");
+}
+
+function openAirwayDurationPicker() {
+  if (!els.airwayDurationOverlay) return;
+  els.airwayDurationOverlay.classList.remove("hidden");
+}
+
+function closeAirwayDurationPicker() {
+  if (!els.airwayDurationOverlay) return;
+  els.airwayDurationOverlay.classList.add("hidden");
+}
+
+function formatAirwayRemain(sec) {
+  const s = Math.max(0, sec);
+  const mm = String(Math.floor(s / 60)).padStart(2, "0");
+  const ss = String(s % 60).padStart(2, "0");
+  return `${mm}:${ss}`;
+}
+
+function tickAirwayTimer() {
+  if (state.airway.remainSec <= 0) return;
+  state.airway.remainSec -= 1;
+  if (els.airwayScenarioMeta) {
+    els.airwayScenarioMeta.textContent = `残り ${formatAirwayRemain(state.airway.remainSec)} | Step ${state.airway.stepIdx + 1}`;
+  }
+  if (state.airway.remainSec <= 0) {
+    clearInterval(state.airway.timerId);
+    state.airway.timerId = null;
+    if (els.airwayFeedback) {
+      els.airwayFeedback.classList.remove("hidden", "correct");
+      els.airwayFeedback.classList.add("wrong");
+      els.airwayFeedback.textContent = "学習時間が終了しました。いったん一覧に戻るか、別症例で再開してください。";
+    }
+    if (els.airwaySubmitStepBtn) els.airwaySubmitStepBtn.disabled = true;
+    if (els.airwayNextStepBtn) els.airwayNextStepBtn.disabled = true;
+    if (els.airwayRestartBtn) els.airwayRestartBtn.classList.remove("hidden");
+  }
+}
+
+function startAirwayScenarioTraining(durationMin) {
+  closeAirwayDurationPicker();
+  openAirwayFullscreen();
+  state.airway.scenarioIdx = Math.floor(Math.random() * AIRWAY_SCENARIOS.length);
+  state.airway.stepIdx = 0;
+  state.airway.score = 0;
+  state.airway.answered = false;
+  state.airway.selectedOptionIndexes = [];
+  state.airway.stepSelectedTexts = [];
+  state.airway.durationMin = durationMin;
+  state.airway.remainSec = durationMin * 60;
+  clearInterval(state.airway.timerId);
+  state.airway.timerId = setInterval(tickAirwayTimer, 1000);
+  if (els.airwayRestartBtn) els.airwayRestartBtn.classList.add("hidden");
+  if (els.airwaySubmitStepBtn) els.airwaySubmitStepBtn.classList.remove("hidden");
+  if (els.airwayNextStepBtn) els.airwayNextStepBtn.disabled = false;
+  renderAirwayStep();
+}
+
+function renderAirwayStep() {
+  const sIdx = state.airway.scenarioIdx;
+  if (sIdx < 0 || sIdx >= AIRWAY_SCENARIOS.length) return;
+  const scenario = AIRWAY_SCENARIOS[sIdx];
+  const step = scenario.steps[state.airway.stepIdx];
+  if (!step) {
+    renderAirwayResult();
+    return;
+  }
+  if (!els.airwayScenarioTitle || !els.airwayScenarioMeta || !els.airwayScenarioPatient || !els.airwayStepPrompt || !els.airwayOptions) return;
+  els.airwayScenarioTitle.textContent = scenario.title;
+  els.airwayScenarioMeta.textContent = `残り ${formatAirwayRemain(state.airway.remainSec)} | Step ${state.airway.stepIdx + 1} / ${scenario.steps.length}`;
+  els.airwayScenarioPatient.textContent = `患者情報: ${scenario.patient}`;
+  const prevTexts = state.airway.stepSelectedTexts[state.airway.stepIdx - 1] || [];
+  if (state.airway.stepIdx > 0 && prevTexts.length > 0) {
+    els.airwayStepPrompt.textContent = `${step.prompt}\n（前Stepで選択: ${prevTexts.join(" / ")}）`;
+  } else {
+    els.airwayStepPrompt.textContent = step.prompt;
+  }
+  if (els.airwayFeedback) {
+    els.airwayFeedback.classList.add("hidden");
+    els.airwayFeedback.classList.remove("correct", "wrong");
+    els.airwayFeedback.textContent = "";
+  }
+  if (els.airwayNextStepBtn) els.airwayNextStepBtn.classList.add("hidden");
+  if (els.airwaySubmitStepBtn) els.airwaySubmitStepBtn.disabled = false;
+  els.airwayOptions.replaceChildren();
+  step.options.forEach((opt, idx) => {
+    const label = document.createElement("label");
+    label.className = "airway-option-label";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = String(idx);
+    const text = document.createElement("span");
+    text.textContent = opt.text;
+    label.appendChild(input);
+    label.appendChild(text);
+    els.airwayOptions.appendChild(label);
+  });
+  state.airway.answered = false;
+}
+
+function submitAirwayStep() {
+  if (state.airway.answered || !els.airwayOptions || state.airway.remainSec <= 0) return;
+  const checks = Array.from(els.airwayOptions.querySelectorAll("input[type='checkbox']"));
+  const selectedIndexes = checks
+    .map((input, idx) => ({ idx, checked: input.checked }))
+    .filter((x) => x.checked)
+    .map((x) => x.idx);
+  if (selectedIndexes.length === 0) {
+    if (els.airwayFeedback) {
+      els.airwayFeedback.classList.remove("hidden", "correct");
+      els.airwayFeedback.classList.add("wrong");
+      els.airwayFeedback.textContent = "1つ以上の action を選択してから判定してください。";
+    }
+    return;
+  }
+  state.airway.answered = true;
+  state.airway.selectedOptionIndexes = selectedIndexes;
+  state.airway.stepSelectedTexts[state.airway.stepIdx] = selectedIndexes.map((idx) => step.options[idx].text);
+  const scenario = AIRWAY_SCENARIOS[state.airway.scenarioIdx];
+  const step = scenario.steps[state.airway.stepIdx];
+  const recommendedIdx = step.options.map((opt, idx) => ({ idx, ok: opt.correct })).filter((x) => x.ok).map((x) => x.idx);
+  const selectedRecommended = selectedIndexes.filter((idx) => recommendedIdx.includes(idx));
+  const missed = recommendedIdx.filter((idx) => !selectedIndexes.includes(idx));
+  const risky = selectedIndexes.filter((idx) => !recommendedIdx.includes(idx));
+
+  checks.forEach((input) => {
+    input.disabled = true;
+    const idx = Number(input.value);
+    if (recommendedIdx.includes(idx)) {
+      input.parentElement?.classList.add("is-recommended");
+    }
+    if (risky.includes(idx)) {
+      input.parentElement?.classList.add("is-risky");
+    }
+  });
+
+  if (missed.length === 0 && risky.length === 0) {
+    state.airway.score += 1;
+  }
+  if (els.airwayFeedback) {
+    els.airwayFeedback.classList.remove("hidden");
+    const solved = missed.length === 0 && risky.length === 0;
+    els.airwayFeedback.classList.add(solved ? "correct" : "wrong");
+    const goodLine = selectedRecommended.length
+      ? `選べた推奨 action: ${selectedRecommended.map((idx) => step.options[idx].text).join(" / ")}`
+      : "選べた推奨 action: なし";
+    const missLine = missed.length
+      ? `不足している action: ${missed.map((idx) => step.options[idx].text).join(" / ")}`
+      : "不足している action: なし";
+    const riskLine = risky.length
+      ? `再検討したい action: ${risky.map((idx) => step.options[idx].text).join(" / ")}`
+      : "再検討したい action: なし";
+    const rationale = step.options
+      .filter((opt) => opt.correct)
+      .map((opt) => opt.rationale)
+      .join(" ");
+    els.airwayFeedback.textContent = `${solved ? "整理できています。" : "思考を再整理しましょう。"} ${goodLine} / ${missLine} / ${riskLine} ${rationale}`;
+  }
+  if (els.airwaySubmitStepBtn) els.airwaySubmitStepBtn.disabled = true;
+  if (els.airwayNextStepBtn) {
+    const isLast = state.airway.stepIdx >= scenario.steps.length - 1;
+    els.airwayNextStepBtn.textContent = isLast ? "症例をふり返る" : "次の判断へ";
+    els.airwayNextStepBtn.classList.remove("hidden");
+  }
+}
+
+function goNextAirwayStep() {
+  if (state.airway.remainSec <= 0) return;
+  const scenario = AIRWAY_SCENARIOS[state.airway.scenarioIdx];
+  if (!scenario) return;
+  if (state.airway.stepIdx < scenario.steps.length - 1) {
+    state.airway.stepIdx += 1;
+    renderAirwayStep();
+    return;
+  }
+  renderAirwayResult();
+}
+
+function renderAirwayResult() {
+  const scenario = AIRWAY_SCENARIOS[state.airway.scenarioIdx];
+  if (!scenario || !els.airwayScenarioMeta || !els.airwayStepPrompt || !els.airwayOptions || !els.airwayFeedback) return;
+  const total = scenario.steps.length;
+  const score = state.airway.score;
+  els.airwayScenarioMeta.textContent = `完了 ${score} / ${total}（残り ${formatAirwayRemain(state.airway.remainSec)}）`;
+  els.airwayStepPrompt.textContent = "症例ふり返り: 何を先に考えるべきか";
+  els.airwayOptions.replaceChildren();
+  const ul = document.createElement("ul");
+  ["予測される困難点を最初に言語化する", "Plan A/B/C（酸素化優先）を導入前に共有する", "薬剤量は患者背景に合わせて過量投与を避ける"].forEach((text) => {
+    const li = document.createElement("li");
+    li.textContent = text;
+    ul.appendChild(li);
+  });
+  els.airwayOptions.appendChild(ul);
+  els.airwayFeedback.classList.remove("hidden", "correct", "wrong");
+  els.airwayFeedback.textContent = `スコア ${score}/${total}。正解だけでなく、各Stepの解説を読んで判断理由を確認してください。`;
+  if (els.airwaySubmitStepBtn) els.airwaySubmitStepBtn.classList.add("hidden");
+  if (els.airwayNextStepBtn) els.airwayNextStepBtn.classList.add("hidden");
+  if (els.airwayRestartBtn) els.airwayRestartBtn.classList.remove("hidden");
 }
 
 function clampQuestionSeconds(sec) {
@@ -689,6 +1195,16 @@ function closeSessionLengthPicker() {
   pendingGameMode = null;
 }
 
+function openAdvancedModePicker(totalQuestions) {
+  pendingAdvancedTotalQuestions = totalQuestions;
+  if (els.advancedModeOverlay) els.advancedModeOverlay.classList.remove("hidden");
+}
+
+function closeAdvancedModePicker() {
+  if (els.advancedModeOverlay) els.advancedModeOverlay.classList.add("hidden");
+  pendingAdvancedTotalQuestions = null;
+}
+
 function showStudyTutorialChoiceOverlay() {
   if (els.studyTutorialChoiceOverlay) els.studyTutorialChoiceOverlay.classList.remove("hidden");
 }
@@ -746,16 +1262,19 @@ function closeGameFullscreen() {
 
 function startMode(mode, totalQuestions, opts = {}) {
   const showTutorial = mode === "study" && opts.showTutorial === true;
+  const advancedVariant = mode === "advanced" && opts.advancedVariant === "practical" ? "practical" : "standard";
   clearInterval(state.sessionTimerId);
   clearInterval(state.questionTimerId);
   hideRoundResultOverlay();
   hideRecoveryOverlay();
   hideTutorialOverlay();
+  closeAdvancedModePicker();
   state.tutorialOnlyPreview = false;
 
   const name = state.playerName;
   state.playerName = name;
   state.mode = mode;
+  state.advancedVariant = advancedVariant;
   state.status = "running";
   state.questionIndex = 0;
   state.totalQuestionCount = totalQuestions;
@@ -824,7 +1343,7 @@ function updateRemainQuestionsUi() {
 
 function modeLabel(mode) {
   if (mode === "challenge") return "応用編";
-  if (mode === "advanced") return "発展編";
+  if (mode === "advanced") return state.advancedVariant === "practical" ? "発展編（本番）" : "発展編";
   return "基本編";
 }
 
@@ -842,7 +1361,8 @@ function renderMeta() {
     els.sessionMeta.textContent = `${modeText} | チュートリアル（${total}問） | コマ送りで確認`;
     return;
   }
-  els.sessionMeta.textContent = `${modeText} | ${current}/${total} | 残り${left}問 | ${state.score}点 | セッション残り${state.remainSec}秒`;
+  const streakPart = state.streak > 0 ? ` | 連続正解 ${state.streak}` : "";
+  els.sessionMeta.textContent = `${modeText} | ${current}/${total} | 残り${left}問 | ${state.score}点${streakPart} | セッション残り${state.remainSec}秒`;
 }
 
 function renderQuestionTimer() {
@@ -864,14 +1384,19 @@ function prepareIntroAndWaitGo() {
     state.currentQuestionLimit = clampQuestionSeconds(state.currentQuestionLimit + state.pendingAddQuestionSecondsSec);
     state.pendingAddQuestionSecondsSec = 0;
   }
+  state.blockWeightKg = pickQuestionWeight(state.mode);
   state.currentQuestion = makeQuestionForSlot(state.questionIndex, state.blockWeightKg, state.mode);
   els.introWeight.textContent = String(state.blockWeightKg);
-  const introUnit = state.currentQuestion.drug === "hANP" ? "μg" : "mg";
-  const introDose =
-    state.currentQuestion.drug === "hANP"
-      ? state.currentQuestion.mgPer50ml * 1000
-      : state.currentQuestion.mgPer50ml;
-  els.introDrug.textContent = `${state.currentQuestion.drug}　${introDose}${introUnit}／50ml`;
+  if (state.currentQuestion.practicalMode) {
+    els.introDrug.textContent = `${state.currentQuestion.drug}　希釈法を選択`;
+  } else {
+    const introUnit = state.currentQuestion.drug === "hANP" ? "μg" : "mg";
+    const introDose =
+      state.currentQuestion.drug === "hANP"
+        ? state.currentQuestion.mgPer50ml * 1000
+        : state.currentQuestion.mgPer50ml;
+    els.introDrug.textContent = `${state.currentQuestion.drug}　${introDose}${introUnit}／50ml`;
+  }
   updateLevelLine();
   updateRpgUi();
   updateRemainQuestionsUi();
@@ -890,14 +1415,6 @@ function ensureBlockForCurrentIndex() {
     maybeAdvanceRpgTier();
   }
   state.lastBlockIndex = blockIdx;
-
-  if (state.mode === "study") {
-    state.blockWeightKg = pick(STUDY_WEIGHTS);
-  } else if (state.mode === "advanced") {
-    state.blockWeightKg = pick(ADVANCED_WEIGHTS);
-  } else {
-    state.blockWeightKg = pick(CHALLENGE_WEIGHTS);
-  }
 
   if (blockIdx === 0) {
     state.level = 1;
@@ -922,9 +1439,52 @@ function renderQuestion() {
   const q = state.currentQuestion;
   if (!q) return;
   els.gameLimitPerQuestion.textContent = String(state.currentQuestionLimit);
-  els.questionContextWeight.textContent = `体重 ${state.blockWeightKg} kg（このブロック共通）`;
+  els.questionContextWeight.textContent = `体重 ${state.blockWeightKg} kg（この問）`;
   if (els.questionPreparation) {
     els.questionPreparation.textContent = q.preparationLine || "";
+  }
+  const isPractical = q.practicalMode === true && Array.isArray(q.practicalOptions);
+  if (els.dilutionChooser && els.dilutionSelect && els.dilutionSourceHint) {
+    if (isPractical) {
+      els.dilutionChooser.classList.remove("hidden");
+      els.dilutionSelect.replaceChildren();
+      const ph = document.createElement("option");
+      ph.value = "";
+      ph.textContent = "希釈法を選択";
+      els.dilutionSelect.appendChild(ph);
+      q.practicalOptions.forEach((opt, idx) => {
+        const o = document.createElement("option");
+        o.value = String(idx);
+        o.textContent = opt.label;
+        els.dilutionSelect.appendChild(o);
+      });
+      els.dilutionSelect.value = "";
+      els.dilutionSourceHint.textContent = "公開されている希釈法から選択してください。";
+    } else {
+      els.dilutionChooser.classList.add("hidden");
+      els.dilutionSelect.replaceChildren();
+      els.dilutionSourceHint.textContent = "";
+    }
+  }
+  if (els.questionConcentration) {
+    if (isPractical) {
+      els.questionConcentration.textContent = "溶解濃度（主薬）: 希釈法を選択すると表示";
+    } else if (typeof q.concentrationMcgPerMl === "number") {
+      const c = q.concentrationMcgPerMl;
+      const cDisp = Math.abs(c - Math.round(c)) < 1e-6 ? String(Math.round(c)) : c.toFixed(1);
+      els.questionConcentration.textContent = `溶解濃度（主薬）: ${cDisp} μg/ml`;
+    } else {
+      els.questionConcentration.textContent = "";
+    }
+  }
+  if (els.questionGammaHint) {
+    if (isPractical) {
+      els.questionGammaHint.textContent = "式メモ: ml/h ＝ γ(μg/kg/min) × 体重(kg) × 60 ÷ 選択した濃度(μg/ml)";
+    } else if (typeof q.concentrationMcgPerMl === "number") {
+      els.questionGammaHint.textContent = `式メモ: ml/h ＝ γ(μg/kg/min) × 体重(kg) × 60 ÷ ${q.concentrationMcgPerMl.toFixed(1)}`;
+    } else {
+      els.questionGammaHint.textContent = "";
+    }
   }
   els.questionText.textContent = q.text;
   els.answerInput.value = "";
@@ -936,6 +1496,28 @@ function renderQuestion() {
   clearInterval(state.questionTimerId);
   state.questionTimerId = setInterval(tickQuestion, 1000);
   renderMeta();
+}
+
+function refreshPracticalSelectionPreview() {
+  const q = state.currentQuestion;
+  if (!q || !q.practicalMode || !els.questionConcentration || !els.questionGammaHint) return;
+  const qMath = resolveQuestionMath(q);
+  if (!qMath.selected) {
+    els.questionConcentration.textContent = "溶解濃度（主薬）: 希釈法を選択すると表示";
+    els.questionGammaHint.textContent = "式メモ: ml/h ＝ γ(μg/kg/min) × 体重(kg) × 60 ÷ 選択した濃度(μg/ml)";
+    if (els.dilutionSourceHint) {
+      els.dilutionSourceHint.textContent = "公開されている希釈法から選択してください。";
+    }
+    return;
+  }
+  const c = qMath.concentrationMcgPerMl;
+  const cDisp = Math.abs(c - Math.round(c)) < 1e-6 ? String(Math.round(c)) : c.toFixed(1);
+  els.questionConcentration.textContent = `溶解濃度（主薬）: ${cDisp} μg/ml`;
+  els.questionGammaHint.textContent = `式メモ: ml/h ＝ γ(μg/kg/min) × 体重(kg) × 60 ÷ ${c.toFixed(1)}`;
+  if (els.dilutionSourceHint) {
+    const src = qMath.selected.source ? `（${qMath.selected.source}）` : "";
+    els.dilutionSourceHint.textContent = `選択中: ${qMath.selected.label}${src}`;
+  }
 }
 
 function tickQuestion() {
@@ -962,8 +1544,13 @@ function evaluateAnswer({ forcedTimeout }) {
   const q = state.currentQuestion;
   let roundedInput = null;
   let correct = false;
+  const qMath = resolveQuestionMath(q);
 
   if (!forcedTimeout) {
+    if (q.practicalMode && !qMath.selected) {
+      alert("先に希釈法を選択してください。");
+      return;
+    }
     const raw = els.answerInput.value;
     if (!raw) {
       alert("回答を入力してください。");
@@ -976,19 +1563,9 @@ function evaluateAnswer({ forcedTimeout }) {
     }
     roundedInput = round1(inputRate);
   }
-  const roundedAnswer = round1(q.answerMlPerHour);
+  const roundedAnswer = round1(qMath.answerMlPerHour);
   if (!forcedTimeout) {
-    correct = isCorrectMlPerHourAnswer(roundedInput, q.answerMlPerHour);
-  }
-
-  if (correct) {
-    state.score += 100;
-    state.streak += 1;
-    if (state.streak > 0 && state.streak % 3 === 0) state.score += 40;
-  } else {
-    state.score -= 30;
-    if (q.drug === "ノルアドレナリン") state.score -= 30;
-    state.streak = 0;
+    correct = isCorrectMlPerHourAnswer(roundedInput, qMath.answerMlPerHour);
   }
 
   const limitMs = state.currentQuestionLimit * 1000;
@@ -996,13 +1573,36 @@ function evaluateAnswer({ forcedTimeout }) {
   const elapsedMs = forcedTimeout ? limitMs : Math.min(limitMs, Date.now() - startAt);
   const timeUsedSec = Math.round((elapsedMs / 1000) * 10) / 10;
 
+  let speedBonus = 0;
+  if (correct) {
+    state.score += 100;
+    state.streak += 1;
+    if (state.streak > 0 && state.streak % 3 === 0) state.score += 40;
+    if (!forcedTimeout && timeUsedSec <= state.currentQuestionLimit * SPEED_BONUS_TIME_RATIO) {
+      speedBonus = SPEED_BONUS_POINTS;
+      state.score += speedBonus;
+    }
+  } else {
+    state.score -= 30;
+    if (q.drug === "ノルアドレナリン") state.score -= 30;
+    state.streak = 0;
+  }
+
   clearInterval(state.questionTimerId);
 
-  const subline = formatCorrectMlSubline(q.answerMlPerHour);
+  const subline = buildRoundFeedbackSubline(q, {
+    correct,
+    forcedTimeout,
+    roundedInput,
+    speedBonus,
+    answerMlPerHour: qMath.answerMlPerHour,
+    concentrationMcgPerMl: qMath.concentrationMcgPerMl,
+    selectedDilutionLabel: qMath.selected ? qMath.selected.label : null
+  });
   let headline;
   let resultClass;
   if (correct) {
-    headline = "正解";
+    headline = speedBonus > 0 ? `正解（速答 +${speedBonus}）` : "正解";
     resultClass = "is-correct";
   } else if (forcedTimeout) {
     headline = "時間切れ";
@@ -1018,14 +1618,18 @@ function evaluateAnswer({ forcedTimeout }) {
     drug: q.drug,
     weightKg: q.weightKg,
     orderGamma: q.orderGamma,
+    selectedDilution: qMath.selected ? qMath.selected.label : null,
+    selectedDilutionSource: qMath.selected ? qMath.selected.source : null,
+    selectedMgPer50ml: qMath.mgPer50ml,
     answerMlPerHour: roundedAnswer,
-    answerTrunc1ml: trunc1ml(q.answerMlPerHour),
-    answerCeil1ml: ceil1ml(q.answerMlPerHour),
+    answerTrunc1ml: trunc1ml(qMath.answerMlPerHour),
+    answerCeil1ml: ceil1ml(qMath.answerMlPerHour),
     inputMlPerHour: roundedInput,
     timeout: forcedTimeout,
     correct,
     level: state.level,
-    timeUsedSec
+    timeUsedSec,
+    speedBonus
   };
 
   showRoundResultThen(headline, subline, resultClass, () => {
@@ -1184,6 +1788,10 @@ function makeQuestionForSlot(index, weightKg, mode) {
     });
   }
   if (mode === "advanced") {
+    if (state.advancedVariant === "practical") {
+      const spec = pick(ADVANCED_PRACTICAL_DRUG_POOL);
+      return makePracticalQuestionBySpec({ seq: index + 1, weightKg, ...spec });
+    }
     const spec = pick(ADVANCED_DRUG_POOL);
     return makeQuestionBySpec({ seq: index + 1, weightKg, ...spec });
   }
@@ -1226,30 +1834,46 @@ function makeQuestionBySpec({ seq, category, drug, mgPer50ml, weightKg, orderGam
   });
 }
 
+function makePracticalQuestionBySpec({ seq, category, drug, weightKg, orderGammaList, dilutionOptions }) {
+  const orderGamma = pickGammaForTier(orderGammaList, state.rpgTierIdx);
+  return makeQuestion({
+    seq,
+    category,
+    drug,
+    mgPer50ml: dilutionOptions[0].mgPer50ml,
+    weightKg,
+    orderGamma,
+    practicalOptions: dilutionOptions
+  });
+}
+
 function preparationLineForQuestion(drug, mgPer50ml) {
   if (drug === "レミフェンタニル") {
-    return "レミフェンタニル 5mg／50ml total。主薬5mgを希釈液に溶解し、全量50mlで調製。";
+    return "レミフェンタニル 5mg／50ml";
   }
   if (drug === "ノルアドレナリン") {
-    return `ノルアドレナリン ${mgPer50ml}mg／50ml total。主薬${mgPer50ml}mgを希釈液に溶解し、全量50mlで調製。`;
+    return `ノルアド ${mgPer50ml}mg／50ml`;
   }
   if (drug === "ドブタミン") {
-    return `ドブタミン ${mgPer50ml}mg／50ml total。主薬${mgPer50ml}mgを希釈液に溶解し、全量50mlで調製。`;
+    return `ドブタミン ${mgPer50ml}mg／50ml`;
   }
   if (drug === "ミルリノン") {
-    return `ミルリノン ${mgPer50ml}mg／50ml total。主薬${mgPer50ml}mgを希釈液に溶解し、全量50mlで調製。`;
+    return `ミルリノン ${mgPer50ml}mg／50ml`;
   }
   if (drug === "hANP") {
     const mcgPer50ml = mgPer50ml * 1000;
-    return `hANP ${mcgPer50ml}μg／50ml total。主薬${mcgPer50ml}μgを希釈液に溶解し、全量50mlで調製。`;
+    return `hANP ${mcgPer50ml}μg／50ml`;
   }
-  return `主薬 ${mgPer50ml}mg／50ml total。希釈液に溶解し、全量50mlで調製。`;
+  return `主薬 ${mgPer50ml}mg／50ml`;
 }
 
-function makeQuestion({ seq, category, drug, mgPer50ml, weightKg, orderGamma }) {
+function makeQuestion({ seq, category, drug, mgPer50ml, weightKg, orderGamma, practicalOptions = null }) {
+  const practicalMode = Array.isArray(practicalOptions) && practicalOptions.length > 0;
   const concentrationMcgPerMl = (mgPer50ml * 1000) / 50;
   const answerMlPerHour = (orderGamma * weightKg * 60) / concentrationMcgPerMl;
-  const text = `「${orderGamma}γ（μg/kg/min）で持続しろ」。何 ml/h？（小数第1位まで。第2位は切り捨て・繰り上げどちらでも正解）`;
+  const text = practicalMode
+    ? `指示\n${orderGamma} γ（μg/kg/min）\n持続\n\n希釈法を選択して\nml/h？\n※小数第1位`
+    : `指示\n${orderGamma} γ（μg/kg/min）\n持続\n\nml/h？\n※小数第1位`;
   return {
     id: `q${seq}`,
     category,
@@ -1257,15 +1881,46 @@ function makeQuestion({ seq, category, drug, mgPer50ml, weightKg, orderGamma }) 
     mgPer50ml,
     weightKg,
     orderGamma,
+    concentrationMcgPerMl,
     answerMlPerHour,
     text,
-    preparationLine: preparationLineForQuestion(drug, mgPer50ml),
+    preparationLine: practicalMode ? `${drug} の希釈法を選択` : preparationLineForQuestion(drug, mgPer50ml),
+    practicalMode,
+    practicalOptions,
     explanation: "式: ml/h = γ(μg/kg/min) × 体重(kg) × 60 ÷ 濃度(μg/ml)"
   };
 }
 
+function getSelectedPracticalOption(q) {
+  if (!q || !q.practicalMode || !Array.isArray(q.practicalOptions) || !els.dilutionSelect) return null;
+  const idx = Number(els.dilutionSelect.value);
+  if (!Number.isInteger(idx) || idx < 0 || idx >= q.practicalOptions.length) return null;
+  return q.practicalOptions[idx];
+}
+
+function resolveQuestionMath(q) {
+  const selected = getSelectedPracticalOption(q);
+  const mgPer50ml = selected ? selected.mgPer50ml : q.mgPer50ml;
+  const concentrationMcgPerMl = (mgPer50ml * 1000) / 50;
+  const answerMlPerHour = (q.orderGamma * q.weightKg * 60) / concentrationMcgPerMl;
+  return { selected, mgPer50ml, concentrationMcgPerMl, answerMlPerHour };
+}
+
 function pick(list) {
   return list[Math.floor(Math.random() * list.length)];
+}
+
+function pickQuestionWeight(mode) {
+  const pool =
+    mode === "study" ? STUDY_WEIGHTS : mode === "advanced" ? ADVANCED_WEIGHTS : CHALLENGE_WEIGHTS;
+  if (pool.length <= 1) return pool[0];
+  let w;
+  let guard = 0;
+  do {
+    w = pick(pool);
+    guard += 1;
+  } while (guard < 14 && state.blockWeightKg != null && w === state.blockWeightKg);
+  return w;
 }
 
 function round1(value) {
@@ -1301,6 +1956,31 @@ function formatCorrectMlSubline(trueMlPerHour) {
     return `正答 ${t.toFixed(1)} ml/h`;
   }
   return `正答 ${t.toFixed(1)} ml/h（第2位切り捨て）または ${c.toFixed(1)} ml/h（第2位繰り上げ）`;
+}
+
+function formatGammaCalculationMemo(q, concentrationMcgPerMl) {
+  const c = concentrationMcgPerMl;
+  const raw = (q.orderGamma * q.weightKg * 60) / c;
+  const cDisp = Number.isFinite(c) ? (Math.abs(c - Math.round(c)) < 1e-6 ? String(Math.round(c)) : c.toFixed(1)) : "—";
+  return `内訳: ${q.orderGamma}×${q.weightKg}×60÷${cDisp} ≒ ${raw.toFixed(2)} ml/h（表示は小数第1位）`;
+}
+
+function buildRoundFeedbackSubline(
+  q,
+  { correct, forcedTimeout, roundedInput, speedBonus, answerMlPerHour, concentrationMcgPerMl, selectedDilutionLabel }
+) {
+  const lines = [formatCorrectMlSubline(answerMlPerHour)];
+  if (selectedDilutionLabel) {
+    lines.push(`選択した希釈法: ${selectedDilutionLabel}`);
+  }
+  if (!forcedTimeout && roundedInput != null && !correct) {
+    lines.push(`あなたの回答: ${roundedInput.toFixed(1)} ml/h`);
+  }
+  lines.push(formatGammaCalculationMemo(q, concentrationMcgPerMl));
+  if (correct && speedBonus > 0) {
+    lines.push(`速答ボーナス +${speedBonus}点（制限の${Math.round(SPEED_BONUS_TIME_RATIO * 100)}%以内）`);
+  }
+  return lines.join("\n");
 }
 
 function calcRender() {
@@ -1410,6 +2090,33 @@ if (els.startAdvancedBtn) {
 if (els.openTutorialOnlyBtn) {
   els.openTutorialOnlyBtn.addEventListener("click", () => openTutorialPreviewOnly());
 }
+if (els.startAirwayScenarioBtn) {
+  els.startAirwayScenarioBtn.addEventListener("click", openAirwayDurationPicker);
+}
+if (els.airwaySubmitStepBtn) {
+  els.airwaySubmitStepBtn.addEventListener("click", submitAirwayStep);
+}
+if (els.airwayNextStepBtn) {
+  els.airwayNextStepBtn.addEventListener("click", goNextAirwayStep);
+}
+if (els.airwayRestartBtn) {
+  els.airwayRestartBtn.addEventListener("click", openAirwayDurationPicker);
+}
+if (els.airwayCloseBtn) {
+  els.airwayCloseBtn.addEventListener("click", closeAirwayFullscreen);
+}
+if (els.airwayDur3Btn) {
+  els.airwayDur3Btn.addEventListener("click", () => startAirwayScenarioTraining(3));
+}
+if (els.airwayDur5Btn) {
+  els.airwayDur5Btn.addEventListener("click", () => startAirwayScenarioTraining(5));
+}
+if (els.airwayDur10Btn) {
+  els.airwayDur10Btn.addEventListener("click", () => startAirwayScenarioTraining(10));
+}
+if (els.airwayDurCancelBtn) {
+  els.airwayDurCancelBtn.addEventListener("click", closeAirwayDurationPicker);
+}
 
 els.sessionLen5Btn.addEventListener("click", () => {
   const m = pendingGameMode;
@@ -1418,6 +2125,8 @@ els.sessionLen5Btn.addEventListener("click", () => {
   if (m === "study") {
     pendingStudyTotalQuestions = 5;
     showStudyTutorialChoiceOverlay();
+  } else if (m === "advanced") {
+    openAdvancedModePicker(5);
   } else {
     startMode(m, 5);
   }
@@ -1430,6 +2139,8 @@ els.sessionLen10Btn.addEventListener("click", () => {
   if (m === "study") {
     pendingStudyTotalQuestions = 10;
     showStudyTutorialChoiceOverlay();
+  } else if (m === "advanced") {
+    openAdvancedModePicker(10);
   } else {
     startMode(m, 10);
   }
@@ -1458,9 +2169,35 @@ if (els.studyTutorialCancelBtn) {
   });
 }
 
+if (els.advancedModeStandardBtn) {
+  els.advancedModeStandardBtn.addEventListener("click", () => {
+    const n = pendingAdvancedTotalQuestions;
+    if (n == null) return;
+    closeAdvancedModePicker();
+    startMode("advanced", n, { advancedVariant: "standard" });
+  });
+}
+if (els.advancedModePracticalBtn) {
+  els.advancedModePracticalBtn.addEventListener("click", () => {
+    const n = pendingAdvancedTotalQuestions;
+    if (n == null) return;
+    closeAdvancedModePicker();
+    startMode("advanced", n, { advancedVariant: "practical" });
+  });
+}
+if (els.advancedModeCancelBtn) {
+  els.advancedModeCancelBtn.addEventListener("click", () => {
+    closeAdvancedModePicker();
+    openSessionLengthPicker("advanced");
+  });
+}
+
 els.sessionLenCancelBtn.addEventListener("click", () => {
   closeSessionLengthPicker();
 });
+if (els.dilutionSelect) {
+  els.dilutionSelect.addEventListener("change", refreshPracticalSelectionPreview);
+}
 els.submitAnswerBtn.addEventListener("click", gradeAnswer);
 els.answerInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !els.submitAnswerBtn.disabled) {

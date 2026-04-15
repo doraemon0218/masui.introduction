@@ -6,8 +6,12 @@
   "engines": {
     "node": ">=18"
   },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
   "scripts": {
-    "dev": "npx --yes serve@latest . -l 5173",
+    "dev": "live-server . --port=5173 --no-browser",
+    "dev:static": "npx --yes serve@latest . -l 5173",
     "deploy": "vercel --prod",
     "deploy:preview": "vercel"
   }

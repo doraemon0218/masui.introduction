@@ -28,7 +28,7 @@
 ### いつもの流れ
 
 1. プロジェクト直下でローカルサーバを起動する  
-2. ブラウザで `http://localhost:5173` を開き、`index.html` / `styles.css` / `app.js` を編集しながら確認する（保存して再読み込み）  
+2. ブラウザで `http://localhost:5173` を一度開き、`index.html` / `styles.css` / `app.js` を保存するたびに **自動で再読み込み** されるので、そのまま試しながら改良できる  
 3. できたら本番へ反映する
 
 ```bash
@@ -50,7 +50,7 @@ npm run deploy
 
 ### 補足
 
-- `npm run dev` は `serve` で静的ファイルを配信します。ポートは `5173` です（競合する場合は `package.json` の `dev` を `-l 別ポート` に変更）。
+- `npm run dev` は **live-server** で静的ファイルを配信し、**ファイル保存でブラウザがリロード**されます。ポートは `5173` です（競合する場合は `package.json` の `--port=` を変更）。自動リロードなしで従来どおり試すときは **`npm run dev:static`**（`serve`）。
 - すでに `vercel login` 済みで、`.vercel` がリンクされているディレクトリなら `npm run deploy` でそのプロジェクトに本番デプロイされます。
 - **GitHub と Vercel を連携**していれば、`git push` だけで自動デプロイも可能です（CLI は不要）。
 

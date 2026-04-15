@@ -109,6 +109,142 @@ select {
     0 2px 8px rgba(139, 105, 20, 0.3);
 }
 
+.airway-panel {
+  border-color: #b6d4fe;
+}
+
+.airway-trainer {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.airway-summary {
+  padding: 0.9rem;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+.airway-summary-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.airway-summary ul {
+  margin: 0 0 0.8rem;
+  padding-left: 1rem;
+}
+
+.airway-summary li {
+  margin: 0.3rem 0;
+}
+
+.airway-scenario {
+  padding: 1rem;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.airway-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1210;
+  background: #f6f8fa;
+  overflow: auto;
+  padding: 0.75rem;
+}
+
+.airway-fullscreen.hidden {
+  display: none;
+}
+
+.airway-fullscreen-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.airway-top {
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 0.6rem;
+}
+
+.airway-scenario-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.airway-patient {
+  margin: 0.6rem 0 0.5rem;
+  font-weight: 600;
+}
+
+.airway-step-prompt {
+  margin: 0 0 0.7rem;
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: pre-line;
+}
+
+.airway-options {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.airway-option-label {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 0.55rem;
+  align-items: start;
+  padding: 0.6rem 0.65rem;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.airway-option-label input {
+  margin-top: 0.2rem;
+}
+
+.airway-option-label.is-recommended {
+  border-color: #1a7f37;
+  background: #eef9f0;
+}
+
+.airway-option-label.is-risky {
+  border-color: #cf222e;
+  background: #fff1f0;
+}
+
+.airway-actions-tip {
+  margin: 0 0 0.6rem;
+  font-size: 0.88rem;
+  color: #57606a;
+}
+
+.airway-feedback {
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #d0d7de;
+  background: #f6f8fa;
+  font-size: 0.92rem;
+}
+
+.airway-feedback.correct {
+  border-color: #1a7f37;
+  background: #eef9f0;
+}
+
+.airway-feedback.wrong {
+  border-color: #cf222e;
+  background: #fff1f0;
+}
+
 button {
   padding: 0.6rem 0.8rem;
   border: 1px solid #1f6feb;
@@ -190,7 +326,8 @@ button:disabled {
   }
 }
 
-body.game-active {
+body.game-active,
+body.airway-active {
   overflow: hidden;
 }
 
@@ -372,6 +509,12 @@ body.game-active {
   font-size: clamp(1.1rem, 3.5vw, 1.75rem);
   font-weight: 700;
   color: #57606a;
+  white-space: pre-line;
+  text-align: left;
+  max-width: min(560px, 94%);
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.45;
 }
 
 .end-score-line {
@@ -523,6 +666,37 @@ body.game-active {
   border-radius: 6px;
 }
 
+.dilution-chooser {
+  margin: 0 0 0.8rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px dashed #8c959f;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.dilution-source-hint {
+  margin: 0.45rem 0 0;
+  font-size: 0.86rem;
+}
+
+.question-concentration {
+  margin: -0.35rem 0 0.45rem;
+  font-weight: 600;
+  color: #0969da;
+}
+
+.question-gamma-hint {
+  margin: 0 0 0.75rem;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #1f2328;
+  background: #fff8c5;
+  border: 1px solid #d4a72c;
+  border-radius: 6px;
+}
+
 .instruction-label {
   margin: 0 0 0.35rem;
   font-size: 0.85rem;
@@ -537,6 +711,7 @@ body.game-active {
   font-size: clamp(1.35rem, 4vw, 2rem);
   font-weight: 800;
   line-height: 1.35;
+  white-space: pre-line;
 }
 
 .card-block {
@@ -674,6 +849,20 @@ button.secondary:hover {
   .calc-btn {
     min-height: 46px;
     font-size: 1.05rem;
+  }
+
+  .airway-fullscreen {
+    min-height: 100dvh;
+    padding:
+      max(0.5rem, env(safe-area-inset-top))
+      max(0.5rem, env(safe-area-inset-right))
+      max(0.75rem, env(safe-area-inset-bottom))
+      max(0.5rem, env(safe-area-inset-left));
+  }
+
+  .airway-option-label {
+    grid-template-columns: 24px 1fr;
+    font-size: 0.96rem;
   }
 }
 

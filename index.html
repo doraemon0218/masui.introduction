@@ -66,11 +66,27 @@
           <strong>基本編</strong>は問題数を選んだあと、「チュートリアルをもう一度」か「このまま進む」を選べます。<strong>応用編・発展編</strong>にはチュートリアルはありません。横のボタンからはチュートリアルだけ閲覧できます。
         </p>
         <p class="hint">応用編・発展編は制限時間あり。ランキングに反映されます。</p>
+        <p class="hint">
+          プレイ中は<strong>溶解濃度（μg/ml）</strong>と<strong>計算内訳</strong>を表示し、不正解・時間切れ後も式の確認ができます。素早く正解すると<strong>速答ボーナス</strong>が入ります。
+        </p>
       </section>
 
-      <section class="panel">
-        <h3>コンテンツ2: 気道管理ドリル</h3>
-        <p class="hint">拡張中</p>
+      <section class="panel airway-panel">
+        <h3>コンテンツ2: Difficult Airway Management 思考ドリル</h3>
+        <p class="hint">
+          術前評価から準備、導入薬剤、バックアッププランまでを症例ベースで疑似体験します。身体手技の代わりに、実践時に迷わないための「判断順序」をトレーニングします。
+        </p>
+        <div id="airwayTrainer" class="airway-trainer">
+          <div class="airway-summary">
+            <p class="airway-summary-title">学習テーマ</p>
+            <ul>
+              <li>術前に気道確保困難・マスク換気困難リスクを言語化する</li>
+              <li>導入前の準備（人員・器材・代替手段）を先に決める</li>
+              <li>標準的な導入薬剤量と注意点を症例ごとに組み立てる</li>
+            </ul>
+            <button id="startAirwayScenarioBtn" type="button">症例シミュレーションを開始</button>
+          </div>
+        </div>
       </section>
 
       <section class="panel">
@@ -122,6 +138,35 @@
       </div>
     </div>
 
+    <div id="advancedModeOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="advancedModeTitle">
+      <div class="overlay-card">
+        <h2 id="advancedModeTitle">発展編モード</h2>
+        <p class="hint">通常の発展編に加えて、本番モードでは希釈法を選んでから ml/h を回答します。</p>
+        <div class="actions">
+          <button id="advancedModeStandardBtn" type="button">通常モード（従来）</button>
+          <button id="advancedModePracticalBtn" type="button">本番モード（希釈法選択あり）</button>
+        </div>
+        <div class="actions">
+          <button id="advancedModeCancelBtn" type="button" class="secondary">戻る</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="airwayDurationOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="airwayDurationTitle">
+      <div class="overlay-card">
+        <h2 id="airwayDurationTitle">座学シミュレーション時間</h2>
+        <p class="hint">開始前に、今回の勉強時間を選択してください。</p>
+        <div class="actions">
+          <button id="airwayDur3Btn" type="button">3分</button>
+          <button id="airwayDur5Btn" type="button">5分</button>
+          <button id="airwayDur10Btn" type="button">10分</button>
+        </div>
+        <div class="actions">
+          <button id="airwayDurCancelBtn" type="button" class="secondary">キャンセル</button>
+        </div>
+      </div>
+    </div>
+
     <div id="gameFullscreen" class="game-fullscreen hidden" aria-hidden="true">
       <div class="game-fullscreen-inner">
         <header class="game-top game-top-compact">
@@ -158,6 +203,17 @@
               <p class="question-context" id="questionContextWeight"></p>
               <p class="instruction-label">規格・溶解</p>
               <p id="questionPreparation" class="question-preparation"></p>
+              <div id="dilutionChooser" class="dilution-chooser hidden">
+                <label>
+                  希釈法を選択
+                  <select id="dilutionSelect">
+                    <option value="">希釈法を選択</option>
+                  </select>
+                </label>
+                <p id="dilutionSourceHint" class="hint dilution-source-hint"></p>
+              </div>
+              <p id="questionConcentration" class="question-concentration meta"></p>
+              <p id="questionGammaHint" class="question-gamma-hint"></p>
               <p class="instruction-label">指導医の指示</p>
               <p id="questionText" class="instruction-text"></p>
               <label>
@@ -250,6 +306,28 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div id="airwayFullscreen" class="airway-fullscreen hidden" aria-hidden="true">
+      <div class="airway-fullscreen-inner">
+        <header class="airway-top">
+          <p id="airwayScenarioTitle" class="airway-scenario-title">症例</p>
+          <p id="airwayScenarioMeta" class="meta">Step 1 / 4</p>
+          <button id="airwayCloseBtn" type="button" class="secondary">一覧に戻る</button>
+        </header>
+        <section class="airway-scenario">
+          <p id="airwayScenarioPatient" class="airway-patient"></p>
+          <p id="airwayStepPrompt" class="airway-step-prompt"></p>
+          <div class="airway-actions-tip">複数選択可: 実施したい action をすべて選んでから判定します。</div>
+          <div id="airwayOptions" class="airway-options"></div>
+          <div id="airwayFeedback" class="airway-feedback hidden"></div>
+          <div class="actions">
+            <button id="airwaySubmitStepBtn" type="button">このStepを判定</button>
+            <button id="airwayNextStepBtn" type="button" class="hidden">次の判断へ</button>
+            <button id="airwayRestartBtn" type="button" class="secondary hidden">別症例を解く</button>
+          </div>
+        </section>
       </div>
     </div>
 
