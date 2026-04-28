@@ -56,47 +56,45 @@
         </div>
         <div class="gamma-start-actions">
           <div class="gamma-start-actions__row gamma-start-actions__row--modes">
-            <button id="startStudyBtn" type="button">ゲーム開始（基本編）</button>
-            <button id="startChallengeBtn" type="button">ゲーム開始（応用編）</button>
-            <button id="startAdvancedBtn" type="button">ゲーム開始（発展編）</button>
+            <button id="startStudyBtn" type="button">基礎編（レミフェンタニル編）</button>
+            <button id="startChallengeBtn" type="button">応用編（ER編）</button>
+            <button id="startAdvancedBtn" type="button">発展編（P-ICU対応&組成選択）</button>
           </div>
           <button id="openTutorialOnlyBtn" type="button" class="btn-tutorial-prominent">γ計算チュートリアル</button>
         </div>
         <p class="hint">
-          <strong>基本編</strong>は問題数を選んだあと、「チュートリアルをもう一度」か「このまま進む」を選べます。<strong>応用編・発展編</strong>にはチュートリアルはありません。横のボタンからはチュートリアルだけ閲覧できます。
+          <strong>基礎編（レミフェンタニル編）</strong>は問題数を選んだあと、「チュートリアルをもう一度」か「このまま進む」を選べます。<strong>応用編（ER編）・発展編（P-ICU対応&組成選択）</strong>にはチュートリアルはありません。横のボタンからはチュートリアルだけ閲覧できます。
         </p>
-        <p class="hint">応用編・発展編は制限時間あり。ランキングに反映されます。</p>
+        <p class="hint">応用編（ER編）・発展編（P-ICU対応&組成選択）は制限時間あり。ランキングに反映されます。</p>
         <p class="hint">
-          プレイ中は<strong>溶解濃度（μg/ml）</strong>と<strong>計算内訳</strong>を表示し、不正解・時間切れ後も式の確認ができます。素早く正解すると<strong>速答ボーナス</strong>が入ります。
+          出題中は<strong>組成と指導医メッセージ</strong>に集中。濃度や式の内訳は<strong>正誤表示のあと</strong>に出ます。素早く正解すると<strong>速答ボーナス</strong>が入ります。
         </p>
       </section>
 
       <section class="panel airway-panel">
-        <h3>コンテンツ2: Difficult Airway Management 思考ドリル</h3>
+        <h3>コンテンツ2: 初学者必修チェックリスト</h3>
         <p class="hint">
-          術前評価から準備、導入薬剤、バックアッププランまでを症例ベースで疑似体験します。身体手技の代わりに、実践時に迷わないための「判断順序」をトレーニングします。
+          挿管準備（SOAP-MD）・挿管困難評価（LEMON）・マスク換気困難評価（MOAN）・人工呼吸離脱（SBT/抜管）・血圧低下の輸液反応性。イラスト付き問題集で研修開始前に知識を確認できます。
         </p>
-        <div id="airwayTrainer" class="airway-trainer">
-          <div class="airway-summary">
-            <p class="airway-summary-title">学習テーマ</p>
-            <ul>
-              <li>術前に気道確保困難・マスク換気困難リスクを言語化する</li>
-              <li>導入前の準備（人員・器材・代替手段）を先に決める</li>
-              <li>標準的な導入薬剤量と注意点を症例ごとに組み立てる</li>
-            </ul>
-            <button id="startAirwayScenarioBtn" type="button">症例シミュレーションを開始</button>
-          </div>
+        <div class="actions">
+          <button id="startCheckModuleBtn" type="button">チェックリスト問題集を開く</button>
+          <button id="startAirwayScenarioBtn" type="button" class="secondary">困難気道シナリオ（応用）</button>
         </div>
       </section>
 
       <section class="panel">
-        <h3>コンテンツ3: モニタリング異常対応</h3>
-        <p class="hint">拡張中</p>
+        <h3>コンテンツ3: 先人から学ぶ</h3>
+        <p class="hint">
+          チャーミングな題名の症例一覧から問題を解きます。全問正解で<strong>正答済み</strong>が付きます。一覧上段の<strong>シャッフルモード</strong>では終了するまでランダム出題されます。
+        </p>
+        <div class="actions">
+          <button id="startMishapTrainerBtn" type="button">先人から学ぶを開く</button>
+        </div>
       </section>
 
       <section class="panel full">
         <h2>3. プレイ中</h2>
-        <p class="hint">無限γ計算トレーニングは全画面です。ゲーム開始を押すと表示されます。</p>
+        <p class="hint">無限γ計算トレーニングは全画面です。各モードボタンを押すと表示されます。</p>
       </section>
 
       <section class="panel">
@@ -126,8 +124,8 @@
 
     <div id="studyTutorialChoiceOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="studyTutorialChoiceTitle">
       <div class="overlay-card">
-        <h2 id="studyTutorialChoiceTitle">基本編の開始</h2>
-        <p class="hint">γ計算のチュートリアル（4ステップ）を表示しますか？</p>
+        <h2 id="studyTutorialChoiceTitle">基礎編（レミフェンタニル編）の開始</h2>
+        <p class="hint">γ計算のチュートリアル（5ステップ）を表示しますか？</p>
         <div class="actions">
           <button id="studyWithTutorialBtn" type="button">チュートリアルをもう一度</button>
           <button id="studySkipTutorialBtn" type="button" class="secondary">このまま進む</button>
@@ -140,11 +138,11 @@
 
     <div id="advancedModeOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="advancedModeTitle">
       <div class="overlay-card">
-        <h2 id="advancedModeTitle">発展編モード</h2>
-        <p class="hint">通常の発展編に加えて、本番モードでは希釈法を選んでから ml/h を回答します。</p>
+        <h2 id="advancedModeTitle">発展編（P-ICU対応&組成選択）モード</h2>
+        <p class="hint">通常モードに加えて、本番モードでは希釈法を選んでから ml/h を回答します。</p>
         <div class="actions">
-          <button id="advancedModeStandardBtn" type="button">通常モード（従来）</button>
-          <button id="advancedModePracticalBtn" type="button">本番モード（希釈法選択あり）</button>
+          <button id="advancedModeStandardBtn" type="button">通常モード</button>
+          <button id="advancedModePracticalBtn" type="button">本番モード（組成選択）</button>
         </div>
         <div class="actions">
           <button id="advancedModeCancelBtn" type="button" class="secondary">戻る</button>
@@ -192,37 +190,72 @@
             <p class="intro-huge intro-weight-line"><span id="introWeight">—</span> <span class="intro-unit">kg</span></p>
             <p class="intro-label">薬剤（組成）</p>
             <p class="intro-huge intro-drug-line" id="introDrug">—</p>
+            <p class="intro-rounding-badge" role="note">
+              小数第1位までOK
+              <span class="intro-rounding-sub">（繰り上げ・切り捨てどっちでもOK！）</span>
+            </p>
             <p class="intro-hint">
-              残り <span id="introRemainQuestions">—</span> 問。GO（または Enter）で指導医の指示。ml/h は小数第1位まで（第2位は切り捨て・繰り上げどちらでも正解）。
+              残り <span id="introRemainQuestions">—</span> 問 · GO（または Enter）でスタート
             </p>
             <button id="goBtn" type="button" class="go-btn">GO</button>
           </section>
 
           <section class="game-question card-block">
-            <div id="questionArea" class="question hidden">
-              <p class="question-context" id="questionContextWeight"></p>
-              <p class="instruction-label">規格・溶解</p>
-              <p id="questionPreparation" class="question-preparation"></p>
-              <div id="dilutionChooser" class="dilution-chooser hidden">
-                <label>
-                  希釈法を選択
-                  <select id="dilutionSelect">
-                    <option value="">希釈法を選択</option>
+            <div id="questionArea" class="question question--pop hidden">
+              <p class="question-weight-chip" id="questionContextWeight"></p>
+              <p class="question-composition-label">溶解液の組成</p>
+              <p id="questionPreparation" class="question-preparation question-preparation--pop"></p>
+              <div id="dilutionChooser" class="dilution-chooser dilution-chooser--pop hidden">
+                <label class="dilution-chooser__label">
+                  希釈
+                  <select id="dilutionSelect" class="dilution-select--pop">
+                    <option value="">選ぶ</option>
                   </select>
                 </label>
-                <p id="dilutionSourceHint" class="hint dilution-source-hint"></p>
+                <p id="dilutionSourceHint" class="dilution-source-hint dilution-source-hint--pop"></p>
               </div>
-              <p id="questionConcentration" class="question-concentration meta"></p>
-              <p id="questionGammaHint" class="question-gamma-hint"></p>
-              <p class="instruction-label">指導医の指示</p>
-              <p id="questionText" class="instruction-text"></p>
-              <label>
-                回答（ml/h）
-                <input id="answerInput" type="number" step="0.1" min="0" placeholder="例: 8.4" />
-              </label>
-              <div class="hint">小数第1位まで。第2位の扱いは切り捨て・繰り上げどちらでも正解。Enterで回答確定。</div>
-              <div class="actions">
-                <button id="submitAnswerBtn" type="button">回答を確定</button>
+              <p id="questionConcentration" class="question-concentration meta question-calc-hint" hidden aria-hidden="true"></p>
+              <p id="questionGammaHint" class="question-gamma-hint question-calc-hint" hidden aria-hidden="true"></p>
+              <p id="questionText" class="instruction-text hidden" aria-hidden="true"></p>
+              <div class="doctor-row" aria-live="polite">
+                <div class="doctor-avatar" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" class="doctor-avatar__svg">
+                    <circle cx="48" cy="48" r="46" fill="#7ec8ff" stroke="#1f6feb" stroke-width="3" />
+                    <ellipse cx="48" cy="38" rx="22" ry="24" fill="#ffd4a8" />
+                    <path d="M28 44c2-14 40-14 42 0" fill="none" stroke="#c97a4a" stroke-width="2" stroke-linecap="round" />
+                    <circle cx="40" cy="36" r="3" fill="#1f2328" />
+                    <circle cx="56" cy="36" r="3" fill="#1f2328" />
+                    <path d="M42 46c4 4 8 4 12 0" fill="none" stroke="#1f2328" stroke-width="2" stroke-linecap="round" />
+                    <rect x="22" y="58" width="52" height="28" rx="6" fill="#fff" stroke="#1f6feb" stroke-width="2" />
+                    <rect x="26" y="62" width="44" height="8" rx="2" fill="#0969da" opacity="0.15" />
+                    <path d="M34 78h28" stroke="#1f6feb" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <div class="doctor-bubble">
+                  <p id="instructorMessage" class="instructor-message"></p>
+                </div>
+              </div>
+              <div class="answer-pop-row">
+                <label class="answer-pop-label" for="answerInput">
+                  <span class="answer-pop-prefix">回答</span>
+                  <span class="answer-pop-inputwrap">
+                    <input
+                      id="answerInput"
+                      class="answer-input--pop"
+                      type="text"
+                      inputmode="decimal"
+                      readonly
+                      autocomplete="off"
+                      autocorrect="off"
+                      spellcheck="false"
+                      placeholder="?"
+                    />
+                    <span class="answer-pop-suffix">ml/h</span>
+                  </span>
+                </label>
+              </div>
+              <div class="actions question-actions--pop">
+                <button id="submitAnswerBtn" type="button" class="submit-answer--pop">OK！</button>
               </div>
             </div>
           </section>
@@ -326,6 +359,60 @@
             <button id="airwaySubmitStepBtn" type="button">このStepを判定</button>
             <button id="airwayNextStepBtn" type="button" class="hidden">次の判断へ</button>
             <button id="airwayRestartBtn" type="button" class="secondary hidden">別症例を解く</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div id="mishapFullscreen" class="airway-fullscreen mishap-fullscreen hidden" aria-hidden="true">
+      <div class="airway-fullscreen-inner mishap-fullscreen-inner">
+        <header class="airway-top">
+          <p id="mishapTitle" class="airway-scenario-title">先人から学ぶ</p>
+          <p id="mishapMeta" class="meta">Step 1 / 2</p>
+          <button id="mishapCloseBtn" type="button" class="secondary">閉じる / 戻る</button>
+        </header>
+        <div id="mishapListArea" class="mishap-list-area airway-scenario hidden">
+          <p id="mishapListHint" class="hint mishap-list-hint"></p>
+          <div id="mishapListRoot" class="mishap-list-root" role="list"></div>
+        </div>
+        <section id="mishapQuizArea" class="airway-scenario mishap-quiz-area hidden">
+          <p id="mishapCaseText" class="airway-patient"></p>
+          <div id="mishapImage" class="mishap-image-frame" aria-hidden="true"></div>
+          <p id="mishapPrompt" class="airway-step-prompt"></p>
+          <div id="mishapOptions" class="airway-options"></div>
+          <div id="mishapFeedback" class="airway-feedback hidden"></div>
+          <div class="actions mishap-quiz-actions">
+            <button id="mishapSubmitBtn" type="button">選択し、解答を見る</button>
+            <button id="mishapNextBtn" type="button" class="hidden">次へ</button>
+            <button id="mishapRestartBtn" type="button" class="secondary hidden">症例一覧へ</button>
+            <button id="mishapShuffleNextBtn" type="button" class="hidden">次の問題へ</button>
+            <button id="mishapShuffleEndBtn" type="button" class="secondary hidden">終了する</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div id="checkFullscreen" class="airway-fullscreen mishap-fullscreen hidden" aria-hidden="true">
+      <div class="airway-fullscreen-inner mishap-fullscreen-inner">
+        <header class="airway-top">
+          <p id="checkTitle" class="airway-scenario-title">初学者必修チェックリスト</p>
+          <p id="checkMeta" class="meta">モジュールを選んでください</p>
+          <button id="checkCloseBtn" type="button" class="secondary">閉じる</button>
+        </header>
+        <div id="checkListArea" class="mishap-list-area airway-scenario hidden">
+          <p class="hint">各ニーモニックを使って、チェック漏れなく準備・評価できるか確認します。全項目正解で<strong>修了</strong>が付きます。</p>
+          <div id="checkListRoot" class="mishap-list-root" role="list"></div>
+        </div>
+        <section id="checkQuizArea" class="airway-scenario hidden">
+          <p id="checkContext" class="airway-patient"></p>
+          <div id="checkImage" class="mishap-image-frame" aria-hidden="true"></div>
+          <p id="checkPrompt" class="airway-step-prompt"></p>
+          <div class="airway-actions-tip">複数選択可: 正しい項目を全て選んでから判定します。</div>
+          <div id="checkItems" class="airway-options"></div>
+          <div id="checkFeedback" class="airway-feedback hidden"></div>
+          <div class="actions mishap-quiz-actions">
+            <button id="checkSubmitBtn" type="button">判定する</button>
+            <button id="checkRestartBtn" type="button" class="secondary hidden">モジュール一覧へ</button>
           </div>
         </section>
       </div>
