@@ -684,7 +684,603 @@ const MISHAP_CHARMING_TITLES = [
   });
 })();
 
+// ===== OR室SOAP-MDシミュレーション =====
+function generateORSceneSVG(present) {
+  const s=present.includes("S"),o=present.includes("O"),a=present.includes("A"),
+        p=present.includes("P"),m=present.includes("M"),d=present.includes("D");
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 310" font-family="sans-serif">
+  <rect width="520" height="310" fill="#c5c9cd"/>
+  <rect width="520" height="158" fill="#dde0e4"/>
+  <line x1="0" y1="158" x2="520" y2="158" stroke="#b8bcbf" stroke-width="1.5"/>
+  <rect x="190" y="0" width="140" height="9" rx="2" fill="#9aa0a6"/>
+  <rect x="250" y="9" width="20" height="26" fill="#aab0b6"/>
+  <ellipse cx="260" cy="42" rx="55" ry="15" fill="#52585e"/>
+  <ellipse cx="260" cy="44" rx="49" ry="11" fill="#e2e2e2"/>
+  <ellipse cx="260" cy="46" rx="38" ry="7" fill="#f5f2e0" opacity="0.6"/>
+  <rect x="152" y="30" width="5" height="130" fill="#7a7a7a"/>
+  <rect x="18" y="26" width="136" height="96" rx="6" fill="#181818"/>
+  ${m ? `<rect x="22" y="30" width="128" height="88" rx="3" fill="#0a0a1e"/>
+  <text x="26" y="43" font-size="8" fill="#00e676" font-weight="bold">HR  72</text>
+  <text x="72" y="43" font-size="8" fill="#ff9800">SpO₂  99%</text>
+  <text x="124" y="43" font-size="8" fill="#ef5350">BP 124/76</text>
+  <polyline points="22,60 34,60 38,46 44,74 50,60 60,60 64,53 70,67 76,60 88,60 92,54 98,66 104,60 150,60" stroke="#00e676" fill="none" stroke-width="1.5"/>
+  <polyline points="22,83 32,83 36,75 42,91 48,83 56,83 60,77 66,89 72,83 84,83 88,77 94,89 100,83 150,83" stroke="#ff9800" fill="none" stroke-width="1.5"/>
+  <polyline points="22,103 30,103 34,95 42,95 46,103 64,103 68,95 76,95 80,103 98,103 102,95 110,95 114,103 150,103" stroke="#4fc3f7" fill="none" stroke-width="1.5"/>
+  <text x="26" y="113" font-size="7" fill="#4fc3f7">EtCO₂  34mmHg</text>` :
+  `<rect x="22" y="30" width="128" height="88" rx="3" fill="#0a0a0a"/>
+  <text x="86" y="74" font-size="13" fill="#2a2a2a" text-anchor="middle">■ OFF</text>
+  <text x="86" y="90" font-size="9" fill="#333" text-anchor="middle">未接続</text>`}
+  <text x="86" y="130" font-size="8" fill="#888" text-anchor="middle">M: モニター</text>
+  <rect x="18" y="130" width="96" height="180" rx="5" fill="#5888c4"/>
+  <rect x="22" y="138" width="88" height="52" rx="3" fill="#3a68a2"/>
+  <rect x="26" y="144" width="80" height="20" rx="2" fill="#1a2e4a"/>
+  <text x="66" y="153" font-size="6.5" fill="#90c0f0" text-anchor="middle">Vt 480  RR 12  FiO₂ 50%</text>
+  <text x="66" y="161" font-size="6.5" fill="#90c0f0" text-anchor="middle">Ppeak 18   PEEP 5</text>
+  <circle cx="36" cy="206" r="9" fill="#2c5282" stroke="#90cdf4" stroke-width="1.5"/>
+  <circle cx="57" cy="206" r="9" fill="#2c5282" stroke="#90cdf4" stroke-width="1.5"/>
+  <circle cx="78" cy="206" r="9" fill="#2c5282" stroke="#90cdf4" stroke-width="1.5"/>
+  <circle cx="99" cy="206" r="9" fill="#2c5282" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="36" y="222" font-size="6" fill="#7eb8f7" text-anchor="middle">O₂</text>
+  <text x="57" y="222" font-size="6" fill="#7eb8f7" text-anchor="middle">N₂O</text>
+  <text x="78" y="222" font-size="6" fill="#7eb8f7" text-anchor="middle">AIR</text>
+  <text x="99" y="222" font-size="6" fill="#fbbf24" text-anchor="middle">SEVO</text>
+  <rect x="22" y="230" width="88" height="74" rx="6" fill="#4878b4"/>
+  <ellipse cx="66" cy="230" rx="44" ry="7" fill="#6898d0"/>
+  <line x1="22" y1="245" x2="110" y2="245" stroke="#3a68a2" stroke-width="1"/>
+  <line x1="22" y1="258" x2="110" y2="258" stroke="#3a68a2" stroke-width="1"/>
+  <line x1="22" y1="271" x2="110" y2="271" stroke="#3a68a2" stroke-width="1"/>
+  <circle cx="114" cy="262" r="6" fill="#6898d0" stroke="#e0e8f0" stroke-width="1.5"/>
+  <path d="M 120 262 Q 162 262 184 280" fill="none" stroke="#b8c8e0" stroke-width="5" stroke-linecap="round"/>
+  <path d="M 120 262 Q 161 261 183 279" fill="none" stroke="#dce8f5" stroke-width="2.5"/>
+  ${o ? `<ellipse cx="125" cy="292" rx="17" ry="11" fill="#e65100" opacity="0.9"/>
+  <ellipse cx="110" cy="292" rx="9" ry="7" fill="#ef6c00" opacity="0.85"/>
+  <rect x="134" y="288" width="8" height="8" rx="2" fill="#bf360c"/>
+  <path d="M 142 292 Q 148 282 126 276" stroke="#90cdf4" stroke-width="1.5" stroke-dasharray="3,2" fill="none"/>
+  <text x="122" y="308" font-size="7" fill="#e65100" text-anchor="middle">O: BVM</text>` : ``}
+  ${s ? `<rect x="138" y="262" width="34" height="40" rx="4" fill="#f0f0f0" stroke="#999" stroke-width="1.5"/>
+  <rect x="142" y="268" width="26" height="16" rx="2" fill="#deeeff"/>
+  <text x="155" y="279" font-size="6" fill="#555" text-anchor="middle">吸引器</text>
+  <rect x="142" y="285" width="26" height="10" rx="2" fill="#c8dcf0"/>
+  <path d="M 172 272 Q 188 268 196 265" fill="none" stroke="#bbb" stroke-width="2.5" stroke-dasharray="4,2"/>
+  <path d="M 196 265 Q 208 261 220 259" fill="none" stroke="#aaa" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="222" cy="259" r="4" fill="none" stroke="#aaa" stroke-width="2"/>
+  <text x="154" y="308" font-size="7" fill="#555" text-anchor="middle">S: 吸引器</text>` : ``}
+  <rect x="162" y="245" width="196" height="65" rx="5" fill="#dfd0b0"/>
+  <rect x="184" y="249" width="152" height="32" rx="15" fill="#ede0c0"/>
+  <ellipse cx="260" cy="265" rx="42" ry="34" fill="#f2b880"/>
+  <ellipse cx="260" cy="249" rx="41" ry="16" fill="#3d2215"/>
+  <path d="M 246 260 Q 252 264 258 260" fill="none" stroke="#7a4520" stroke-width="1.5"/>
+  <path d="M 264 260 Q 270 264 276 260" fill="none" stroke="#7a4520" stroke-width="1.5"/>
+  <path d="M 256 267 Q 260 273 264 267" fill="none" stroke="#d09060" stroke-width="1.2"/>
+  <rect x="248" y="276" width="24" height="5" rx="2.5" fill="#a0c4d8" opacity="0.7"/>
+  <rect x="218" y="300" width="84" height="10" rx="4" fill="#f2b880"/>
+  <rect x="464" y="16" width="6" height="289" fill="#888"/>
+  <ellipse cx="467" cy="304" rx="26" ry="7" fill="#777"/>
+  <rect x="440" y="16" width="54" height="4" rx="2" fill="#999"/>
+  <rect x="448" y="22" width="38" height="52" rx="7" fill="#b2d8f6" opacity="0.9"/>
+  <ellipse cx="467" cy="22" rx="13" ry="4" fill="#92c8f2" opacity="0.9"/>
+  <line x1="467" y1="74" x2="467" y2="92" stroke="#aaa" stroke-width="1.5"/>
+  <path d="M 467 92 Q 450 160 428 210 Q 408 248 386 264" fill="none" stroke="#ccc" stroke-width="1.5" opacity="0.8"/>
+  <rect x="396" y="124" width="64" height="38" rx="4" fill="#e0e4e8" stroke="#bbb" stroke-width="1"/>
+  <rect x="400" y="128" width="56" height="16" rx="2" fill="#1a1a2e"/>
+  <text x="428" y="139" font-size="7" fill="#4fc3f7" text-anchor="middle">PUMP</text>
+  <rect x="400" y="150" width="52" height="6" rx="3" fill="#c0d0e0"/>
+  <rect x="358" y="196" width="5" height="114" fill="#888"/>
+  <rect x="324" y="196" width="106" height="7" rx="2" fill="#a8a8a8"/>
+  <rect x="326" y="201" width="102" height="60" rx="3" fill="#c4c4c4"/>
+  ${a ? `<rect x="332" y="208" width="10" height="30" rx="3" fill="#222"/>
+  <path d="M 342 213 L 357 208 L 359 211 L 344 216 Z" fill="#555"/>
+  <circle cx="357" cy="209" r="2" fill="#ffd700"/>
+  <text x="340" y="246" font-size="6" fill="#444" text-anchor="middle">喉頭鏡</text>
+  <path d="M 360 211 Q 374 213 376 226 Q 378 235 376 242" fill="none" stroke="#d0e8f8" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="361" cy="211" r="4" fill="none" stroke="#d0e8f8" stroke-width="2.5"/>
+  <text x="372" y="246" font-size="6" fill="#444" text-anchor="middle">ETチューブ</text>
+  <line x1="382" y1="210" x2="384" y2="238" stroke="#bbb" stroke-width="2.5"/>` : ``}
+  ${d ? `<rect x="396" y="204" width="26" height="40" rx="5" fill="#1560c0"/>
+  <rect x="398" y="206" width="22" height="14" rx="2" fill="#0d47a1"/>
+  <rect x="399" y="207" width="20" height="12" rx="1" fill="#1a237e"/>
+  <ellipse cx="409" cy="213" rx="6" ry="4" fill="none" stroke="#4fc3f7" stroke-width="1"/>
+  <path d="M 403 213 Q 409 210 415 213" fill="none" stroke="#4fc3f7" stroke-width="1"/>
+  <path d="M 408 244 Q 418 247 420 258 Q 420 262 416 264" fill="none" stroke="#90caf9" stroke-width="3" stroke-linecap="round"/>
+  <text x="409" y="272" font-size="6" fill="#1565c0" text-anchor="middle">VL</text>` : ``}
+  ${p ? `<rect x="324" y="266" width="104" height="22" rx="3" fill="#e0e0e0" stroke="#bbb" stroke-width="1"/>
+  <rect x="328" y="270" width="20" height="9" rx="4" fill="#fff" stroke="#bbb" stroke-width="0.8"/>
+  <text x="338" y="277" font-size="5.5" fill="#333" text-anchor="middle">Prop</text>
+  <rect x="352" y="270" width="20" height="9" rx="4" fill="#ffd54f" stroke="#f9a825" stroke-width="0.8"/>
+  <text x="362" y="277" font-size="5.5" fill="#333" text-anchor="middle">Roc</text>
+  <rect x="376" y="270" width="20" height="9" rx="4" fill="#90caf9" stroke="#42a5f5" stroke-width="0.8"/>
+  <text x="386" y="277" font-size="5.5" fill="#333" text-anchor="middle">Sug</text>
+  <rect x="400" y="270" width="20" height="9" rx="4" fill="#ef9a9a" stroke="#e53935" stroke-width="0.8"/>
+  <text x="410" y="277" font-size="5.5" fill="#555" text-anchor="middle">Eph</text>
+  <text x="376" y="298" font-size="7" fill="#555" text-anchor="middle">P: 薬剤</text>` : ``}
+  <text x="260" y="12" font-size="8" fill="#666" text-anchor="middle">麻酔科医の立ち位置から見た手術室</text>
+</svg>`;
+}
+
+const ALL_SOAP_KEYS = ["S","O","A","P","M","D"];
+const SOAP_MD_LABELS = {
+  S:"S: 吸引器（接続・作動確認）",
+  O:"O: 酸素供給・BVM",
+  A:"A: 気道器具（ETチューブ・喉頭鏡・スタイレット）",
+  P:"P: 薬剤（導入薬・筋弛緩薬・拮抗薬）",
+  M:"M: モニター（SpO₂・EtCO₂・BP・ECG）",
+  D:"D: 困難気道器具（ビデオ喉頭鏡・LMA）"
+};
+const SOAP_MD_RATIONALE = {
+  S:{ present:"吸引器は接続・作動確認済み。分泌物・嘔吐への対応が可能です。",  missing:"吸引器がありません。嘔吐・分泌物対応ができず、誤嚥リスクが高まります。" },
+  O:{ present:"BVMと酸素ラインが準備済み。プレオキシと緊急換気が可能です。",   missing:"BVMが見当たりません。挿管失敗時や緊急換気ができません。" },
+  A:{ present:"喉頭鏡・ETチューブ・スタイレットが準備されています。",          missing:"気道器具（喉頭鏡・ETチューブ）が準備されていません。挿管が行えません。" },
+  P:{ present:"導入薬・筋弛緩薬・拮抗薬がラベル確認済みで準備されています。", missing:"薬剤シリンジが準備されていません。麻酔導入ができません。" },
+  M:{ present:"モニター接続・作動確認済み。ECG・SpO₂・EtCO₂・BPが監視中です。",missing:"モニターがOFF（未接続）です。挿管確認・循環管理が行えません。" },
+  D:{ present:"ビデオ喉頭鏡などの困難気道対応器具がトレイに準備されています。",missing:"困難気道対応器具がありません。予期せぬ困難挿管への対応ができません。" }
+};
+
+const OR_SCENARIOS = (function() {
+  const defs = [
+    { id:"or-s",  patient:"35歳 女性", procedure:"待機的腹腔鏡下胆嚢摘出術",       missing:["S"] },
+    { id:"or-d",  patient:"58歳 男性", procedure:"待機的大腸手術",                 missing:["D"] },
+    { id:"or-m",  patient:"72歳 男性", procedure:"緊急腸閉塞解除術",               missing:["M"] },
+    { id:"or-o",  patient:"44歳 女性", procedure:"待機的子宮筋腫切除術",           missing:["O"] },
+    { id:"or-a",  patient:"62歳 男性", procedure:"待機的人工股関節置換術",         missing:["A"] },
+    { id:"or-p",  patient:"29歳 女性", procedure:"緊急虫垂炎手術",                 missing:["P"] },
+    { id:"or-sd", patient:"70歳 男性", procedure:"緊急整形外科手術（大腿骨骨折）", missing:["S","D"] },
+    { id:"or-mp", patient:"52歳 男性", procedure:"待機的泌尿器科手術",             missing:["M","P"] }
+  ];
+  return defs.map(sc => ({
+    ...sc,
+    imageSvg: generateORSceneSVG(ALL_SOAP_KEYS.filter(k => !sc.missing.includes(k))),
+    items: ALL_SOAP_KEYS.map(key => ({
+      key, label: SOAP_MD_LABELS[key],
+      correct: sc.missing.includes(key),
+      rationale: SOAP_MD_RATIONALE[key][sc.missing.includes(key) ? "missing" : "present"]
+    }))
+  }));
+})();
+
+// ===== LEMON / MOAN 症例問題集（病歴＋画像付き） =====
+const CASE_QUIZ_BANK = [
+  // --- MOAN ---
+  {
+    id:"cm1", framework:"MOAN", patient:"36歳 男性", cc:"腸閉塞 / 緊急手術",
+    obs:["濃い顎ひげ（剃毛なし）","BMI 24（正常）","自歯あり","顔面変形なし"],
+    imageSvg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 170" font-family="sans-serif">
+<rect width="460" height="170" fill="#f5f7fb"/>
+<rect x="8" y="8" width="200" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="108" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">顔面観察</text>
+<ellipse cx="108" cy="88" rx="55" ry="64" fill="#f0c090"/>
+<ellipse cx="108" cy="42" rx="54" ry="20" fill="#3d2215"/>
+<ellipse cx="88" cy="74" rx="10" ry="7" fill="#fff" stroke="#444" stroke-width="1"/>
+<circle cx="88" cy="74" r="4" fill="#333"/>
+<ellipse cx="128" cy="74" rx="10" ry="7" fill="#fff" stroke="#444" stroke-width="1"/>
+<circle cx="128" cy="74" r="4" fill="#333"/>
+<path d="M 96 90 Q 108 96 120 90" fill="none" stroke="#c08060" stroke-width="1.5"/>
+<path d="M 78 110 Q 108 120 138 110" fill="none" stroke="#8b6040" stroke-width="2"/>
+<ellipse cx="108" cy="118" rx="38" ry="22" fill="#5a3828"/>
+<ellipse cx="108" cy="108" rx="34" ry="12" fill="#5a3828" opacity="0.7"/>
+<rect x="82" y="126" width="52" height="8" rx="4" fill="#4a3020" opacity="0.5"/>
+<rect x="68" y="148" width="80" height="10" rx="4" fill="#f0c090"/>
+<text x="108" y="165" text-anchor="middle" font-size="9" fill="#dc2626" font-weight="bold">⚠ 濃いひげ</text>
+<rect x="220" y="8" width="232" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="336" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">MOAN 評価</text>
+<rect x="228" y="32" width="216" height="28" rx="5" fill="#fee2e2"/>
+<text x="236" y="47" font-size="10" fill="#dc2626" font-weight="bold">M ✓</text>
+<text x="252" y="47" font-size="10" fill="#991b1b">マスクシール不良（ひげ）</text>
+<rect x="228" y="64" width="216" height="28" rx="5" fill="#f0fdf4"/>
+<text x="236" y="79" font-size="10" fill="#6b7280">O —</text>
+<text x="252" y="79" font-size="10" fill="#6b7280">肥満/OSA（BMI 24 → 非該当）</text>
+<rect x="228" y="96" width="216" height="28" rx="5" fill="#f0fdf4"/>
+<text x="236" y="111" font-size="10" fill="#6b7280">A —</text>
+<text x="252" y="111" font-size="10" fill="#6b7280">高齢（36歳 → 55歳未満）</text>
+<rect x="228" y="128" width="216" height="28" rx="5" fill="#f0fdf4"/>
+<text x="236" y="143" font-size="10" fill="#6b7280">N —</text>
+<text x="252" y="143" font-size="10" fill="#6b7280">無歯顎（自歯あり → 非該当）</text>
+</svg>`,
+    prompt:"MOAN評価でマスク換気困難因子に該当するものを全て選んでください",
+    items:[
+      {label:"M: マスクシール不良（濃いひげ）",correct:true,rationale:"顎ひげはマスク密着を妨げる最多原因。剃毛または義歯装着で改善できる。"},
+      {label:"O: 肥満・OSA（BMI 24→正常）",correct:false,rationale:"BMI 24はMOAN基準（≥26）を下回る。O因子非該当。"},
+      {label:"A: 高齢（36歳→55歳未満）",correct:false,rationale:"36歳はA因子（55歳以上）に非該当。"},
+      {label:"N: 無歯顎（自歯あり）",correct:false,rationale:"自歯があり無歯顎ではない。N因子非該当。"}
+    ]
+  },
+  {
+    id:"cm2", framework:"MOAN", patient:"81歳 男性", cc:"大腸癌 / 待機的手術（総義歯・義歯を外した状態）",
+    obs:["総義歯（評価時義歯を外した状態）","顎ひげなし","BMI 21（正常）","顔面変形なし"],
+    imageSvg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 170" font-family="sans-serif">
+<rect width="460" height="170" fill="#f5f7fb"/>
+<rect x="8" y="8" width="200" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="108" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">顔面観察</text>
+<ellipse cx="108" cy="92" rx="52" ry="60" fill="#d4a876"/>
+<ellipse cx="108" cy="46" rx="50" ry="18" fill="#888"/>
+<path d="M 70 58 Q 108 50 146 58" fill="none" stroke="#aaa" stroke-width="1.5"/>
+<ellipse cx="88" cy="76" rx="9" ry="6" fill="#fff" stroke="#666" stroke-width="1"/>
+<circle cx="88" cy="76" r="3" fill="#555"/>
+<ellipse cx="128" cy="76" rx="9" ry="6" fill="#fff" stroke="#666" stroke-width="1"/>
+<circle cx="128" cy="76" r="3" fill="#555"/>
+<path d="M 96 90 Q 108 88 120 90" stroke="#c08060" fill="none" stroke-width="1.5"/>
+<path d="M 90 108 Q 108 102 126 108" fill="#e8d0a0" stroke="#b89060" stroke-width="1"/>
+<path d="M 72 70 Q 62 90 68 110" fill="none" stroke="#c0a070" stroke-width="1.5"/>
+<path d="M 144 70 Q 154 90 148 110" fill="none" stroke="#c0a070" stroke-width="1.5"/>
+<path d="M 76 86 Q 72 96 76 106" fill="none" stroke="#c0a070" stroke-width="1.2"/>
+<path d="M 140 86 Q 144 96 140 106" fill="none" stroke="#c0a070" stroke-width="1.2"/>
+<rect x="72" y="138" width="72" height="12" rx="5" fill="#d4a876"/>
+<text x="108" y="165" text-anchor="middle" font-size="9" fill="#dc2626" font-weight="bold">⚠ 無歯顎・高齢</text>
+<rect x="220" y="8" width="232" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="336" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">MOAN 評価</text>
+<rect x="228" y="32" width="216" height="28" rx="5" fill="#f0fdf4"/>
+<text x="236" y="47" font-size="10" fill="#6b7280">M —</text>
+<text x="252" y="47" font-size="10" fill="#6b7280">ひげ・外傷なし → 非該当</text>
+<rect x="228" y="64" width="216" height="28" rx="5" fill="#f0fdf4"/>
+<text x="236" y="79" font-size="10" fill="#6b7280">O —</text>
+<text x="252" y="79" font-size="10" fill="#6b7280">BMI 21（正常）→ 非該当</text>
+<rect x="228" y="96" width="216" height="28" rx="5" fill="#fee2e2"/>
+<text x="236" y="111" font-size="10" fill="#dc2626" font-weight="bold">A ✓</text>
+<text x="252" y="111" font-size="10" fill="#991b1b">高齢（81歳 → 55歳以上）</text>
+<rect x="228" y="128" width="216" height="28" rx="5" fill="#fee2e2"/>
+<text x="236" y="143" font-size="10" fill="#dc2626" font-weight="bold">N ✓</text>
+<text x="252" y="143" font-size="10" fill="#991b1b">無歯顎（義歯を外した状態）</text>
+</svg>`,
+    prompt:"MOAN評価でマスク換気困難因子に該当するものを全て選んでください",
+    items:[
+      {label:"M: マスクシール不良（ひげ・外傷なし）",correct:false,rationale:"マスクシールを妨げる要因がない。M因子非該当。"},
+      {label:"O: 肥満・OSA（BMI 21→正常）",correct:false,rationale:"BMI 21はMOAN基準（≥26）以下。O因子非該当。"},
+      {label:"A: 高齢（81歳→55歳以上）",correct:true,rationale:"高齢では軟部組織弾力低下により気道が虚脱しやすい。"},
+      {label:"N: 無歯顎（義歯を外した状態）",correct:true,rationale:"無歯顎ではマスクが沈み込みシールが得られにくい。麻酔前まで義歯を装着させると改善できることがある。"}
+    ]
+  },
+  {
+    id:"cm3", framework:"MOAN", patient:"56歳 女性", cc:"子宮筋腫 / 待機的手術（高度肥満・OSA）",
+    obs:["BMI 35（高度肥満）","OSA（CPAP使用中）","ひげなし","自歯あり"],
+    imageSvg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 170" font-family="sans-serif">
+<rect width="460" height="170" fill="#f5f7fb"/>
+<rect x="8" y="8" width="200" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="108" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">顔面観察</text>
+<ellipse cx="108" cy="96" rx="68" ry="62" fill="#f2c498"/>
+<ellipse cx="108" cy="44" rx="58" ry="22" fill="#5a3020"/>
+<ellipse cx="86" cy="78" rx="10" ry="7" fill="#fff" stroke="#444" stroke-width="1"/>
+<circle cx="86" cy="78" r="4" fill="#333"/>
+<ellipse cx="130" cy="78" rx="10" ry="7" fill="#fff" stroke="#444" stroke-width="1"/>
+<circle cx="130" cy="78" r="4" fill="#333"/>
+<path d="M 96 96 Q 108 104 120 96" fill="none" stroke="#c08060" stroke-width="1.5"/>
+<ellipse cx="108" cy="128" rx="60" ry="18" fill="#e8b888"/>
+<rect x="60" y="140" width="96" height="18" rx="8" fill="#f2c498"/>
+<text x="108" y="166" text-anchor="middle" font-size="9" fill="#dc2626" font-weight="bold">⚠ 高度肥満・短頸</text>
+<rect x="220" y="8" width="232" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="336" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">MOAN 評価</text>
+<rect x="228" y="32" width="216" height="28" rx="5" fill="#f0fdf4"/>
+<text x="236" y="47" font-size="10" fill="#6b7280">M —</text>
+<text x="252" y="47" font-size="10" fill="#6b7280">ひげ・外傷なし → 非該当</text>
+<rect x="228" y="64" width="216" height="28" rx="5" fill="#fee2e2"/>
+<text x="236" y="79" font-size="10" fill="#dc2626" font-weight="bold">O ✓</text>
+<text x="252" y="79" font-size="10" fill="#991b1b">肥満（BMI 35）＋ OSA</text>
+<rect x="228" y="96" width="216" height="28" rx="5" fill="#fee2e2"/>
+<text x="236" y="111" font-size="10" fill="#dc2626" font-weight="bold">A ✓</text>
+<text x="252" y="111" font-size="10" fill="#991b1b">高齢（56歳 → 55歳以上）</text>
+<rect x="228" y="128" width="216" height="28" rx="5" fill="#f0fdf4"/>
+<text x="236" y="143" font-size="10" fill="#6b7280">N —</text>
+<text x="252" y="143" font-size="10" fill="#6b7280">自歯あり → 非該当</text>
+</svg>`,
+    prompt:"MOAN評価でマスク換気困難因子に該当するものを全て選んでください",
+    items:[
+      {label:"M: マスクシール不良（ひげ・外傷なし）",correct:false,rationale:"マスクシールを妨げる因子がない。M因子非該当。"},
+      {label:"O: 肥満（BMI 35≥26）＋ OSA",correct:true,rationale:"肥満はFRC低下・気道虚脱を招く。OSAは上気道閉塞性変化の指標。"},
+      {label:"A: 高齢（56歳→55歳以上）",correct:true,rationale:"MOANのA因子は55歳以上。本症例は該当。軟部組織弾力低下がリスクを増す。"},
+      {label:"N: 無歯顎（自歯あり）",correct:false,rationale:"自歯あり。N因子非該当。"}
+    ]
+  },
+  {
+    id:"cm4", framework:"MOAN", patient:"68歳 男性", cc:"顔面骨折（交通外傷）/ 緊急整復術",
+    obs:["頬骨・上顎骨骨折（左頬部陥凹）","顔面腫脹あり","ひげなし","自歯あり","BMI 24"],
+    imageSvg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 170" font-family="sans-serif">
+<rect width="460" height="170" fill="#f5f7fb"/>
+<rect x="8" y="8" width="200" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="108" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">顔面観察</text>
+<ellipse cx="112" cy="90" rx="52" ry="62" fill="#f0b880"/>
+<ellipse cx="84" cy="88" rx="22" ry="18" fill="#e09060" opacity="0.6"/>
+<ellipse cx="82" cy="85" rx="16" ry="12" fill="#c07050" opacity="0.5"/>
+<ellipse cx="112" cy="40" rx="50" ry="18" fill="#888"/>
+<ellipse cx="92" cy="76" rx="9" ry="7" fill="#fff" stroke="#444" stroke-width="1"/>
+<circle cx="92" cy="76" r="4" fill="#333"/>
+<ellipse cx="132" cy="74" rx="9" ry="7" fill="#fff" stroke="#444" stroke-width="1"/>
+<circle cx="132" cy="74" r="4" fill="#333"/>
+<path d="M 100 98 Q 112 106 124 98" fill="none" stroke="#c08060" stroke-width="1.5"/>
+<rect x="74" y="140" width="76" height="12" rx="5" fill="#f0b880"/>
+<text x="108" y="165" text-anchor="middle" font-size="9" fill="#dc2626" font-weight="bold">⚠ 顔面骨折・左頬部陥凹</text>
+<rect x="220" y="8" width="232" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="336" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">MOAN 評価</text>
+<rect x="228" y="32" width="216" height="28" rx="5" fill="#fee2e2"/>
+<text x="236" y="47" font-size="10" fill="#dc2626" font-weight="bold">M ✓</text>
+<text x="252" y="47" font-size="10" fill="#991b1b">骨折による頬部陥凹・変形</text>
+<rect x="228" y="64" width="216" height="28" rx="5" fill="#f0fdf4"/>
+<text x="236" y="79" font-size="10" fill="#6b7280">O —</text>
+<text x="252" y="79" font-size="10" fill="#6b7280">BMI 24（正常）→ 非該当</text>
+<rect x="228" y="96" width="216" height="28" rx="5" fill="#fee2e2"/>
+<text x="236" y="111" font-size="10" fill="#dc2626" font-weight="bold">A ✓</text>
+<text x="252" y="111" font-size="10" fill="#991b1b">高齢（68歳 → 55歳以上）</text>
+<rect x="228" y="128" width="216" height="28" rx="5" fill="#f0fdf4"/>
+<text x="236" y="143" font-size="10" fill="#6b7280">N —</text>
+<text x="252" y="143" font-size="10" fill="#6b7280">自歯あり → 非該当</text>
+</svg>`,
+    prompt:"MOAN評価でマスク換気困難因子に該当するものを全て選んでください",
+    items:[
+      {label:"M: マスクシール不良（骨折による頬部陥凹・変形）",correct:true,rationale:"骨折陥凹はマスク密着を妨げる典型的なM因子。"},
+      {label:"O: 肥満・OSA（BMI 24→正常）",correct:false,rationale:"BMI 24はMOAN基準以下。O因子非該当。"},
+      {label:"A: 高齢（68歳→55歳以上）",correct:true,rationale:"68歳はA因子に該当。軟部組織弾力低下がリスクを増す。"},
+      {label:"N: 無歯顎（自歯あり）",correct:false,rationale:"自歯あり。N因子非該当。"}
+    ]
+  },
+  {
+    id:"cm5", framework:"MOAN", patient:"76歳 女性", cc:"大腿骨頸部骨折 / 待機的手術（総義歯・軽度肥満）",
+    obs:["総義歯（義歯を外した状態）","BMI 28（軽度肥満）","ひげなし","OSA診断なし"],
+    imageSvg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 170" font-family="sans-serif">
+<rect width="460" height="170" fill="#f5f7fb"/>
+<rect x="8" y="8" width="200" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="108" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">顔面観察</text>
+<ellipse cx="108" cy="94" rx="58" ry="62" fill="#d4a070"/>
+<ellipse cx="108" cy="44" rx="48" ry="18" fill="#888" opacity="0.7"/>
+<ellipse cx="88" cy="78" rx="9" ry="6" fill="#fff" stroke="#666" stroke-width="1"/>
+<circle cx="88" cy="78" r="3" fill="#555"/>
+<ellipse cx="128" cy="78" rx="9" ry="6" fill="#fff" stroke="#666" stroke-width="1"/>
+<circle cx="128" cy="78" r="3" fill="#555"/>
+<path d="M 70 68 Q 62 90 68 112" fill="none" stroke="#c0a070" stroke-width="1.5"/>
+<path d="M 146 68 Q 154 90 148 112" fill="none" stroke="#c0a070" stroke-width="1.5"/>
+<path d="M 96 100 Q 108 96 120 100" stroke="#b89060" fill="#e8d0a0" stroke-width="1"/>
+<ellipse cx="108" cy="130" rx="55" ry="16" fill="#c49060"/>
+<rect x="64" y="142" width="88" height="14" rx="6" fill="#d4a070"/>
+<text x="108" y="165" text-anchor="middle" font-size="9" fill="#dc2626" font-weight="bold">⚠ 無歯顎・高齢・軽度肥満</text>
+<rect x="220" y="8" width="232" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="336" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">MOAN 評価</text>
+<rect x="228" y="32" width="216" height="28" rx="5" fill="#f0fdf4"/>
+<text x="236" y="47" font-size="10" fill="#6b7280">M —</text>
+<text x="252" y="47" font-size="10" fill="#6b7280">ひげ・外傷なし → 非該当</text>
+<rect x="228" y="64" width="216" height="28" rx="5" fill="#fee2e2"/>
+<text x="236" y="79" font-size="10" fill="#dc2626" font-weight="bold">O ✓</text>
+<text x="252" y="79" font-size="10" fill="#991b1b">肥満（BMI 28 ≥ 26）</text>
+<rect x="228" y="96" width="216" height="28" rx="5" fill="#fee2e2"/>
+<text x="236" y="111" font-size="10" fill="#dc2626" font-weight="bold">A ✓</text>
+<text x="252" y="111" font-size="10" fill="#991b1b">高齢（76歳 → 55歳以上）</text>
+<rect x="228" y="128" width="216" height="28" rx="5" fill="#fee2e2"/>
+<text x="236" y="143" font-size="10" fill="#dc2626" font-weight="bold">N ✓</text>
+<text x="252" y="143" font-size="10" fill="#991b1b">無歯顎（義歯を外した状態）</text>
+</svg>`,
+    prompt:"MOAN評価でマスク換気困難因子に該当するものを全て選んでください",
+    items:[
+      {label:"M: マスクシール不良（ひげ・外傷なし）",correct:false,rationale:"マスクシールを妨げる因子がない。M因子非該当。"},
+      {label:"O: 肥満（BMI 28≥26）",correct:true,rationale:"BMI 26以上はMOANのO因子に該当。軽度肥満でも対象となる。"},
+      {label:"A: 高齢（76歳→55歳以上）",correct:true,rationale:"高齢は軟部組織弾力低下によるO因子と相加的リスク。"},
+      {label:"N: 無歯顎（義歯を外した状態）",correct:true,rationale:"義歯を外すとマスクが沈み込みシール不良になる。麻酔前まで義歯を装着させることで改善できる。"}
+    ]
+  },
+  // --- LEMON ---
+  {
+    id:"cl1", framework:"LEMON", patient:"28歳 女性", cc:"扁桃周囲膿瘍 / 緊急ドレナージ",
+    obs:["開口：1.5横指（疼痛性開口障害）","口峡部腫脹・扁桃変位著明","嗄声あり","体温 38.7℃"],
+    imageSvg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 170" font-family="sans-serif">
+<rect width="460" height="170" fill="#f5f7fb"/>
+<rect x="8" y="8" width="210" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="113" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">開口・口腔内評価</text>
+<ellipse cx="113" cy="75" rx="80" ry="40" fill="#c06060"/>
+<ellipse cx="113" cy="60" rx="68" ry="20" fill="#e07070"/>
+<rect x="55" y="56" width="116" height="16" rx="3" fill="#f0f0f0"/>
+<rect x="58" y="57" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="76" y="57" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="94" y="57" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="112" y="57" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="130" y="57" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="148" y="57" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<ellipse cx="113" cy="105" rx="42" ry="28" fill="#d06870"/>
+<ellipse cx="95" cy="78" rx="16" ry="12" fill="#cc5060" opacity="0.8"/>
+<ellipse cx="131" cy="78" rx="16" ry="12" fill="#cc5060" opacity="0.8"/>
+<ellipse cx="113" cy="68" rx="8" ry="12" fill="#c04858"/>
+<text x="113" y="148" text-anchor="middle" font-size="9" fill="#555">口峡部腫脹・扁桃変位著明</text>
+<line x1="30" y1="75" x2="46" y2="75" stroke="#dc2626" stroke-width="2"/>
+<line x1="46" y1="65" x2="46" y2="85" stroke="#dc2626" stroke-width="2"/>
+<text x="28" y="62" font-size="9" fill="#dc2626">1.5</text>
+<text x="22" y="74" font-size="9" fill="#dc2626">横指</text>
+<rect x="226" y="8" width="226" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="339" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">LEMON 評価</text>
+<rect x="234" y="32" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="47" font-size="9" fill="#dc2626" font-weight="bold">L ✓  外見（腫脹・変位）</text>
+<rect x="234" y="58" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="73" font-size="9" fill="#dc2626" font-weight="bold">E ✓  3-3-2（開口1.5横指）</text>
+<rect x="234" y="84" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="99" font-size="9" fill="#dc2626" font-weight="bold">M ✓  口腔内視野制限（腫脹）</text>
+<rect x="234" y="110" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="125" font-size="9" fill="#dc2626" font-weight="bold">O ✓  膿瘍による気道閉塞</text>
+<rect x="234" y="136" width="210" height="22" rx="4" fill="#f0fdf4"/>
+<text x="242" y="151" font-size="9" fill="#6b7280">N —  頸部可動域（正常）</text>
+</svg>`,
+    prompt:"LEMON評価で困難挿管因子に該当するものを全て選んでください",
+    items:[
+      {label:"L: 外見（口峡部腫脹・扁桃変位による外観変化）",correct:true,rationale:"視覚的に気道変形が明らか。腫脹進行でさらに困難になる。"},
+      {label:"E: 3-3-2ルール（開口1.5横指→基準以下）",correct:true,rationale:"開口3横指未満は3-3-2ルール異常。疼痛性・器質性ともに困難因子。"},
+      {label:"M: マランパティ（口峡部腫脹で視野著明制限）",correct:true,rationale:"扁桃周囲膿瘍では口腔内視野が著しく制限される。評価不能自体が困難因子。"},
+      {label:"O: 膿瘍による気道閉塞（腫脹進行リスク）",correct:true,rationale:"腫脹進行による完全閉塞リスクがある。緊急の困難気道宣言・バックアッププランが必要。"},
+      {label:"N: 頸部可動域制限（本症例は問題なし）",correct:false,rationale:"頸椎・頸部の問題はなく、スニッフィング姿勢が取れる。"}
+    ]
+  },
+  {
+    id:"cl2", framework:"LEMON", patient:"57歳 男性", cc:"強直性脊椎炎（AS）/ 待機的手術",
+    obs:["頸椎：前屈・後屈・側屈ともに著明制限","開口：4横指","マランパティ分類 I","顔面・顎変形なし"],
+    imageSvg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 170" font-family="sans-serif">
+<rect width="460" height="170" fill="#f5f7fb"/>
+<rect x="8" y="8" width="210" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="113" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">側面・頸部評価</text>
+<ellipse cx="100" cy="70" rx="44" ry="50" fill="#f0b880"/>
+<ellipse cx="100" cy="34" rx="42" ry="16" fill="#4a3020"/>
+<ellipse cx="84" cy="60" rx="8" ry="6" fill="#fff" stroke="#444" stroke-width="1"/>
+<circle cx="84" cy="60" r="3" fill="#333"/>
+<path d="M 88 82 Q 100 88 112 82" fill="none" stroke="#c08060" stroke-width="1.5"/>
+<rect x="76" y="114" width="48" height="38" rx="6" fill="#f0b880"/>
+<rect x="66" y="148" width="68" height="14" rx="6" fill="#f0b880"/>
+<rect x="56" y="112" width="88" height="42" rx="4" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="5,3"/>
+<text x="100" y="166" text-anchor="middle" font-size="9" fill="#dc2626" font-weight="bold">⚠ 頸部可動域著明制限</text>
+<line x1="150" y1="60" x2="190" y2="60" stroke="#dc2626" stroke-width="2" marker-end="url(#arr)"/>
+<text x="152" y="56" font-size="8" fill="#dc2626">前屈×</text>
+<text x="152" y="70" font-size="8" fill="#dc2626">後屈×</text>
+<text x="152" y="82" font-size="8" fill="#dc2626">側屈×</text>
+<rect x="226" y="8" width="226" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="339" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">LEMON 評価</text>
+<rect x="234" y="32" width="210" height="22" rx="4" fill="#f0fdf4"/>
+<text x="242" y="47" font-size="9" fill="#6b7280">L —  外見（顔面・顎変形なし）</text>
+<rect x="234" y="58" width="210" height="22" rx="4" fill="#f0fdf4"/>
+<text x="242" y="73" font-size="9" fill="#6b7280">E —  3-3-2（開口4横指→正常）</text>
+<rect x="234" y="84" width="210" height="22" rx="4" fill="#f0fdf4"/>
+<text x="242" y="99" font-size="9" fill="#6b7280">M —  マランパティ I（正常）</text>
+<rect x="234" y="110" width="210" height="22" rx="4" fill="#f0fdf4"/>
+<text x="242" y="125" font-size="9" fill="#6b7280">O —  閉塞なし</text>
+<rect x="234" y="136" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="151" font-size="9" fill="#dc2626" font-weight="bold">N ✓  頸部可動域全方向制限</text>
+</svg>`,
+    prompt:"LEMON評価で困難挿管因子に該当するものを全て選んでください",
+    items:[
+      {label:"L: 外見（顔面・顎変形なし）",correct:false,rationale:"脊椎変形はあるが顔面・気道の外見上の困難因子はない。"},
+      {label:"E: 3-3-2ルール（開口4横指→正常）",correct:false,rationale:"開口は正常。3-3-2ルールに異常なし。"},
+      {label:"M: マランパティ I（正常）",correct:false,rationale:"マランパティIは困難挿管を示唆しない。"},
+      {label:"O: 気道閉塞（腫瘍・膿瘍なし）",correct:false,rationale:"気道閉塞の原因となる病変はない。"},
+      {label:"N: 頸部可動域制限（全方向・スニッフィング姿勢不可）",correct:true,rationale:"頸椎強直により嗅ぎ位が取れず、直接喉頭鏡での展開が困難になる。ビデオ喉頭鏡や覚醒下挿管を検討。"}
+    ]
+  },
+  {
+    id:"cl3", framework:"LEMON", patient:"44歳 男性", cc:"下顎骨骨折（交通外傷）/ 緊急固定術",
+    obs:["顔面腫脹・左頬部皮下出血","口腔内出血あり","開口：2横指（疼痛・変形のため）","マランパティ評価困難"],
+    imageSvg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 170" font-family="sans-serif">
+<rect width="460" height="170" fill="#f5f7fb"/>
+<rect x="8" y="8" width="210" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="113" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">開口・口腔内評価</text>
+<ellipse cx="113" cy="80" rx="80" ry="36" fill="#c06060"/>
+<ellipse cx="113" cy="66" rx="68" ry="18" fill="#e07070"/>
+<rect x="63" y="62" width="100" height="10" rx="2" fill="#f0f0f0"/>
+<rect x="66" y="63" width="12" height="8" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="82" y="63" width="12" height="8" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="114" y="63" width="12" height="8" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="130" y="63" width="12" height="8" rx="2" fill="#fff" stroke="#ddd"/>
+<ellipse cx="113" cy="100" rx="35" ry="20" fill="#cc6068"/>
+<ellipse cx="90" cy="78" rx="10" ry="8" fill="#d04058" opacity="0.8"/>
+<text x="113" y="133" text-anchor="middle" font-size="8.5" fill="#555">口腔内出血・骨折変形</text>
+<line x1="30" y1="80" x2="44" y2="80" stroke="#dc2626" stroke-width="2"/>
+<line x1="44" y1="72" x2="44" y2="88" stroke="#dc2626" stroke-width="2"/>
+<text x="28" y="68" font-size="9" fill="#dc2626">2</text>
+<text x="22" y="78" font-size="9" fill="#dc2626">横指</text>
+<rect x="226" y="8" width="226" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="339" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">LEMON 評価</text>
+<rect x="234" y="32" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="47" font-size="9" fill="#dc2626" font-weight="bold">L ✓  外見（腫脹・骨折変形）</text>
+<rect x="234" y="58" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="73" font-size="9" fill="#dc2626" font-weight="bold">E ✓  3-3-2（開口2横指）</text>
+<rect x="234" y="84" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="99" font-size="9" fill="#dc2626" font-weight="bold">M ✓  評価困難（出血・変形）</text>
+<rect x="234" y="110" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="125" font-size="9" fill="#dc2626" font-weight="bold">O ✓  口腔内出血・骨片閉塞</text>
+<rect x="234" y="136" width="210" height="22" rx="4" fill="#f0fdf4"/>
+<text x="242" y="151" font-size="9" fill="#6b7280">N —  頸椎損傷なし（正常）</text>
+</svg>`,
+    prompt:"LEMON評価で困難挿管因子に該当するものを全て選んでください",
+    items:[
+      {label:"L: 外見（顔面腫脹・骨折変形）",correct:true,rationale:"外傷による顔面変形は視覚的困難因子。骨片による解剖変位も考慮。"},
+      {label:"E: 3-3-2ルール（開口2横指→基準以下）",correct:true,rationale:"開口2横指は3横指未満。骨折・疼痛・腫脹による開口制限。"},
+      {label:"M: マランパティ評価困難（口腔内出血で視野不良）",correct:true,rationale:"評価できないこと自体が困難因子。最悪を想定した準備が必要。"},
+      {label:"O: 口腔内出血・骨片による気道閉塞リスク",correct:true,rationale:"骨片・血液・腫脹による閉塞リスクがある。吸引器の準備が最重要。"},
+      {label:"N: 頸部可動域制限（頸椎損傷なし）",correct:false,rationale:"頸椎損傷がなければ頸部可動域は保たれる。"}
+    ]
+  },
+  {
+    id:"cl4", framework:"LEMON", patient:"66歳 女性", cc:"高度肥満・OSA / 待機的腹腔鏡手術",
+    obs:["BMI 39・頸部短く太い","開口：3横指","マランパティ III","仰臥位でいびき・低換気傾向"],
+    imageSvg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 170" font-family="sans-serif">
+<rect width="460" height="170" fill="#f5f7fb"/>
+<rect x="8" y="8" width="210" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="113" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">開口・マランパティ評価</text>
+<ellipse cx="113" cy="78" rx="80" ry="44" fill="#c06060"/>
+<ellipse cx="113" cy="60" rx="72" ry="22" fill="#e07070"/>
+<rect x="53" y="55" width="120" height="16" rx="3" fill="#f0f0f0"/>
+<rect x="56" y="56" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="74" y="56" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="92" y="56" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<ellipse cx="113" cy="108" rx="50" ry="30" fill="#d06870"/>
+<ellipse cx="113" cy="80" rx="42" ry="22" fill="#d06870"/>
+<ellipse cx="113" cy="68" rx="10" ry="14" fill="#c04858"/>
+<text x="113" y="143" text-anchor="middle" font-size="8.5" fill="#555">舌が大きく软口蓋のみ見える (Mallampati III)</text>
+<line x1="24" y1="78" x2="38" y2="78" stroke="#dc2626" stroke-width="2"/>
+<line x1="38" y1="67" x2="38" y2="89" stroke="#dc2626" stroke-width="2"/>
+<text x="22" y="65" font-size="9" fill="#dc2626">3</text>
+<text x="16" y="76" font-size="9" fill="#dc2626">横指</text>
+<rect x="226" y="8" width="226" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="339" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">LEMON 評価</text>
+<rect x="234" y="32" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="47" font-size="9" fill="#dc2626" font-weight="bold">L ✓  外見（高度肥満・短頸）</text>
+<rect x="234" y="58" width="210" height="22" rx="4" fill="#f0fdf4"/>
+<text x="242" y="73" font-size="9" fill="#6b7280">E —  3-3-2（開口3横指→正常）</text>
+<rect x="234" y="84" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="99" font-size="9" fill="#dc2626" font-weight="bold">M ✓  マランパティ III</text>
+<rect x="234" y="110" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="125" font-size="9" fill="#dc2626" font-weight="bold">O ✓  OSA・軟部組織肥大</text>
+<rect x="234" y="136" width="210" height="22" rx="4" fill="#f0fdf4"/>
+<text x="242" y="151" font-size="9" fill="#6b7280">N —  頸部可動域（正常）</text>
+</svg>`,
+    prompt:"LEMON評価で困難挿管因子に該当するものを全て選んでください",
+    items:[
+      {label:"L: 外見（高度肥満・短頸）",correct:true,rationale:"肥満・短頸は外見上の困難因子。気道展開が困難になりやすい。"},
+      {label:"E: 3-3-2ルール（開口3横指→正常範囲）",correct:false,rationale:"開口3横指は正常範囲内の境界値。E因子に含めない。"},
+      {label:"M: マランパティ III（困難挿管リスク）",correct:true,rationale:"マランパティIII/IVは困難挿管の予測因子。"},
+      {label:"O: OSA・軟部組織肥大による気道閉塞傾向",correct:true,rationale:"OSAは上気道の閉塞性変化を反映し、麻酔中のリスクが高い。"},
+      {label:"N: 頸部可動域制限（可動域は正常）",correct:false,rationale:"肥満でも頸部可動域が保たれていればN因子に含まれない。"}
+    ]
+  },
+  {
+    id:"cl5", framework:"LEMON", patient:"70歳 男性", cc:"舌根癌（放射線治療後）/ PEG造設術",
+    obs:["頸部照射後（皮膚硬化・線維化）","頸部前屈：軽度制限","開口：4横指","マランパティ II"],
+    imageSvg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 170" font-family="sans-serif">
+<rect width="460" height="170" fill="#f5f7fb"/>
+<rect x="8" y="8" width="210" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="113" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">開口・頸部評価</text>
+<ellipse cx="113" cy="78" rx="80" ry="44" fill="#c06060"/>
+<ellipse cx="113" cy="60" rx="72" ry="22" fill="#e07070"/>
+<rect x="53" y="55" width="120" height="16" rx="3" fill="#f0f0f0"/>
+<rect x="56" y="56" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="74" y="56" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="92" y="56" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<rect x="110" y="56" width="14" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+<ellipse cx="113" cy="106" rx="40" ry="22" fill="#d06870"/>
+<ellipse cx="113" cy="72" rx="12" ry="16" fill="#c04858"/>
+<text x="113" y="145" text-anchor="middle" font-size="8.5" fill="#555">マランパティ II（軟口蓋・口峡柱見える）</text>
+<rect x="62" y="130" width="102" height="12" rx="4" fill="#fef9c3" stroke="#d97706"/>
+<text x="113" y="140" text-anchor="middle" font-size="8" fill="#92400e">頸部照射後・皮膚硬化</text>
+<rect x="226" y="8" width="226" height="154" rx="8" fill="#fff" stroke="#d0d7de"/>
+<text x="339" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#374151">LEMON 評価</text>
+<rect x="234" y="32" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="47" font-size="9" fill="#dc2626" font-weight="bold">L ✓  外見（照射後頸部変化）</text>
+<rect x="234" y="58" width="210" height="22" rx="4" fill="#f0fdf4"/>
+<text x="242" y="73" font-size="9" fill="#6b7280">E —  3-3-2（開口4横指→正常）</text>
+<rect x="234" y="84" width="210" height="22" rx="4" fill="#f0fdf4"/>
+<text x="242" y="99" font-size="9" fill="#6b7280">M —  マランパティ II（正常）</text>
+<rect x="234" y="110" width="210" height="22" rx="4" fill="#f0fdf4"/>
+<text x="242" y="125" font-size="9" fill="#6b7280">O —  現在気道閉塞なし</text>
+<rect x="234" y="136" width="210" height="22" rx="4" fill="#fee2e2"/>
+<text x="242" y="151" font-size="9" fill="#dc2626" font-weight="bold">N ✓  頸部前屈制限（照射後）</text>
+</svg>`,
+    prompt:"LEMON評価で困難挿管因子に該当するものを全て選んでください",
+    items:[
+      {label:"L: 外見（頸部放射線後変化・皮膚硬化）",correct:true,rationale:"照射後の頸部変化はLの外見困難因子に含まれる。組織硬化・解剖変位を考慮。"},
+      {label:"E: 3-3-2ルール（開口4横指→正常）",correct:false,rationale:"開口は正常範囲。E因子に該当しない。"},
+      {label:"M: マランパティ II（正常範囲）",correct:false,rationale:"マランパティIIは通常困難因子としない。"},
+      {label:"O: 気道閉塞（現在は閉塞なし）",correct:false,rationale:"治療後で現在の気道閉塞はない。"},
+      {label:"N: 頸部可動域制限（照射後硬化による前屈制限）",correct:true,rationale:"スニッフィング姿勢のための前屈が制限される。ビデオ喉頭鏡の準備を推奨。"}
+    ]
+  }
+];
+
 const CHECKLIST_MODULES = [
+  {
+    id: "or-sim",
+    type: "or-sim",
+    title: "OR室SOAP-MDチェック（視覚確認）",
+  },
+  {
+    id: "case-quiz-lm",
+    type: "case-quiz",
+    title: "症例問題集（LEMON / MOAN）",
+  },
   {
     id: "soap-md",
     title: "挿管準備物品チェック（SOAP-MD）",
@@ -1015,7 +1611,11 @@ const state = {
   check: {
     view: "list",
     moduleIdx: -1,
-    answered: false
+    answered: false,
+    orIdx: 0,
+    orOrder: [],
+    caseIdx: 0,
+    caseOrder: []
   }
 };
 
@@ -1120,6 +1720,7 @@ const els = {
   checkFeedback: document.getElementById("checkFeedback"),
   checkSubmitBtn: document.getElementById("checkSubmitBtn"),
   checkRestartBtn: document.getElementById("checkRestartBtn"),
+  checkNextBtn: document.getElementById("checkNextBtn"),
   startMishapTrainerBtn: document.getElementById("startMishapTrainerBtn"),
   mishapFullscreen: document.getElementById("mishapFullscreen"),
   mishapCloseBtn: document.getElementById("mishapCloseBtn"),
@@ -1810,7 +2411,13 @@ function renderCheckList() {
     btn.appendChild(titleLine);
     const sub = document.createElement("span");
     sub.className = "mishap-list-official";
-    sub.textContent = `正解 ${mod.items.filter(it => it.correct).length} 項目 ／ ダミー ${mod.items.filter(it => !it.correct).length} 項目`;
+    if (mod.type === "or-sim") {
+      sub.textContent = `${OR_SCENARIOS.length} シナリオ ／ 麻酔科医視点でSOAP-MD不足を発見`;
+    } else if (mod.type === "case-quiz") {
+      sub.textContent = `${CASE_QUIZ_BANK.length} 症例 ／ LEMON・MOAN 病歴＋画像で診断`;
+    } else {
+      sub.textContent = `正解 ${mod.items.filter(it => it.correct).length} 項目 ／ ダミー ${mod.items.filter(it => !it.correct).length} 項目`;
+    }
     btn.appendChild(sub);
     if (cleared) {
       const badge = document.createElement("span");
@@ -1831,6 +2438,9 @@ function startCheckModule(idx) {
   if (idx < 0 || idx >= CHECKLIST_MODULES.length) return;
   state.check.moduleIdx = idx;
   state.check.answered = false;
+  const mod = CHECKLIST_MODULES[idx];
+  if (mod.type === "or-sim") { startORSim(); return; }
+  if (mod.type === "case-quiz") { startCaseQuiz(); return; }
   renderCheckModule();
   showCheckQuizView();
 }
@@ -1878,6 +2488,8 @@ function submitCheckModule() {
   const idx = state.check.moduleIdx;
   if (idx < 0 || idx >= CHECKLIST_MODULES.length) return;
   const mod = CHECKLIST_MODULES[idx];
+  if (mod.type === "or-sim") { submitORScenario(); return; }
+  if (mod.type === "case-quiz") { submitCaseQuestion(); return; }
   const allInputs = Array.from(els.checkItems.querySelectorAll("input[type='checkbox']"));
   const selectedIdxs = allInputs.filter(el => el.checked).map(el => Number(el.value));
   if (selectedIdxs.length === 0) {
@@ -1926,6 +2538,159 @@ function submitCheckModule() {
   }
   if (els.checkSubmitBtn) els.checkSubmitBtn.classList.add("hidden");
   if (els.checkRestartBtn) els.checkRestartBtn.classList.remove("hidden");
+}
+
+// ===== OR室シミュレーション =====
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function startORSim() {
+  state.check.orOrder = shuffleArray(OR_SCENARIOS.map((_, i) => i));
+  state.check.orIdx = 0;
+  renderORScenario();
+  showCheckQuizView();
+}
+
+function renderORScenario() {
+  const sc = OR_SCENARIOS[state.check.orOrder[state.check.orIdx]];
+  if (els.checkTitle) els.checkTitle.textContent = "OR室SOAP-MDチェック";
+  if (els.checkMeta) els.checkMeta.textContent = `シナリオ ${state.check.orIdx + 1} / ${state.check.orOrder.length}`;
+  if (els.checkContext) els.checkContext.textContent = `${sc.patient} ／ ${sc.procedure} ／ 全身麻酔導入前`;
+  if (els.checkImage) {
+    els.checkImage.className = "mishap-image-frame or-sim-image";
+    els.checkImage.innerHTML = sc.imageSvg;
+  }
+  if (els.checkPrompt) els.checkPrompt.textContent = "この場面で不足している準備項目を全て選んでください";
+  if (!els.checkItems) return;
+  els.checkItems.replaceChildren();
+  sc.items.forEach((item, i) => {
+    const label = document.createElement("label");
+    label.className = "airway-option-label";
+    const input = document.createElement("input");
+    input.type = "checkbox"; input.value = String(i);
+    const text = document.createElement("span");
+    text.textContent = item.label;
+    label.appendChild(input); label.appendChild(text);
+    els.checkItems.appendChild(label);
+  });
+  resetCheckQuizButtons();
+}
+
+function submitORScenario() {
+  const sc = OR_SCENARIOS[state.check.orOrder[state.check.orIdx]];
+  submitGenericCheckQuiz(sc.items, () => {
+    const isLast = state.check.orIdx >= state.check.orOrder.length - 1;
+    if (!isLast && els.checkNextBtn) els.checkNextBtn.classList.remove("hidden");
+  });
+}
+
+function nextORScenario() {
+  state.check.orIdx++;
+  if (state.check.orIdx >= state.check.orOrder.length) { renderCheckList(); showCheckListView(); return; }
+  renderORScenario();
+}
+
+// ===== LEMON/MOAN 症例問題集 =====
+function startCaseQuiz() {
+  state.check.caseOrder = shuffleArray(CASE_QUIZ_BANK.map((_, i) => i));
+  state.check.caseIdx = 0;
+  renderCaseQuestion();
+  showCheckQuizView();
+}
+
+function renderCaseQuestion() {
+  const c = CASE_QUIZ_BANK[state.check.caseOrder[state.check.caseIdx]];
+  const fwColor = { LEMON:"#ca8a04", MOAN:"#1d4ed8" }[c.framework] || "#374151";
+  if (els.checkTitle) els.checkTitle.textContent = "症例問題集";
+  if (els.checkMeta) els.checkMeta.textContent = `症例 ${state.check.caseIdx + 1} / ${state.check.caseOrder.length} ・ ${c.framework}`;
+  if (els.checkContext) {
+    els.checkContext.innerHTML = `<strong style="color:${fwColor}">${c.framework}</strong> ／ ${c.patient} ／ ${c.cc}<br><span style="font-size:0.85em;color:#555">${c.obs.map(o=>`<b>・</b>${o}`).join(" ")}</span>`;
+  }
+  if (els.checkImage) {
+    els.checkImage.className = "mishap-image-frame";
+    els.checkImage.innerHTML = c.imageSvg;
+  }
+  if (els.checkPrompt) els.checkPrompt.textContent = c.prompt;
+  if (!els.checkItems) return;
+  els.checkItems.replaceChildren();
+  c.items.forEach((item, i) => {
+    const label = document.createElement("label");
+    label.className = "airway-option-label";
+    const input = document.createElement("input");
+    input.type = "checkbox"; input.value = String(i);
+    const text = document.createElement("span");
+    text.textContent = item.label;
+    label.appendChild(input); label.appendChild(text);
+    els.checkItems.appendChild(label);
+  });
+  resetCheckQuizButtons();
+}
+
+function submitCaseQuestion() {
+  const c = CASE_QUIZ_BANK[state.check.caseOrder[state.check.caseIdx]];
+  submitGenericCheckQuiz(c.items, () => {
+    const isLast = state.check.caseIdx >= state.check.caseOrder.length - 1;
+    if (!isLast && els.checkNextBtn) els.checkNextBtn.classList.remove("hidden");
+  });
+}
+
+function nextCaseQuestion() {
+  state.check.caseIdx++;
+  if (state.check.caseIdx >= state.check.caseOrder.length) { renderCheckList(); showCheckListView(); return; }
+  renderCaseQuestion();
+}
+
+function resetCheckQuizButtons() {
+  state.check.answered = false;
+  if (els.checkFeedback) { els.checkFeedback.classList.add("hidden"); els.checkFeedback.classList.remove("correct","wrong"); els.checkFeedback.textContent = ""; }
+  if (els.checkSubmitBtn) { els.checkSubmitBtn.classList.remove("hidden"); els.checkSubmitBtn.disabled = false; }
+  if (els.checkRestartBtn) els.checkRestartBtn.classList.add("hidden");
+  if (els.checkNextBtn) els.checkNextBtn.classList.add("hidden");
+}
+
+function submitGenericCheckQuiz(items, onDone) {
+  if (state.check.answered || !els.checkItems) return;
+  const allInputs = Array.from(els.checkItems.querySelectorAll("input[type='checkbox']"));
+  const selectedIdxs = allInputs.filter(el => el.checked).map(el => Number(el.value));
+  if (selectedIdxs.length === 0) {
+    if (els.checkFeedback) { els.checkFeedback.classList.remove("hidden","correct"); els.checkFeedback.classList.add("wrong"); els.checkFeedback.textContent = "1つ以上選んでから判定してください。"; }
+    return;
+  }
+  state.check.answered = true;
+  const correctIdxs = items.map((it, i) => it.correct ? i : -1).filter(i => i >= 0);
+  const allCorrect = correctIdxs.every(i => selectedIdxs.includes(i));
+  const noIncorrect = selectedIdxs.every(i => correctIdxs.includes(i));
+  const perfect = allCorrect && noIncorrect;
+  const correctSelected = selectedIdxs.filter(i => correctIdxs.includes(i)).length;
+  const incorrectSelected = selectedIdxs.filter(i => !correctIdxs.includes(i)).length;
+  const missed = correctIdxs.filter(i => !selectedIdxs.includes(i)).length;
+  allInputs.forEach((el, i) => {
+    el.disabled = true;
+    const item = items[i];
+    const isSel = selectedIdxs.includes(i);
+    if (item.correct && isSel) el.parentElement?.classList.add("is-recommended");
+    else if (!item.correct && isSel) el.parentElement?.classList.add("is-risky");
+    else if (item.correct && !isSel) el.parentElement?.classList.add("is-missed");
+    const r = document.createElement("span");
+    r.className = "check-rationale"; r.textContent = item.rationale;
+    el.parentElement?.appendChild(r);
+  });
+  if (els.checkFeedback) {
+    els.checkFeedback.classList.remove("hidden");
+    els.checkFeedback.classList.add(perfect ? "correct" : "wrong");
+    let fb = perfect ? `正解！ 全 ${correctIdxs.length} 項目を正しく選択しました。` : `正解選択: ${correctSelected} / ${correctIdxs.length} 項目`;
+    if (incorrectSelected > 0) fb += ` ・ 過剰選択: ${incorrectSelected} 個`;
+    if (missed > 0) fb += ` ・ 見落とし: ${missed} 個`;
+    els.checkFeedback.textContent = fb;
+  }
+  if (els.checkSubmitBtn) els.checkSubmitBtn.classList.add("hidden");
+  if (els.checkRestartBtn) els.checkRestartBtn.classList.remove("hidden");
+  if (onDone) onDone();
 }
 
 function openAirwayDurationPicker() {
@@ -3302,7 +4067,14 @@ if (els.checkSubmitBtn) {
   els.checkSubmitBtn.addEventListener("click", submitCheckModule);
 }
 if (els.checkRestartBtn) {
-  els.checkRestartBtn.addEventListener("click", renderCheckList);
+  els.checkRestartBtn.addEventListener("click", () => { renderCheckList(); showCheckListView(); });
+}
+if (els.checkNextBtn) {
+  els.checkNextBtn.addEventListener("click", () => {
+    const mod = CHECKLIST_MODULES[state.check.moduleIdx];
+    if (mod?.type === "or-sim") nextORScenario();
+    else if (mod?.type === "case-quiz") nextCaseQuestion();
+  });
 }
 if (els.startMishapTrainerBtn) {
   els.startMishapTrainerBtn.addEventListener("click", startMishapTrainer);

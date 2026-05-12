@@ -272,6 +272,15 @@ select {
   height: auto;
 }
 
+.or-sim-image {
+  max-height: 320px;
+  background: #c5c9cd;
+}
+
+.or-sim-image svg {
+  max-height: 320px;
+}
+
 .mishap-list-area {
   margin-top: 0.25rem;
 }
