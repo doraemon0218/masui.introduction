@@ -106,50 +106,67 @@ const SPEED_BONUS_TIME_RATIO = 0.45;
 const SPEED_BONUS_POINTS = 15;
 const ROUND_RESULT_MS = 2000;
 
-/** ゲーム開始前チュートリアル（コマ送りスライド） */
+/** ゲーム開始前チュートリアル（公文式：説明 + 暗算問題 + 答え合わせ） */
 const TUTORIAL_SLIDES = [
   {
-    title: "まずは γ の意味を1行で",
-    paragraphs: [
-      { text: "γ（ガンマ）は μg/kg/min（マイクログラム/キログラム/分）です。" },
-      { text: "つまり「1kgあたり・1分あたり、どれだけ流すか」。" },
-      { em: "ここだけ覚える: γ = 体重と時間で決まる“速さ”" }
-    ]
+    title: "ステップ1：γ（ガンマ）の意味",
+    explains: [
+      "γ（ガンマ）= μg/kg/min です。",
+      "「1kgあたり・1分あたりに投与するマイクログラム数」のこと。",
+      { em: "覚えること: 1γ = 1μg/kg/min" }
+    ],
+    problem: "50kgの患者に 1γ を投与するとき\n1分間で何μg 投与することになる？",
+    answer: 50,
+    unit: "μg/min",
+    reveal: "✓ 1γ × 50kg = 50μg/min\nγの定義そのまま。体重をかけるだけ。"
   },
   {
-    title: "50kgなら、まず 3000 を作ろう",
-    paragraphs: [
-      { text: "50kgの患者さんを考えると、50 × 60分 = 3000 です。" },
-      { text: "この 3000 を先に作ると、暗算が一気にラクになります。" },
-      { em: "50kgの型: γ × 3000（μg/h）" }
-    ]
+    title: "ステップ2：分 → 時間に換算",
+    explains: [
+      "ポンプの設定は ml/h（時間単位）。だから「×60」して時間量に変えます。",
+      "50kg・1γ なら 1分で 50μg。",
+      { em: "50μg/min × 60min = 3000μg/h" }
+    ],
+    problem: "50kgの患者に 1γ を投与するとき\n1時間（h）で何μg になる？",
+    answer: 3000,
+    unit: "μg/h",
+    reveal: "✓ 50μg/min × 60 = 3000μg/h\n「50kg × 60 = 3000」はそのまま覚えておくと速い。"
   },
   {
-    title: "実際に1γを暗算してみよう",
-    paragraphs: [
-      { text: "例: 50kg、レミフェンタニル 5mg/50ml。" },
-      { em: "1γ = 1×3000μg/50kg/60min = 3mg/50kg/h" },
-      { text: "この薬液は 5mg/50ml なので 0.1mg/ml。" },
-      { text: "3mg/h を入れたいなら、3 ÷ 0.1 = 30ml/h。" },
-      { em: "答え: 1γ なら 30ml/h（50kg・5mg/50ml）" }
-    ]
+    title: "ステップ3：濃度で割って ml/h へ",
+    explains: [
+      "レミフェンタニル 5mg/50ml の濃度は 0.1mg/ml = 100μg/ml です。",
+      "必要量(μg/h) ÷ 濃度(μg/ml) = 流量(ml/h)",
+      { em: "3000μg/h ÷ 100μg/ml = 30ml/h" }
+    ],
+    problem: "50kg・1γ・レミフェンタニル 5mg/50ml（=100μg/ml）\n何ml/h に設定する？",
+    answer: 30,
+    unit: "ml/h",
+    reveal: "✓ 3000μg/h ÷ 100μg/ml = 30ml/h\n濃度で割る = 「薄い分だけ多く流す」イメージ。"
   },
   {
-    title: "体重が変わっても、倍率で考える",
-    paragraphs: [
-      { text: "100kgなら50kgの2倍なので、30ml/hの2倍で 60ml/h。" },
-      { text: "75kgなら50kgの1.5倍なので、30ml/hの1.5倍で 45ml/h。" },
-      { text: "56kgなら「だいたい55kg=1.1倍」と置くと、約33ml/h とすぐ出せます。" },
-      { em: "暗算のコツ: 50kgの答え × 体重倍率" }
-    ]
+    title: "ステップ4：指示γを変えてみよう",
+    explains: [
+      "指示が 0.1γ なら、1γの答え（30ml/h）× 0.1 = 3ml/h。",
+      "掛け算するだけ。暗算しやすい。",
+      { em: "30ml/h × 0.1 = 3ml/h" }
+    ],
+    problem: "50kg・0.1γ・レミフェンタニル 5mg/50ml（=100μg/ml）\n何ml/h に設定する？",
+    answer: 3,
+    unit: "ml/h",
+    reveal: "✓ 0.1γ × 50kg × 60 ÷ 100 = 3ml/h\nまたは「1γの30ml/h × 0.1」でも同じ。"
   },
   {
-    title: "最後に、いつもの形に戻す",
-    paragraphs: [
-      { text: "まず指示 γ と体重で「必要量（mg/h）」を作る。" },
-      { text: "次に薬液濃度（mg/ml）で割って、ml/h に直す。" },
-      { em: "流れは毎回同じ: 必要量を作る → 濃度で割る → ml/h" }
-    ]
+    title: "ステップ5：体重が変わっても倍率で",
+    explains: [
+      "60kg は 50kgの 1.2倍。だから答えも 1.2倍。",
+      "70kg なら 1.4倍。40kg なら 0.8倍。",
+      { em: "50kgの答え × (体重÷50) = 答え" }
+    ],
+    problem: "60kg・0.1γ・レミフェンタニル 5mg/50ml（=100μg/ml）\n何ml/h に設定する？",
+    answer: 3.6,
+    unit: "ml/h",
+    reveal: "✓ 50kgの答え 3ml/h × (60÷50) = 3 × 1.2 = 3.6ml/h\nまたは 0.1×60×60÷100 = 3.6ml/h でも正解。"
   }
 ];
 
@@ -219,7 +236,7 @@ const AIRWAY_SCENARIOS = [
           {
             text: "試行回数の上限を明示し、酸素化が崩れる前に救済ルートへ移行する",
             correct: true,
-            rationale: "“いつ切り替えるか”を先に決めるのが安全です。"
+            rationale: "「いつ切り替えるか」を先に決めるのが安全です。"
           },
           {
             text: "同じ喉頭鏡・同じ角度で成功するまで繰り返す",
@@ -237,7 +254,7 @@ const AIRWAY_SCENARIOS = [
         prompt: "Step4: 換気困難へ移行。最優先で選ぶべき action は？",
         options: [
           {
-            text: "直ちに“酸素化回復”を最優先にし、声門上器具や二人法マスク換気へ移行する",
+            text: "直ちに「酸素化回復」を最優先にし、声門上器具や二人法マスク換気へ移行する",
             correct: true,
             rationale: "CICV回避には酸素化再開が最優先です。"
           },
@@ -688,63 +705,85 @@ const MISHAP_CHARMING_TITLES = [
 function generateORSceneSVG(present) {
   const s=present.includes("S"),o=present.includes("O"),a=present.includes("A"),
         p=present.includes("P"),m=present.includes("M"),d=present.includes("D");
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 310" font-family="sans-serif">
-  <rect width="520" height="310" fill="#c5c9cd"/>
-  <rect width="520" height="158" fill="#dde0e4"/>
-  <line x1="0" y1="158" x2="520" y2="158" stroke="#b8bcbf" stroke-width="1.5"/>
-  <rect x="190" y="0" width="140" height="9" rx="2" fill="#9aa0a6"/>
-  <rect x="250" y="9" width="20" height="26" fill="#aab0b6"/>
-  <ellipse cx="260" cy="42" rx="55" ry="15" fill="#52585e"/>
-  <ellipse cx="260" cy="44" rx="49" ry="11" fill="#e2e2e2"/>
-  <ellipse cx="260" cy="46" rx="38" ry="7" fill="#f5f2e0" opacity="0.6"/>
-  <rect x="152" y="30" width="5" height="130" fill="#7a7a7a"/>
-  <rect x="18" y="26" width="136" height="96" rx="6" fill="#181818"/>
-  ${m ? `<rect x="22" y="30" width="128" height="88" rx="3" fill="#0a0a1e"/>
-  <text x="26" y="43" font-size="8" fill="#00e676" font-weight="bold">HR  72</text>
-  <text x="72" y="43" font-size="8" fill="#ff9800">SpO₂  99%</text>
-  <text x="124" y="43" font-size="8" fill="#ef5350">BP 124/76</text>
-  <polyline points="22,60 34,60 38,46 44,74 50,60 60,60 64,53 70,67 76,60 88,60 92,54 98,66 104,60 150,60" stroke="#00e676" fill="none" stroke-width="1.5"/>
-  <polyline points="22,83 32,83 36,75 42,91 48,83 56,83 60,77 66,89 72,83 84,83 88,77 94,89 100,83 150,83" stroke="#ff9800" fill="none" stroke-width="1.5"/>
-  <polyline points="22,103 30,103 34,95 42,95 46,103 64,103 68,95 76,95 80,103 98,103 102,95 110,95 114,103 150,103" stroke="#4fc3f7" fill="none" stroke-width="1.5"/>
-  <text x="26" y="113" font-size="7" fill="#4fc3f7">EtCO₂  34mmHg</text>` :
-  `<rect x="22" y="30" width="128" height="88" rx="3" fill="#0a0a0a"/>
-  <text x="86" y="74" font-size="13" fill="#2a2a2a" text-anchor="middle">■ OFF</text>
-  <text x="86" y="90" font-size="9" fill="#333" text-anchor="middle">未接続</text>`}
-  <text x="86" y="130" font-size="8" fill="#888" text-anchor="middle">M: モニター</text>
-  <rect x="18" y="130" width="96" height="180" rx="5" fill="#5888c4"/>
-  <rect x="22" y="138" width="88" height="52" rx="3" fill="#3a68a2"/>
-  <rect x="26" y="144" width="80" height="20" rx="2" fill="#1a2e4a"/>
-  <text x="66" y="153" font-size="6.5" fill="#90c0f0" text-anchor="middle">Vt 480  RR 12  FiO₂ 50%</text>
-  <text x="66" y="161" font-size="6.5" fill="#90c0f0" text-anchor="middle">Ppeak 18   PEEP 5</text>
-  <circle cx="36" cy="206" r="9" fill="#2c5282" stroke="#90cdf4" stroke-width="1.5"/>
-  <circle cx="57" cy="206" r="9" fill="#2c5282" stroke="#90cdf4" stroke-width="1.5"/>
-  <circle cx="78" cy="206" r="9" fill="#2c5282" stroke="#90cdf4" stroke-width="1.5"/>
-  <circle cx="99" cy="206" r="9" fill="#2c5282" stroke="#fbbf24" stroke-width="1.5"/>
-  <text x="36" y="222" font-size="6" fill="#7eb8f7" text-anchor="middle">O₂</text>
-  <text x="57" y="222" font-size="6" fill="#7eb8f7" text-anchor="middle">N₂O</text>
-  <text x="78" y="222" font-size="6" fill="#7eb8f7" text-anchor="middle">AIR</text>
-  <text x="99" y="222" font-size="6" fill="#fbbf24" text-anchor="middle">SEVO</text>
-  <rect x="22" y="230" width="88" height="74" rx="6" fill="#4878b4"/>
-  <ellipse cx="66" cy="230" rx="44" ry="7" fill="#6898d0"/>
-  <line x1="22" y1="245" x2="110" y2="245" stroke="#3a68a2" stroke-width="1"/>
-  <line x1="22" y1="258" x2="110" y2="258" stroke="#3a68a2" stroke-width="1"/>
-  <line x1="22" y1="271" x2="110" y2="271" stroke="#3a68a2" stroke-width="1"/>
-  <circle cx="114" cy="262" r="6" fill="#6898d0" stroke="#e0e8f0" stroke-width="1.5"/>
-  <path d="M 120 262 Q 162 262 184 280" fill="none" stroke="#b8c8e0" stroke-width="5" stroke-linecap="round"/>
-  <path d="M 120 262 Q 161 261 183 279" fill="none" stroke="#dce8f5" stroke-width="2.5"/>
-  ${o ? `<ellipse cx="125" cy="292" rx="17" ry="11" fill="#e65100" opacity="0.9"/>
-  <ellipse cx="110" cy="292" rx="9" ry="7" fill="#ef6c00" opacity="0.85"/>
-  <rect x="134" y="288" width="8" height="8" rx="2" fill="#bf360c"/>
-  <path d="M 142 292 Q 148 282 126 276" stroke="#90cdf4" stroke-width="1.5" stroke-dasharray="3,2" fill="none"/>
-  <text x="122" y="308" font-size="7" fill="#e65100" text-anchor="middle">O: BVM</text>` : ``}
-  ${s ? `<rect x="138" y="262" width="34" height="40" rx="4" fill="#f0f0f0" stroke="#999" stroke-width="1.5"/>
-  <rect x="142" y="268" width="26" height="16" rx="2" fill="#deeeff"/>
-  <text x="155" y="279" font-size="6" fill="#555" text-anchor="middle">吸引器</text>
-  <rect x="142" y="285" width="26" height="10" rx="2" fill="#c8dcf0"/>
-  <path d="M 172 272 Q 188 268 196 265" fill="none" stroke="#bbb" stroke-width="2.5" stroke-dasharray="4,2"/>
-  <path d="M 196 265 Q 208 261 220 259" fill="none" stroke="#aaa" stroke-width="3" stroke-linecap="round"/>
-  <circle cx="222" cy="259" r="4" fill="none" stroke="#aaa" stroke-width="2"/>
-  <text x="154" y="308" font-size="7" fill="#555" text-anchor="middle">S: 吸引器</text>` : ``}
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 320" font-family="sans-serif">
+  <!-- 室内背景 -->
+  <rect width="560" height="320" fill="#c8cbce"/>
+  <rect width="560" height="155" fill="#dde0e4"/>
+  <line x1="0" y1="155" x2="560" y2="155" stroke="#b8bcbf" stroke-width="1.5"/>
+  <!-- OR照明 -->
+  <rect x="210" y="13" width="140" height="8" rx="2" fill="#9aa0a6"/>
+  <rect x="270" y="21" width="20" height="24" fill="#aab0b6"/>
+  <ellipse cx="280" cy="50" rx="52" ry="14" fill="#52585e"/>
+  <ellipse cx="280" cy="52" rx="46" ry="10" fill="#e2e2e2"/>
+  <ellipse cx="280" cy="54" rx="36" ry="6" fill="#f5f2e0" opacity="0.6"/>
+  <!-- 左: 点滴ポール -->
+  <rect x="58" y="18" width="5" height="252" fill="#888"/>
+  <ellipse cx="60" cy="270" rx="22" ry="6" fill="#777"/>
+  <rect x="38" y="18" width="44" height="4" rx="2" fill="#999"/>
+  <rect x="39" y="23" width="42" height="58" rx="8" fill="#b2d8f6" opacity="0.85" stroke="#7abce8" stroke-width="1"/>
+  <rect x="44" y="30" width="32" height="20" rx="2" fill="#d8eefb" opacity="0.7"/>
+  <text x="60" y="43" font-size="6" fill="#2563a0" text-anchor="middle">生食</text>
+  <text x="60" y="52" font-size="5.5" fill="#2563a0" text-anchor="middle">500mL</text>
+  <line x1="60" y1="81" x2="60" y2="98" stroke="#aaa" stroke-width="1.5"/>
+  <!-- シリンジポンプ（Remi） -->
+  <rect x="16" y="98" width="88" height="46" rx="4" fill="#e0e4e8" stroke="#bbb" stroke-width="1"/>
+  <rect x="20" y="104" width="80" height="20" rx="2" fill="#1a1a2e"/>
+  <text x="60" y="118" font-size="6.5" fill="#4fc3f7" text-anchor="middle">PUMP</text>
+  <rect x="20" y="128" width="74" height="10" rx="4" fill="#c0d0e0"/>
+  <rect x="94" y="125" width="8" height="16" rx="2" fill="#999"/>
+  <rect x="23" y="130" width="68" height="6" rx="1" fill="#fff" opacity="0.8"/>
+  <text x="57" y="135" font-size="5.5" fill="#333" text-anchor="middle">Remi 5mg/50ml</text>
+  <path d="M 60 144 Q 60 195 160 222" fill="none" stroke="#ccc" stroke-width="1.5" opacity="0.7"/>
+  <!-- 右上: 生体情報モニタ -->
+  <rect x="393" y="13" width="158" height="108" rx="5" fill="#181818"/>
+  ${m ? `<rect x="397" y="17" width="150" height="100" rx="3" fill="#0a0a1e"/>
+  <text x="403" y="30" font-size="7.5" fill="#00e676" font-weight="bold">HR  72</text>
+  <text x="448" y="30" font-size="7.5" fill="#ff9800">SpO₂  99%</text>
+  <text x="505" y="30" font-size="7.5" fill="#ef5350">BP 124/76</text>
+  <polyline points="397,48 409,48 413,35 419,62 425,48 435,48 439,41 445,55 451,48 463,48 467,41 473,53 479,48 547,48" stroke="#00e676" fill="none" stroke-width="1.5"/>
+  <polyline points="397,71 407,71 411,63 417,79 423,71 431,71 435,65 441,77 447,71 459,71 463,65 469,77 475,71 547,71" stroke="#ff9800" fill="none" stroke-width="1.5"/>
+  <polyline points="397,91 405,91 409,83 417,83 421,91 439,91 443,83 451,83 455,91 473,91 477,83 485,83 489,91 547,91" stroke="#4fc3f7" fill="none" stroke-width="1.5"/>
+  <text x="401" y="110" font-size="6.5" fill="#4fc3f7">EtCO₂  34mmHg</text>` :
+  `<rect x="397" y="17" width="150" height="100" rx="3" fill="#0a0a0a"/>
+  <text x="472" y="68" font-size="13" fill="#2a2a2a" text-anchor="middle">■ OFF</text>
+  <text x="472" y="85" font-size="9" fill="#333" text-anchor="middle">未接続</text>`}
+  <text x="472" y="130" font-size="8" fill="#888" text-anchor="middle">M: モニター</text>
+  <!-- 右: 麻酔器（人工呼吸器） -->
+  <rect x="408" y="138" width="106" height="172" rx="5" fill="#5888c4"/>
+  <rect x="414" y="144" width="94" height="52" rx="3" fill="#3a68a2"/>
+  <rect x="418" y="150" width="86" height="22" rx="2" fill="#1a2e4a"/>
+  <text x="461" y="160" font-size="6" fill="#90c0f0" text-anchor="middle">Vt 480  RR 12  FiO₂ 50%</text>
+  <text x="461" y="168" font-size="6" fill="#90c0f0" text-anchor="middle">Ppeak 18   PEEP 5</text>
+  <circle cx="428" cy="216" r="9" fill="#2c5282" stroke="#90cdf4" stroke-width="1.5"/>
+  <circle cx="449" cy="216" r="9" fill="#2c5282" stroke="#90cdf4" stroke-width="1.5"/>
+  <circle cx="470" cy="216" r="9" fill="#2c5282" stroke="#90cdf4" stroke-width="1.5"/>
+  <circle cx="491" cy="216" r="9" fill="#2c5282" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="428" y="232" font-size="6" fill="#7eb8f7" text-anchor="middle">O₂</text>
+  <text x="449" y="232" font-size="6" fill="#7eb8f7" text-anchor="middle">N₂O</text>
+  <text x="470" y="232" font-size="6" fill="#7eb8f7" text-anchor="middle">AIR</text>
+  <text x="491" y="232" font-size="6" fill="#fbbf24" text-anchor="middle">SEVO</text>
+  <rect x="414" y="238" width="94" height="66" rx="6" fill="#4878b4"/>
+  <ellipse cx="461" cy="238" rx="47" ry="7" fill="#6898d0"/>
+  <line x1="414" y1="252" x2="508" y2="252" stroke="#3a68a2" stroke-width="1"/>
+  <line x1="414" y1="265" x2="508" y2="265" stroke="#3a68a2" stroke-width="1"/>
+  <circle cx="406" cy="266" r="6" fill="#6898d0" stroke="#e0e8f0" stroke-width="1.5"/>
+  <path d="M 400 266 Q 358 266 338 282" fill="none" stroke="#b8c8e0" stroke-width="5" stroke-linecap="round"/>
+  <path d="M 400 265 Q 359 265 339 281" fill="none" stroke="#dce8f5" stroke-width="2.5"/>
+  <!-- BVM (O): 蛇管の近く -->
+  ${o ? `<ellipse cx="383" cy="296" rx="17" ry="11" fill="#e65100" opacity="0.9"/>
+  <ellipse cx="368" cy="296" rx="9" ry="7" fill="#ef6c00" opacity="0.85"/>
+  <rect x="392" y="292" width="8" height="8" rx="2" fill="#bf360c"/>
+  <path d="M 400 296 Q 406 286 384 280" stroke="#90cdf4" stroke-width="1.5" stroke-dasharray="3,2" fill="none"/>
+  <text x="380" y="312" font-size="7" fill="#e65100" text-anchor="middle">O: BVM</text>` : ``}
+  <!-- 吸引器 (S): 麻酔器の右 -->
+  ${s ? `<rect x="516" y="195" width="40" height="50" rx="4" fill="#f0f0f0" stroke="#999" stroke-width="1.5"/>
+  <rect x="520" y="201" width="32" height="18" rx="2" fill="#deeeff"/>
+  <text x="536" y="213" font-size="6" fill="#555" text-anchor="middle">吸引器</text>
+  <rect x="520" y="224" width="32" height="10" rx="2" fill="#c8dcf0"/>
+  <path d="M 516 218 Q 505 216 498 214" fill="none" stroke="#bbb" stroke-width="2.5" stroke-dasharray="4,2"/>
+  <circle cx="496" cy="214" r="4" fill="none" stroke="#aaa" stroke-width="2"/>
+  <text x="536" y="254" font-size="6.5" fill="#555" text-anchor="middle">S: 吸引器</text>` : ``}
+  <!-- 患者テーブル（中央） -->
   <rect x="162" y="245" width="196" height="65" rx="5" fill="#dfd0b0"/>
   <rect x="184" y="249" width="152" height="32" rx="15" fill="#ede0c0"/>
   <ellipse cx="260" cy="265" rx="42" ry="34" fill="#f2b880"/>
@@ -754,46 +793,36 @@ function generateORSceneSVG(present) {
   <path d="M 256 267 Q 260 273 264 267" fill="none" stroke="#d09060" stroke-width="1.2"/>
   <rect x="248" y="276" width="24" height="5" rx="2.5" fill="#a0c4d8" opacity="0.7"/>
   <rect x="218" y="300" width="84" height="10" rx="4" fill="#f2b880"/>
-  <rect x="464" y="16" width="6" height="289" fill="#888"/>
-  <ellipse cx="467" cy="304" rx="26" ry="7" fill="#777"/>
-  <rect x="440" y="16" width="54" height="4" rx="2" fill="#999"/>
-  <rect x="448" y="22" width="38" height="52" rx="7" fill="#b2d8f6" opacity="0.9"/>
-  <ellipse cx="467" cy="22" rx="13" ry="4" fill="#92c8f2" opacity="0.9"/>
-  <line x1="467" y1="74" x2="467" y2="92" stroke="#aaa" stroke-width="1.5"/>
-  <path d="M 467 92 Q 450 160 428 210 Q 408 248 386 264" fill="none" stroke="#ccc" stroke-width="1.5" opacity="0.8"/>
-  <rect x="396" y="124" width="64" height="38" rx="4" fill="#e0e4e8" stroke="#bbb" stroke-width="1"/>
-  <rect x="400" y="128" width="56" height="16" rx="2" fill="#1a1a2e"/>
-  <text x="428" y="139" font-size="7" fill="#4fc3f7" text-anchor="middle">PUMP</text>
-  <rect x="400" y="150" width="52" height="6" rx="3" fill="#c0d0e0"/>
-  <rect x="358" y="196" width="5" height="114" fill="#888"/>
-  <rect x="324" y="196" width="106" height="7" rx="2" fill="#a8a8a8"/>
-  <rect x="326" y="201" width="102" height="60" rx="3" fill="#c4c4c4"/>
-  ${a ? `<rect x="332" y="208" width="10" height="30" rx="3" fill="#222"/>
-  <path d="M 342 213 L 357 208 L 359 211 L 344 216 Z" fill="#555"/>
-  <circle cx="357" cy="209" r="2" fill="#ffd700"/>
-  <text x="340" y="246" font-size="6" fill="#444" text-anchor="middle">喉頭鏡</text>
-  <path d="M 360 211 Q 374 213 376 226 Q 378 235 376 242" fill="none" stroke="#d0e8f8" stroke-width="5" stroke-linecap="round"/>
-  <circle cx="361" cy="211" r="4" fill="none" stroke="#d0e8f8" stroke-width="2.5"/>
-  <text x="372" y="246" font-size="6" fill="#444" text-anchor="middle">ETチューブ</text>
-  <line x1="382" y1="210" x2="384" y2="238" stroke="#bbb" stroke-width="2.5"/>` : ``}
-  ${d ? `<rect x="396" y="204" width="26" height="40" rx="5" fill="#1560c0"/>
-  <rect x="398" y="206" width="22" height="14" rx="2" fill="#0d47a1"/>
-  <rect x="399" y="207" width="20" height="12" rx="1" fill="#1a237e"/>
-  <ellipse cx="409" cy="213" rx="6" ry="4" fill="none" stroke="#4fc3f7" stroke-width="1"/>
-  <path d="M 403 213 Q 409 210 415 213" fill="none" stroke="#4fc3f7" stroke-width="1"/>
-  <path d="M 408 244 Q 418 247 420 258 Q 420 262 416 264" fill="none" stroke="#90caf9" stroke-width="3" stroke-linecap="round"/>
-  <text x="409" y="272" font-size="6" fill="#1565c0" text-anchor="middle">VL</text>` : ``}
-  ${p ? `<rect x="324" y="266" width="104" height="22" rx="3" fill="#e0e0e0" stroke="#bbb" stroke-width="1"/>
-  <rect x="328" y="270" width="20" height="9" rx="4" fill="#fff" stroke="#bbb" stroke-width="0.8"/>
-  <text x="338" y="277" font-size="5.5" fill="#333" text-anchor="middle">Prop</text>
-  <rect x="352" y="270" width="20" height="9" rx="4" fill="#ffd54f" stroke="#f9a825" stroke-width="0.8"/>
-  <text x="362" y="277" font-size="5.5" fill="#333" text-anchor="middle">Roc</text>
-  <rect x="376" y="270" width="20" height="9" rx="4" fill="#90caf9" stroke="#42a5f5" stroke-width="0.8"/>
-  <text x="386" y="277" font-size="5.5" fill="#333" text-anchor="middle">Sug</text>
-  <rect x="400" y="270" width="20" height="9" rx="4" fill="#ef9a9a" stroke="#e53935" stroke-width="0.8"/>
-  <text x="410" y="277" font-size="5.5" fill="#555" text-anchor="middle">Eph</text>
-  <text x="376" y="298" font-size="7" fill="#555" text-anchor="middle">P: 薬剤</text>` : ``}
-  <text x="260" y="12" font-size="8" fill="#666" text-anchor="middle">麻酔科医の立ち位置から見た手術室</text>
+  <!-- 下段中央: 麻酔科医の箱 -->
+  <rect x="128" y="277" width="196" height="36" rx="4" fill="#d4c89a" stroke="#b0a060" stroke-width="1.5"/>
+  <text x="226" y="289" font-size="7" fill="#5a4a10" text-anchor="middle">麻酔科医の箱</text>
+  <!-- 喉頭鏡 + ETT (A) -->
+  ${a ? `<rect x="136" y="291" width="10" height="18" rx="3" fill="#222"/>
+  <path d="M 146 296 L 162 291 L 164 294 L 148 299 Z" fill="#555"/>
+  <circle cx="163" cy="292" r="2" fill="#ffd700"/>
+  <text x="148" y="312" font-size="6" fill="#444" text-anchor="middle">喉頭鏡</text>
+  <path d="M 166 294 Q 180 295 182 308 Q 184 316 182 320" fill="none" stroke="#d0e8f8" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="167" cy="294" r="3.5" fill="none" stroke="#d0e8f8" stroke-width="2"/>
+  <text x="180" y="312" font-size="6" fill="#444" text-anchor="middle">ETT</text>` : ``}
+  <!-- ビデオ喉頭鏡 (D) -->
+  ${d ? `<rect x="204" y="285" width="24" height="22" rx="4" fill="#1560c0"/>
+  <rect x="206" y="287" width="20" height="12" rx="2" fill="#0d47a1"/>
+  <rect x="207" y="288" width="18" height="10" rx="1" fill="#1a237e"/>
+  <ellipse cx="216" cy="293" rx="6" ry="4" fill="none" stroke="#4fc3f7" stroke-width="1"/>
+  <text x="216" y="312" font-size="6" fill="#1565c0" text-anchor="middle">VL</text>` : ``}
+  <!-- 下段右: 薬剤シリンジ (P) Prop/Roc/Eph -->
+  ${p ? `<rect x="330" y="278" width="148" height="34" rx="3" fill="#e8e8e8" stroke="#bbb" stroke-width="1"/>
+  <text x="404" y="289" font-size="7" fill="#555" text-anchor="middle">P: 薬剤</text>
+  <rect x="337" y="292" width="36" height="11" rx="4" fill="#fff" stroke="#bbb" stroke-width="0.8"/>
+  <rect x="373" y="294" width="6" height="7" rx="1" fill="#aaa"/>
+  <text x="355" y="300" font-size="5.5" fill="#333" text-anchor="middle">Prop</text>
+  <rect x="385" y="292" width="36" height="11" rx="4" fill="#ffd54f" stroke="#f9a825" stroke-width="0.8"/>
+  <rect x="421" y="294" width="6" height="7" rx="1" fill="#c8a000"/>
+  <text x="403" y="300" font-size="5.5" fill="#333" text-anchor="middle">Roc</text>
+  <rect x="433" y="292" width="36" height="11" rx="4" fill="#ef9a9a" stroke="#e53935" stroke-width="0.8"/>
+  <rect x="469" y="294" width="6" height="7" rx="1" fill="#c62828"/>
+  <text x="451" y="300" font-size="5.5" fill="#444" text-anchor="middle">Eph</text>` : ``}
+  <text x="280" y="10" font-size="8" fill="#666" text-anchor="middle">麻酔科医の立ち位置から見た手術室</text>
 </svg>`;
 }
 
@@ -1524,7 +1553,7 @@ const CHECKLIST_MODULES = [
   });
 })();
 
-const RPG_TIERS = ["村人", "戦士", "魔法戦士", "勇者"];
+const RPG_TIERS = ["村人", "戦士", "魔法使い", "勇者"];
 
 /** コンテンツ選択画面用：DQ風ピクセル風SVG（村人〜勇者） */
 const GAMMA_RPG_SPRITES_SVG = [
@@ -1537,16 +1566,12 @@ const GAMMA_RPG_SPRITES_SVG = [
   // 勇者
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" shape-rendering="crispEdges"><rect width="48" height="48" fill="#0a1740"/><rect x="16" y="6" width="16" height="8" fill="#ffd54a"/><rect x="17" y="10" width="14" height="10" fill="#e8b88a"/><rect x="13" y="20" width="22" height="14" fill="#d32f2f"/><rect x="8" y="14" width="8" height="6" fill="#ffd54a"/><rect x="32" y="18" width="4" height="16" fill="#eceff1"/><rect x="17" y="34" width="6" height="10" fill="#3d2914"/><rect x="25" y="34" width="6" height="10" fill="#3d2914"/><rect x="19" y="14" width="3" height="2" fill="#1a1a1a"/><rect x="26" y="14" width="3" height="2" fill="#1a1a1a"/><rect x="20" y="4" width="8" height="4" fill="#ffd54a"/></svg>`
 ];
-// 次の進化（tier+1）までに上げたい目標を、序盤のあなたの能力（baseline）からの差分として持つ
-const RPG_NEXT_DELTAS = [
-  { accAdd: 0.1, timeSubSec: 6 }, // 村人 -> 戦士
-  { accAdd: 0.15, timeSubSec: 8 }, // 戦士 -> 魔法戦士
-  { accAdd: 0.2, timeSubSec: 10 } // 魔法戦士 -> 勇者
+// 進化条件（固定絶対値、直近 BLOCK_SIZE 問で判定）
+const RPG_TIER_THRESHOLDS = [
+  { minAcc: 0.60, maxAvgSec: 30 }, // 村人 → 戦士
+  { minAcc: 0.75, maxAvgSec: 20 }, // 戦士 → 魔法使い
+  { minAcc: 0.90, maxAvgSec: 12 }  // 魔法使い → 勇者
 ];
-const RPG_PROMOTE_THRESHOLD = 0.78;
-const RPG_PROGRESS_W_ACC = 0.45;
-const RPG_PROGRESS_W_SPEED = 0.35;
-const RPG_PROGRESS_W_DIFFICULTY = 0.2;
 const RPG_ADVANCED_PROB_BY_TIER = [0.35, 0.45, 0.6, 0.75];
 
 let pendingGameMode = null;
@@ -1565,8 +1590,6 @@ const state = {
   blockWeightKg: null,
   level: 1,
   rpgTierIdx: 0,
-  baselineAcc: null, // 序盤（block0）での正答率 [0..1]
-  baselineAvgTimeSec: null, // 序盤（block0）での平均解答秒
   currentQuestionLimit: LEVEL_1_SECONDS,
   currentQuestion: null,
   score: 0,
@@ -1612,6 +1635,7 @@ const state = {
     view: "list",
     moduleIdx: -1,
     answered: false,
+    slideShown: false,
     orIdx: 0,
     orOrder: [],
     caseIdx: 0,
@@ -1619,13 +1643,12 @@ const state = {
   }
 };
 
-const calc = {
-  expr: "0"
-};
 
 const els = {
-  playerName: document.getElementById("playerName"),
+  playerName: document.getElementById("playerNameInput"),
   enterBtn: document.getElementById("enterBtn"),
+  savedUserArea: document.getElementById("savedUserArea"),
+  savedUserList: document.getElementById("savedUserList"),
   topPage: document.getElementById("topPage"),
   contentPage: document.getElementById("contentPage"),
   welcomeName: document.getElementById("welcomeName"),
@@ -1672,9 +1695,6 @@ const els = {
   roundResultOverlay: document.getElementById("roundResultOverlay"),
   roundResultBig: document.getElementById("roundResultBig"),
   roundResultSub: document.getElementById("roundResultSub"),
-  calcDisplay: document.getElementById("calcDisplay"),
-  calcGrid: document.getElementById("calcGrid"),
-  calcToAnswerBtn: document.getElementById("calcToAnswerBtn"),
   sessionLengthOverlay: document.getElementById("sessionLengthOverlay"),
   sessionLen5Btn: document.getElementById("sessionLen5Btn"),
   sessionLen10Btn: document.getElementById("sessionLen10Btn"),
@@ -1721,6 +1741,9 @@ const els = {
   checkSubmitBtn: document.getElementById("checkSubmitBtn"),
   checkRestartBtn: document.getElementById("checkRestartBtn"),
   checkNextBtn: document.getElementById("checkNextBtn"),
+  checkSlideArea: document.getElementById("checkSlideArea"),
+  checkSlideContent: document.getElementById("checkSlideContent"),
+  checkSlideBtn: document.getElementById("checkSlideBtn"),
   startMishapTrainerBtn: document.getElementById("startMishapTrainerBtn"),
   mishapFullscreen: document.getElementById("mishapFullscreen"),
   mishapCloseBtn: document.getElementById("mishapCloseBtn"),
@@ -1749,15 +1772,59 @@ const els = {
   tutorialOverlay: document.getElementById("tutorialOverlay"),
   tutorialProgress: document.getElementById("tutorialProgress"),
   tutorialTitle: document.getElementById("tutorialTitle"),
-  tutorialBody: document.getElementById("tutorialBody"),
+  tutorialExplain: document.getElementById("tutorialExplain"),
+  tutorialProblem: document.getElementById("tutorialProblem"),
+  tutorialAnswerInput: document.getElementById("tutorialAnswerInput"),
+  tutorialAnswerUnit: document.getElementById("tutorialAnswerUnit"),
+  tutorialCheckBtn: document.getElementById("tutorialCheckBtn"),
+  tutorialRevealBtn: document.getElementById("tutorialRevealBtn"),
+  tutorialFeedback: document.getElementById("tutorialFeedback"),
   tutorialPrevBtn: document.getElementById("tutorialPrevBtn"),
   tutorialNextBtn: document.getElementById("tutorialNextBtn"),
   tutorialSkipBtn: document.getElementById("tutorialSkipBtn"),
   gammaRpgSprite: document.getElementById("gammaRpgSprite"),
   gammaRpgTierName: document.getElementById("gammaRpgTierName"),
-  gammaRpgTierLevel: document.getElementById("gammaRpgTierLevel"),
   gammaRpgTierHint: document.getElementById("gammaRpgTierHint")
 };
+
+const USERS_STORAGE_KEY = "masui_users";
+
+function loadUsers() {
+  try {
+    return JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveUser(name) {
+  const users = loadUsers();
+  if (!users.includes(name)) {
+    users.push(name);
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+  }
+}
+
+function renderSavedUsers() {
+  const users = loadUsers();
+  if (users.length === 0) {
+    els.savedUserArea.classList.add("hidden");
+    return;
+  }
+  els.savedUserArea.classList.remove("hidden");
+  els.savedUserList.innerHTML = "";
+  users.forEach((name) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "saved-user-btn";
+    btn.textContent = name;
+    btn.addEventListener("click", () => {
+      els.playerName.value = name;
+      enterTopPage();
+    });
+    els.savedUserList.appendChild(btn);
+  });
+}
 
 function attemptsStorageKey(playerId) {
   return `masui_attempts_${playerId}`;
@@ -1934,12 +2001,11 @@ function getGammaRpgMaxTierForPlayer(playerId) {
 }
 
 function renderGammaRpgOnContentPage() {
-  if (!els.gammaRpgTierName || !els.gammaRpgTierLevel) return;
+  if (!els.gammaRpgTierName) return;
   const pid = state.playerName || els.playerName?.value || "";
 
   if (!pid) {
     els.gammaRpgTierName.textContent = RPG_TIERS[0];
-    els.gammaRpgTierLevel.textContent = "1";
     if (els.gammaRpgTierHint) {
       els.gammaRpgTierHint.textContent = "入室すると、あなたの到達位が表示されます。";
     }
@@ -1950,7 +2016,6 @@ function renderGammaRpgOnContentPage() {
   const maxIdx = getGammaRpgMaxTierForPlayer(pid);
   const name = RPG_TIERS[maxIdx] || RPG_TIERS[0];
   els.gammaRpgTierName.textContent = name;
-  els.gammaRpgTierLevel.textContent = String(maxIdx + 1);
   const attempts = loadAttemptsForPlayer(pid);
   const hasRpg = attempts.some((a) => typeof a.rpgTierIdx === "number");
   if (els.gammaRpgTierHint) {
@@ -2382,12 +2447,80 @@ function showCheckListView() {
   state.check.view = "list";
   if (els.checkListArea) els.checkListArea.classList.remove("hidden");
   if (els.checkQuizArea) els.checkQuizArea.classList.add("hidden");
+  if (els.checkSlideArea) els.checkSlideArea.classList.add("hidden");
 }
 
 function showCheckQuizView() {
   state.check.view = "quiz";
   if (els.checkListArea) els.checkListArea.classList.add("hidden");
+  if (els.checkSlideArea) els.checkSlideArea.classList.add("hidden");
   if (els.checkQuizArea) els.checkQuizArea.classList.remove("hidden");
+}
+
+function showCheckSlide(html) {
+  if (els.checkSlideContent) els.checkSlideContent.innerHTML = html;
+  if (els.checkListArea) els.checkListArea.classList.add("hidden");
+  if (els.checkQuizArea) els.checkQuizArea.classList.add("hidden");
+  if (els.checkSlideArea) els.checkSlideArea.classList.remove("hidden");
+}
+
+function buildSOAPMDSlideHTML() {
+  const rows = [
+    ["S","#0284c7","Suction","吸引器の接続・作動確認"],
+    ["O","#16a34a","Oxygen / BVM","酸素供給とバッグマスク換気の確認"],
+    ["A","#dc2626","Airway","喉頭鏡・ETチューブ・スタイレット等の確認"],
+    ["P","#9333ea","Pharmacy","導入薬・筋弛緩薬・昇圧薬の準備"],
+    ["M","#d97706","Monitor","生体情報モニタの接続・波形確認"],
+    ["D","#64748b","Difficult airway","困難気道対応器具（ビデオ喉頭鏡等）の準備"],
+  ].map(([k,c,n,d]) =>
+    `<tr><td class="csk" style="background:${c}">${k}</td><td><strong>${n}</strong> — ${d}</td></tr>`
+  ).join("");
+  return `<div class="check-slide">
+    <h3 class="check-slide-title">SOAP-MD チェックリスト</h3>
+    <p class="check-slide-desc">全身麻酔導入前に、必要な準備が揃っているかを確認するニーモニックです。</p>
+    <table class="check-slide-table">${rows}</table>
+    <p class="check-slide-hint">次の画面で、手術室イラストを見て不足している項目を全て選んでください。</p>
+  </div>`;
+}
+
+function buildFrameworkSlideHTML(fw) {
+  const data = {
+    LEMON: {
+      title: "LEMON — 困難挿管予測",
+      color: "#ca8a04",
+      desc: "直視型喉頭鏡挿管が困難になる因子を評価するニーモニックです。",
+      rows: [
+        ["L","外見 (Look)","外傷・腫瘍・顔面変形など外見上の困難因子"],
+        ["E","評価 (Evaluate)","3-3-2 rule（開口 ≥3横指・舌顎 ≥3横指・甲状軟骨 ≥2横指）"],
+        ["M","Mallampati","開口時の口腔内視野（ClassⅢ/Ⅳで困難）"],
+        ["O","閉塞 (Obstruction)","腫瘍・扁桃肥大・喉頭蓋炎などによる気道閉塞"],
+        ["N","頸部可動性 (Neck)","後屈制限があると直視が困難"],
+      ],
+      hint: "次の画面で、病歴と画像を見て困難挿管因子に該当する項目を選んでください。",
+    },
+    MOAN: {
+      title: "MOAN — 困難マスク換気予測",
+      color: "#1d4ed8",
+      desc: "バッグマスク換気が困難になる因子を評価するニーモニックです。",
+      rows: [
+        ["M","マスクシール (Mask)","ひげ・顔面骨折・変形によるマスク密着不良"],
+        ["O","肥満・OSA","BMI ≥ 26 または閉塞性睡眠時無呼吸"],
+        ["A","高齢 (Age)","55歳以上（軟部組織弾力低下）"],
+        ["N","無歯顎 (No teeth)","義歯を外した状態でのマスクシール不良"],
+      ],
+      hint: "次の画面で、病歴と画像を見て困難マスク換気因子に該当する項目を選んでください。",
+    },
+  };
+  const s = data[fw] || data.LEMON;
+  const rows = s.rows.map(([k,n,d]) =>
+    `<tr><td class="csk" style="background:${s.color}">${k}</td><td><strong>${n}</strong> — ${d}</td></tr>`
+  ).join("");
+  return `<div class="check-slide">
+    <h3 class="check-slide-title" style="color:${s.color}">${s.title}</h3>
+    <p class="check-slide-desc">${s.desc}</p>
+    <table class="check-slide-table">${rows}</table>
+    <p class="check-slide-hint">${s.hint}</p>
+  </div>`;
 }
 
 function renderCheckList() {
@@ -2557,6 +2690,10 @@ function startORSim() {
 }
 
 function renderORScenario() {
+  if (!state.check.slideShown) {
+    showCheckSlide(buildSOAPMDSlideHTML());
+    return;
+  }
   const sc = OR_SCENARIOS[state.check.orOrder[state.check.orIdx]];
   if (els.checkTitle) els.checkTitle.textContent = "OR室SOAP-MDチェック";
   if (els.checkMeta) els.checkMeta.textContent = `シナリオ ${state.check.orIdx + 1} / ${state.check.orOrder.length}`;
@@ -2592,6 +2729,7 @@ function submitORScenario() {
 function nextORScenario() {
   state.check.orIdx++;
   if (state.check.orIdx >= state.check.orOrder.length) { renderCheckList(); showCheckListView(); return; }
+  state.check.slideShown = false;
   renderORScenario();
 }
 
@@ -2604,6 +2742,11 @@ function startCaseQuiz() {
 }
 
 function renderCaseQuestion() {
+  if (!state.check.slideShown) {
+    const c = CASE_QUIZ_BANK[state.check.caseOrder[state.check.caseIdx]];
+    showCheckSlide(buildFrameworkSlideHTML(c.framework));
+    return;
+  }
   const c = CASE_QUIZ_BANK[state.check.caseOrder[state.check.caseIdx]];
   const fwColor = { LEMON:"#ca8a04", MOAN:"#1d4ed8" }[c.framework] || "#374151";
   if (els.checkTitle) els.checkTitle.textContent = "症例問題集";
@@ -2642,6 +2785,7 @@ function submitCaseQuestion() {
 function nextCaseQuestion() {
   state.check.caseIdx++;
   if (state.check.caseIdx >= state.check.caseOrder.length) { renderCheckList(); showCheckListView(); return; }
+  state.check.slideShown = false;
   renderCaseQuestion();
 }
 
@@ -2929,16 +3073,7 @@ function computeAnswersBlockStats(answers) {
 
 function getNextEvolutionTargets() {
   if (state.rpgTierIdx >= RPG_TIERS.length - 1) return null;
-  const nextIdx = state.rpgTierIdx; // 次の tier = current + 1
-  const delta = RPG_NEXT_DELTAS[nextIdx] || RPG_NEXT_DELTAS[RPG_NEXT_DELTAS.length - 1];
-  const baseAcc = typeof state.baselineAcc === "number" ? state.baselineAcc : 0.6;
-  const baseTime = typeof state.baselineAvgTimeSec === "number" ? state.baselineAvgTimeSec : 35;
-  const targetAcc = clamp01(baseAcc + delta.accAdd);
-  const targetTimeSec = Math.max(
-    MIN_QUESTION_SECONDS,
-    Math.min(LEVEL_1_SECONDS, Math.round(baseTime - delta.timeSubSec))
-  );
-  return { targetAcc, targetTimeSec };
+  return RPG_TIER_THRESHOLDS[state.rpgTierIdx] || null;
 }
 
 function updateRpgUi() {
@@ -2948,17 +3083,17 @@ function updateRpgUi() {
   if (!els.nextEvolutionGoals) return;
 
   if (state.rpgTierIdx >= RPG_TIERS.length - 1) {
-    els.nextEvolutionGoals.textContent = "勇者に到達しました。これ以上の進化はありません。";
+    els.nextEvolutionGoals.textContent = "最高位「勇者」に到達しました！";
     return;
   }
 
-  const targets = getNextEvolutionTargets();
-  if (!targets) {
-    els.nextEvolutionGoals.textContent = "次の進化目標：—";
+  const t = getNextEvolutionTargets();
+  if (!t) {
+    els.nextEvolutionGoals.textContent = "";
     return;
   }
-  const accPct = Math.round(targets.targetAcc * 100);
-  els.nextEvolutionGoals.textContent = `次の進化に必要：正答率 ${accPct}% 以上、平均解答 ${targets.targetTimeSec}秒 以内（直近${BLOCK_SIZE}問）`;
+  const next = RPG_TIERS[state.rpgTierIdx + 1];
+  els.nextEvolutionGoals.textContent = `→「${next}」へ：正答率${Math.round(t.minAcc * 100)}%以上 ＆ 平均${t.maxAvgSec}秒以内（直近${BLOCK_SIZE}問）`;
 }
 
 function renderGameEndRpgSummary() {
@@ -2966,7 +3101,7 @@ function renderGameEndRpgSummary() {
   const idx = Math.min(RPG_TIERS.length - 1, Math.max(0, state.rpgTierIdx));
   els.gameEndRpgSprite.innerHTML = GAMMA_RPG_SPRITES_SVG[idx] || GAMMA_RPG_SPRITES_SVG[0];
   if (els.gameEndRpgTierLine) {
-    els.gameEndRpgTierLine.textContent = `${RPG_TIERS[idx]} · Lv${idx + 1}（このセッション終了時）`;
+    els.gameEndRpgTierLine.textContent = `${RPG_TIERS[idx]}（このセッション終了時）`;
   }
   const answers = state.answers || [];
   if (els.gameEndSessionStats) {
@@ -2979,46 +3114,30 @@ function renderGameEndRpgSummary() {
   }
   if (els.gameEndNextEvolution) {
     if (idx >= RPG_TIERS.length - 1) {
-      els.gameEndNextEvolution.textContent = "次の進化：なし（勇者に到達済み）";
+      els.gameEndNextEvolution.textContent = "最高位「勇者」到達済み！";
     } else {
       const t = getNextEvolutionTargets();
       if (t) {
-        const accPct = Math.round(t.targetAcc * 100);
-        els.gameEndNextEvolution.textContent = `次の進化の目安（直近${BLOCK_SIZE}問）：正答率 ${accPct}% 以上、平均解答 ${t.targetTimeSec} 秒以内`;
+        const next = RPG_TIERS[idx + 1];
+        els.gameEndNextEvolution.textContent = `次の目標：「${next}」→ 正答率${Math.round(t.minAcc * 100)}%以上 ＆ 平均${t.maxAvgSec}秒以内（直近${BLOCK_SIZE}問）`;
       } else {
-        els.gameEndNextEvolution.textContent = "次の進化目標：—";
+        els.gameEndNextEvolution.textContent = "";
       }
     }
   }
 }
 
-// 直近ブロック（BLOCK_SIZE問）の正答率・平均解答秒・現在の難易度（=残り秒の短さ）からtierを1段階進める
+// 直近 BLOCK_SIZE 問の正答率・平均解答秒が固定閾値を満たしたら tier を1段階進める
 function maybeAdvanceRpgTier() {
   if (state.rpgTierIdx >= RPG_TIERS.length - 1) return;
   const recent = state.answers.slice(-BLOCK_SIZE);
   if (recent.length < BLOCK_SIZE) return;
 
-  const recentStats = computeAnswersBlockStats(recent);
+  const { acc, avgTimeSec } = computeAnswersBlockStats(recent);
+  const t = RPG_TIER_THRESHOLDS[state.rpgTierIdx];
+  if (!t) return;
 
-  // baselineは最初のブロック（block0）時点の能力推定として固定
-  if (state.baselineAcc == null || state.baselineAvgTimeSec == null) {
-    state.baselineAcc = recentStats.acc;
-    state.baselineAvgTimeSec = recentStats.avgTimeSec;
-  }
-
-  const targets = getNextEvolutionTargets();
-  if (!targets) return;
-
-  const accScore = Math.min(1, recentStats.acc / Math.max(0.001, targets.targetAcc));
-  const speedScore = Math.min(1, targets.targetTimeSec / Math.max(0.001, recentStats.avgTimeSec));
-  const difficultyScore = clamp01(
-    (LEVEL_1_SECONDS - state.currentQuestionLimit) / Math.max(1, LEVEL_1_SECONDS - MIN_QUESTION_SECONDS)
-  );
-
-  const progress =
-    RPG_PROGRESS_W_ACC * accScore + RPG_PROGRESS_W_SPEED * speedScore + RPG_PROGRESS_W_DIFFICULTY * difficultyScore;
-
-  if (progress >= RPG_PROMOTE_THRESHOLD) {
+  if (acc >= t.minAcc && avgTimeSec <= t.maxAvgSec) {
     state.rpgTierIdx = Math.min(RPG_TIERS.length - 1, state.rpgTierIdx + 1);
   }
 }
@@ -3033,44 +3152,107 @@ function showRecoveryOverlay() {
   if (els.recoveryOverlay) els.recoveryOverlay.classList.remove("hidden");
 }
 
+function hasDoneTutorial(playerName) {
+  return !!localStorage.getItem("masui_tutorial_done_" + playerName);
+}
+
+function markTutorialDone(playerName) {
+  if (playerName) localStorage.setItem("masui_tutorial_done_" + playerName, "1");
+}
+
 function hideTutorialOverlay() {
   state.tutorialOpen = false;
   if (els.tutorialOverlay) els.tutorialOverlay.classList.add("hidden");
 }
 
 function renderTutorialSlide() {
-  if (!els.tutorialBody || !els.tutorialTitle || !els.tutorialProgress) return;
+  if (!els.tutorialTitle || !els.tutorialProgress) return;
   const n = TUTORIAL_SLIDES.length;
   const idx = Math.max(0, Math.min(state.tutorialSlideIndex, n - 1));
   state.tutorialSlideIndex = idx;
   const slide = TUTORIAL_SLIDES[idx];
+  const isLastSlide = idx >= n - 1;
+  const canSkip = state.tutorialOnlyPreview || hasDoneTutorial(state.playerName);
+
   els.tutorialTitle.textContent = slide.title;
   els.tutorialProgress.textContent = `${idx + 1} / ${n}`;
-  els.tutorialBody.replaceChildren();
-  slide.paragraphs.forEach((para) => {
-    if (para.text) {
-      const p = document.createElement("p");
-      p.textContent = para.text;
-      els.tutorialBody.appendChild(p);
-    }
-    if (para.em) {
-      const em = document.createElement("span");
-      em.className = "tutorial-em";
-      em.textContent = para.em;
-      els.tutorialBody.appendChild(em);
-    }
-  });
+
+  // 説明部
+  if (els.tutorialExplain) {
+    els.tutorialExplain.replaceChildren();
+    slide.explains.forEach((item) => {
+      if (typeof item === "string") {
+        const p = document.createElement("p");
+        p.textContent = item;
+        els.tutorialExplain.appendChild(p);
+      } else if (item.em) {
+        const em = document.createElement("span");
+        em.className = "tut-em";
+        em.textContent = item.em;
+        els.tutorialExplain.appendChild(em);
+      }
+    });
+  }
+
+  // 問題部
+  if (els.tutorialProblem) els.tutorialProblem.textContent = slide.problem;
+  if (els.tutorialAnswerUnit) els.tutorialAnswerUnit.textContent = slide.unit;
+  if (els.tutorialAnswerInput) {
+    els.tutorialAnswerInput.value = "";
+    setTimeout(() => els.tutorialAnswerInput.focus(), 80);
+  }
+  if (els.tutorialFeedback) {
+    els.tutorialFeedback.textContent = "";
+    els.tutorialFeedback.className = "tutorial-feedback hidden";
+  }
+
+  // ボタン状態
   if (els.tutorialPrevBtn) els.tutorialPrevBtn.disabled = idx === 0;
   if (els.tutorialNextBtn) {
-    if (idx >= n - 1) {
-      els.tutorialNextBtn.textContent = state.tutorialOnlyPreview ? "閉じる" : "ゲームを始める";
-    } else {
-      els.tutorialNextBtn.textContent = "次へ";
-    }
+    els.tutorialNextBtn.disabled = true; // 答え合わせ or 答えを見るまでロック
+    els.tutorialNextBtn.textContent = isLastSlide
+      ? (state.tutorialOnlyPreview ? "閉じる" : "ゲームを始める")
+      : "次へ";
   }
   if (els.tutorialSkipBtn) {
+    els.tutorialSkipBtn.style.display = canSkip ? "" : "none";
     els.tutorialSkipBtn.textContent = state.tutorialOnlyPreview ? "閉じる" : "スキップ";
   }
+}
+
+function unlockTutorialNext() {
+  if (els.tutorialNextBtn) els.tutorialNextBtn.disabled = false;
+}
+
+function checkTutorialAnswer() {
+  if (!els.tutorialAnswerInput || !els.tutorialFeedback) return;
+  const slide = TUTORIAL_SLIDES[state.tutorialSlideIndex];
+  const raw = els.tutorialAnswerInput.value.trim();
+  const val = parseFloat(raw);
+  if (!raw || Number.isNaN(val)) {
+    els.tutorialAnswerInput.focus();
+    return;
+  }
+  const correct = Math.abs(val - slide.answer) < 0.15;
+  if (correct) {
+    els.tutorialFeedback.textContent = slide.reveal;
+    els.tutorialFeedback.className = "tutorial-feedback is-correct";
+    unlockTutorialNext();
+  } else {
+    els.tutorialFeedback.textContent = `△ もう一度考えてみて。ヒント: ${slide.unit}で答えます。`;
+    els.tutorialFeedback.className = "tutorial-feedback is-wrong";
+  }
+  els.tutorialFeedback.classList.remove("hidden");
+}
+
+function revealTutorialAnswer() {
+  if (!els.tutorialFeedback) return;
+  const slide = TUTORIAL_SLIDES[state.tutorialSlideIndex];
+  if (els.tutorialAnswerInput) els.tutorialAnswerInput.value = String(slide.answer);
+  els.tutorialFeedback.textContent = slide.reveal;
+  els.tutorialFeedback.className = "tutorial-feedback is-reveal";
+  els.tutorialFeedback.classList.remove("hidden");
+  unlockTutorialNext();
 }
 
 function showTutorialBeforeGame() {
@@ -3084,6 +3266,7 @@ function showTutorialBeforeGame() {
 
 function tutorialGoNext() {
   if (!state.tutorialOpen) return;
+  if (els.tutorialNextBtn && els.tutorialNextBtn.disabled) return;
   if (state.tutorialSlideIndex >= TUTORIAL_SLIDES.length - 1) {
     finishTutorialAndBeginGame();
     return;
@@ -3110,6 +3293,7 @@ function beginSessionTimersAndIntro() {
 }
 
 function finishTutorialAndBeginGame() {
+  markTutorialDone(state.playerName);
   hideTutorialOverlay();
   if (state.tutorialOnlyPreview) {
     state.tutorialOnlyPreview = false;
@@ -3209,7 +3393,6 @@ function openTutorialPreviewOnly() {
   els.gameIntro.classList.add("hidden");
   els.gameMain.classList.add("game-main--intro-only");
   els.gameEndFooter.classList.add("hidden");
-  calcReset();
   openGameFullscreen();
   els.questionTimer.textContent = "チュートリアル";
   showTutorialBeforeGame();
@@ -3230,7 +3413,8 @@ function closeGameFullscreen() {
 }
 
 function startMode(mode, totalQuestions, opts = {}) {
-  const showTutorial = mode === "study" && opts.showTutorial === true;
+  const firstTimer = !hasDoneTutorial(state.playerName);
+  const showTutorial = firstTimer || (mode === "study" && opts.showTutorial === true);
   const advancedVariant = mode === "advanced" && opts.advancedVariant === "practical" ? "practical" : "standard";
   clearInterval(state.sessionTimerId);
   clearInterval(state.questionTimerId);
@@ -3251,8 +3435,6 @@ function startMode(mode, totalQuestions, opts = {}) {
   state.blockWeightKg = null;
   state.level = 1;
   state.rpgTierIdx = 0;
-  state.baselineAcc = null;
-  state.baselineAvgTimeSec = null;
   state.currentQuestionLimit = LEVEL_1_SECONDS;
   state.currentQuestion = null;
   state.score = 0;
@@ -3278,7 +3460,6 @@ function startMode(mode, totalQuestions, opts = {}) {
   els.gameIntro.classList.add("hidden");
   els.gameMain.classList.add("game-main--intro-only");
 
-  calcReset();
   openGameFullscreen();
   updateRemainQuestionsUi();
   updateRpgUi();
@@ -3298,7 +3479,7 @@ function tickSession() {
 }
 
 function updateLevelLine() {
-  els.gameLevel.textContent = String(state.rpgTierIdx + 1);
+  if (els.gameLevel) els.gameLevel.textContent = String(state.rpgTierIdx + 1);
   els.gameLimitPerQuestion.textContent = String(state.currentQuestionLimit);
 }
 
@@ -3440,8 +3621,7 @@ function renderQuestion() {
   if (els.questionText) els.questionText.textContent = q.text;
   if (els.instructorMessage) els.instructorMessage.textContent = q.instructorLine || `${q.orderGamma}γで投与して！`;
   els.answerInput.value = "";
-  calcReset();
-  els.answerInput.blur();
+  els.answerInput.focus();
 
   state.questionStartedAt = Date.now();
   state.questionRemainSec = state.currentQuestionLimit;
@@ -3506,7 +3686,7 @@ function evaluateAnswer({ forcedTimeout }) {
     }
     const raw = els.answerInput.value;
     if (!raw) {
-      alert("電卓で数値を入れて「答えに反映」してください。");
+      els.answerInput.focus();
       return;
     }
     const inputRate = parseAnswerMlInput(raw);
@@ -3944,71 +4124,6 @@ function buildRoundFeedbackSubline(
   return lines.join("\n");
 }
 
-function calcRender() {
-  els.calcDisplay.textContent = calc.expr || "0";
-}
-
-function calcReset() {
-  calc.expr = "0";
-  calcRender();
-}
-
-function safeEvalArithmetic(str) {
-  const compact = str.replace(/\s/g, "");
-  if (!/^[\d.+\-*/]+$/.test(compact)) return NaN;
-  try {
-    return Function(`"use strict"; return (${compact})`)();
-  } catch {
-    return NaN;
-  }
-}
-
-function calcPress(key) {
-  if (key === "C") {
-    calc.expr = "0";
-    calcRender();
-    return;
-  }
-  if (key === "⌫") {
-    if (calc.expr.length <= 1) calc.expr = "0";
-    else calc.expr = calc.expr.slice(0, -1);
-    calcRender();
-    return;
-  }
-  if (key === "=") {
-    const v = safeEvalArithmetic(calc.expr);
-    if (!Number.isFinite(v)) {
-      calc.expr = "Error";
-    } else {
-      const rounded = Math.round(v * 1e6) / 1e6;
-      calc.expr = String(rounded);
-    }
-    calcRender();
-    return;
-  }
-
-  if (calc.expr === "Error") calc.expr = "0";
-  if (calc.expr === "0" && /[0-9]/.test(key)) {
-    calc.expr = key;
-    calcRender();
-    return;
-  }
-  if (key === "." && calc.expr.includes(".") && !/[+\-*/]/.test(calc.expr.slice(-1))) {
-    const parts = calc.expr.split(/[+\-*/]/);
-    const last = parts[parts.length - 1];
-    if (last.includes(".")) return;
-  }
-  calc.expr += key;
-  calcRender();
-}
-
-function calcToAnswer() {
-  if (calc.expr === "Error") return;
-  const v = Number(calc.expr);
-  if (!Number.isFinite(v)) return;
-  els.answerInput.value = String(round1(v));
-}
-
 function startQuestionFromIntro() {
   if (state.status !== "running" || state.recoveryOpen || state.tutorialOpen) return;
   els.gameIntro.classList.add("hidden");
@@ -4016,14 +4131,16 @@ function startQuestionFromIntro() {
   els.questionArea.classList.remove("hidden");
   els.submitAnswerBtn.disabled = false;
   renderQuestion();
+  setTimeout(() => els.answerInput.focus(), 50);
 }
 
 function enterTopPage() {
-  const name = els.playerName.value;
+  const name = els.playerName.value.trim();
   if (!name) {
-    alert("受講者を選択してください。");
+    els.playerName.focus();
     return;
   }
+  saveUser(name);
   state.playerName = name;
   els.welcomeName.textContent = state.playerName;
   els.topPage.classList.add("hidden");
@@ -4033,16 +4150,15 @@ function enterTopPage() {
   renderGammaRpgOnContentPage();
 }
 
-els.calcGrid.addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-calc]");
-  if (!btn) return;
-  calcPress(btn.dataset.calc);
-});
-
-els.calcToAnswerBtn.addEventListener("click", calcToAnswer);
 els.goBtn.addEventListener("click", startQuestionFromIntro);
 
 els.enterBtn.addEventListener("click", enterTopPage);
+els.playerName.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") { e.preventDefault(); enterTopPage(); }
+});
+
+renderSavedUsers();
+
 els.startStudyBtn.addEventListener("click", () => openSessionLengthPicker("study"));
 els.startChallengeBtn.addEventListener("click", () => openSessionLengthPicker("challenge"));
 if (els.startAdvancedBtn) {
@@ -4074,6 +4190,16 @@ if (els.checkNextBtn) {
     const mod = CHECKLIST_MODULES[state.check.moduleIdx];
     if (mod?.type === "or-sim") nextORScenario();
     else if (mod?.type === "case-quiz") nextCaseQuestion();
+  });
+}
+if (els.checkSlideBtn) {
+  els.checkSlideBtn.addEventListener("click", () => {
+    state.check.slideShown = true;
+    if (els.checkSlideArea) els.checkSlideArea.classList.add("hidden");
+    if (els.checkQuizArea) els.checkQuizArea.classList.remove("hidden");
+    const mod = CHECKLIST_MODULES[state.check.moduleIdx];
+    if (mod?.type === "or-sim") renderORScenario();
+    else if (mod?.type === "case-quiz") renderCaseQuestion();
   });
 }
 if (els.startMishapTrainerBtn) {
@@ -4264,6 +4390,13 @@ els.gameFullscreen.addEventListener("keydown", (e) => {
 if (els.tutorialPrevBtn) els.tutorialPrevBtn.addEventListener("click", tutorialGoPrev);
 if (els.tutorialNextBtn) els.tutorialNextBtn.addEventListener("click", tutorialGoNext);
 if (els.tutorialSkipBtn) els.tutorialSkipBtn.addEventListener("click", finishTutorialAndBeginGame);
+if (els.tutorialCheckBtn) els.tutorialCheckBtn.addEventListener("click", checkTutorialAnswer);
+if (els.tutorialRevealBtn) els.tutorialRevealBtn.addEventListener("click", revealTutorialAnswer);
+if (els.tutorialAnswerInput) {
+  els.tutorialAnswerInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); checkTutorialAnswer(); }
+  });
+}
 
 els.recoveryEasierBtn.addEventListener("click", () => {
   if (state.status !== "running") return;

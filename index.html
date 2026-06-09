@@ -16,18 +16,15 @@
       <section class="panel full">
         <h2>1. 入室</h2>
         <label>
-          受講者（名前を選択）
-          <select id="playerName">
-            <option value="">選択してください</option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-            <option value="D">D</option>
-            <option value="E">E</option>
-          </select>
+          名前を入力（初回は自動登録されます）
+          <input id="playerNameInput" type="text" inputmode="text" autocomplete="off" placeholder="例: 田中 花子" />
         </label>
         <div class="actions top-actions">
           <button id="enterBtn">入室する</button>
+        </div>
+        <div id="savedUserArea" class="saved-user-area hidden">
+          <p class="saved-user-label">登録済みの受講者</p>
+          <div id="savedUserList" class="saved-user-list"></div>
         </div>
       </section>
     </main>
@@ -48,7 +45,6 @@
             <div class="dq-rpg-box__text">
               <p class="dq-rpg-tier-line">
                 <span id="gammaRpgTierName">村人</span>
-                <span class="dq-rpg-lv">Lv<span id="gammaRpgTierLevel">1</span></span>
               </p>
               <p id="gammaRpgTierHint" class="dq-rpg-hint">入室すると、あなたの到達位が表示されます。</p>
             </div>
@@ -176,7 +172,7 @@
               <div class="rpg-next-goals" id="nextEvolutionGoals">次の進化目標：—</div>
             </div>
             <div class="meta level-line">
-              残り <span id="remainQuestionCount">—</span> 問 · Lv <span id="gameLevel">1</span> · <span id="gameLimitPerQuestion">45</span> 秒/問
+              残り <span id="remainQuestionCount">—</span> 問 · <span id="gameLimitPerQuestion">45</span> 秒/問
             </div>
             <div class="actions game-abort-row">
               <button id="abortSessionBtn" type="button" class="secondary">セッション中止</button>
@@ -186,18 +182,24 @@
 
         <div id="gameMain" class="game-main">
           <section id="gameIntro" class="game-intro game-intro-hero hidden">
-            <p class="intro-label">体重</p>
-            <p class="intro-huge intro-weight-line"><span id="introWeight">—</span> <span class="intro-unit">kg</span></p>
-            <p class="intro-label">薬剤（組成）</p>
-            <p class="intro-huge intro-drug-line" id="introDrug">—</p>
+            <p class="heaven-badge">☁️ 天の声 ☁️</p>
+            <p class="heaven-decree">神託が下された</p>
+            <div class="heaven-params">
+              <div class="heaven-param-row">
+                <span class="heaven-param-label">患者の体重</span>
+                <span class="heaven-param-value"><span id="introWeight">—</span><span class="heaven-param-unit">kg</span></span>
+              </div>
+              <div class="heaven-param-row">
+                <span class="heaven-param-label">指示薬剤</span>
+                <span class="heaven-param-value heaven-drug" id="introDrug">—</span>
+              </div>
+            </div>
             <p class="intro-rounding-badge" role="note">
               小数第1位までOK
-              <span class="intro-rounding-sub">（繰り上げ・切り捨てどっちでもOK！）</span>
+              <span class="intro-rounding-sub">（切り上げ・切り捨てどちらでもOK）</span>
             </p>
-            <p class="intro-hint">
-              残り <span id="introRemainQuestions">—</span> 問 · GO（または Enter）でスタート
-            </p>
-            <button id="goBtn" type="button" class="go-btn">GO</button>
+            <p class="heaven-hint">残り <span id="introRemainQuestions">—</span> 問 · GOまたはEnterで開始</p>
+            <button id="goBtn" type="button" class="go-btn heaven-go-btn">GO — 神託を受け取れ</button>
           </section>
 
           <section class="game-question card-block">
@@ -244,7 +246,6 @@
                       class="answer-input--pop"
                       type="text"
                       inputmode="decimal"
-                      readonly
                       autocomplete="off"
                       autocorrect="off"
                       spellcheck="false"
@@ -260,33 +261,6 @@
             </div>
           </section>
 
-          <aside class="game-calculator card-block">
-            <h3>電卓</h3>
-            <div id="calcDisplay" class="calc-display">0</div>
-            <div class="calc-grid" id="calcGrid">
-              <button type="button" class="calc-btn" data-calc="C">C</button>
-              <button type="button" class="calc-btn" data-calc="⌫">⌫</button>
-              <button type="button" class="calc-btn" data-calc="/">÷</button>
-              <button type="button" class="calc-btn" data-calc="*">×</button>
-              <button type="button" class="calc-btn" data-calc="7">7</button>
-              <button type="button" class="calc-btn" data-calc="8">8</button>
-              <button type="button" class="calc-btn" data-calc="9">9</button>
-              <button type="button" class="calc-btn" data-calc="-">−</button>
-              <button type="button" class="calc-btn" data-calc="4">4</button>
-              <button type="button" class="calc-btn" data-calc="5">5</button>
-              <button type="button" class="calc-btn" data-calc="6">6</button>
-              <button type="button" class="calc-btn" data-calc="+">+</button>
-              <button type="button" class="calc-btn" data-calc="1">1</button>
-              <button type="button" class="calc-btn" data-calc="2">2</button>
-              <button type="button" class="calc-btn" data-calc="3">3</button>
-              <button type="button" class="calc-btn calc-tall" data-calc="=">=</button>
-              <button type="button" class="calc-btn calc-wide" data-calc="0">0</button>
-              <button type="button" class="calc-btn" data-calc=".">.</button>
-            </div>
-            <div class="actions calc-actions">
-              <button id="calcToAnswerBtn" type="button" class="secondary">答えに反映</button>
-            </div>
-          </aside>
         </div>
 
         <footer class="game-footer hidden" id="gameEndFooter">
@@ -329,13 +303,24 @@
 
         <div id="tutorialOverlay" class="tutorial-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
           <div class="tutorial-card">
-            <p class="tutorial-progress" id="tutorialProgress" aria-live="polite">1 / 4</p>
+            <p class="tutorial-progress" id="tutorialProgress" aria-live="polite">1 / 5</p>
             <h2 id="tutorialTitle" class="tutorial-title">γ計算チュートリアル</h2>
-            <div id="tutorialBody" class="tutorial-body"></div>
+            <div id="tutorialExplain" class="tutorial-explain"></div>
+            <div id="tutorialProblemArea" class="tutorial-problem-area">
+              <p class="tutorial-problem-label">✏️ 練習問題</p>
+              <p id="tutorialProblem" class="tutorial-problem"></p>
+              <div class="tutorial-answer-row">
+                <input id="tutorialAnswerInput" type="text" inputmode="decimal" placeholder="？" autocomplete="off" spellcheck="false" />
+                <span id="tutorialAnswerUnit" class="tutorial-answer-unit"></span>
+                <button id="tutorialCheckBtn" type="button" class="tutorial-check-btn">答え合わせ</button>
+              </div>
+              <button id="tutorialRevealBtn" type="button" class="secondary tutorial-reveal-btn">答えを見る</button>
+              <div id="tutorialFeedback" class="tutorial-feedback hidden" aria-live="polite"></div>
+            </div>
             <div class="actions tutorial-actions">
               <button id="tutorialSkipBtn" type="button" class="secondary">スキップ</button>
               <button id="tutorialPrevBtn" type="button" class="secondary">戻る</button>
-              <button id="tutorialNextBtn" type="button">次へ</button>
+              <button id="tutorialNextBtn" type="button" disabled>次へ</button>
             </div>
           </div>
         </div>
@@ -402,6 +387,12 @@
         <div id="checkListArea" class="mishap-list-area airway-scenario hidden">
           <p class="hint">各ニーモニックを使って、チェック漏れなく準備・評価できるか確認します。全項目正解で<strong>修了</strong>が付きます。</p>
           <div id="checkListRoot" class="mishap-list-root" role="list"></div>
+        </div>
+        <div id="checkSlideArea" class="airway-scenario hidden">
+          <div id="checkSlideContent"></div>
+          <div class="actions mishap-quiz-actions">
+            <button id="checkSlideBtn" type="button">問題へ進む →</button>
+          </div>
         </div>
         <section id="checkQuizArea" class="airway-scenario hidden">
           <p id="checkContext" class="airway-patient"></p>

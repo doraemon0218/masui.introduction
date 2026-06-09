@@ -57,6 +57,43 @@ select {
   margin-top: 0.8rem;
 }
 
+.saved-user-area {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #d0d7de;
+}
+
+.saved-user-label {
+  margin: 0 0 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #57606a;
+  letter-spacing: 0.04em;
+}
+
+.saved-user-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.saved-user-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #1f6feb;
+  background: #f0f6ff;
+  color: #0550ae;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.12s, box-shadow 0.12s;
+}
+
+.saved-user-btn:hover {
+  background: #dbeafe;
+  box-shadow: 0 1px 4px rgba(31, 111, 235, 0.2);
+}
+
 /* γゲーム：モードボタンとチュートリアル（チュートリアルを目立たせる配置・配色） */
 .gamma-start-actions {
   display: flex;
@@ -280,6 +317,14 @@ select {
 .or-sim-image svg {
   max-height: 320px;
 }
+
+.check-slide { padding: 4px 0 8px; }
+.check-slide-title { font-size: 1.1rem; font-weight: bold; margin: 0 0 6px; }
+.check-slide-desc { font-size: 0.87rem; color: #555; margin: 0 0 10px; }
+.check-slide-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+.check-slide-table td { padding: 6px 10px; font-size: 0.87rem; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+.check-slide-table .csk { width: 32px; text-align: center; font-weight: bold; font-size: 1.05rem; border-radius: 4px; color: #fff; }
+.check-slide-hint { font-size: 0.82rem; color: #666; font-style: italic; margin: 0; }
 
 .mishap-list-area {
   margin-top: 0.25rem;
@@ -572,44 +617,243 @@ body.airway-active {
 }
 
 .tutorial-title {
-  margin: 0 0 1rem;
-  font-size: clamp(1.35rem, 5vw, 2.1rem);
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.2rem, 4.5vw, 1.75rem);
   font-weight: 900;
   line-height: 1.25;
   color: #1f2328;
   letter-spacing: 0.02em;
 }
 
-.tutorial-body {
-  margin: 0 0 1.5rem;
-  font-size: clamp(1.05rem, 3.2vw, 1.45rem);
-  font-weight: 700;
-  line-height: 1.65;
-  color: #24292f;
-  text-align: left;
+/* 説明部 */
+.tutorial-explain {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.9rem;
+  background: #f0f6ff;
+  border-left: 4px solid #0969da;
+  border-radius: 6px;
+  font-size: clamp(0.95rem, 3vw, 1.15rem);
+  font-weight: 600;
+  line-height: 1.7;
+  color: #1f2328;
 }
 
-.tutorial-body p {
-  margin: 0 0 0.85em;
-}
+.tutorial-explain p { margin: 0 0 0.5em; }
+.tutorial-explain p:last-child { margin-bottom: 0; }
 
-.tutorial-body p:last-child {
-  margin-bottom: 0;
-}
-
-.tutorial-body .tutorial-em {
+.tutorial-explain .tut-em {
   display: block;
-  margin-top: 0.5rem;
-  font-size: clamp(1.2rem, 3.8vw, 1.75rem);
+  margin-top: 0.4rem;
+  font-size: 1.1em;
   font-weight: 900;
-  color: #0969da;
-  line-height: 1.35;
+  color: #0550ae;
+}
+
+/* 練習問題部 */
+.tutorial-problem-area {
+  margin: 0 0 1rem;
+  padding: 0.85rem 0.9rem 0.9rem;
+  border: 2px solid #7c3aed;
+  border-radius: 10px;
+  background: linear-gradient(160deg, #fdf4ff 0%, #eef2ff 100%);
+}
+
+.tutorial-problem-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #6d28d9;
+  text-transform: uppercase;
+}
+
+.tutorial-problem {
+  margin: 0 0 0.9rem;
+  font-size: clamp(1rem, 3.5vw, 1.25rem);
+  font-weight: 800;
+  line-height: 1.5;
+  color: #1f2328;
+  white-space: pre-line;
+}
+
+.tutorial-answer-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.55rem;
+}
+
+#tutorialAnswerInput {
+  width: 5.5rem;
+  padding: 0.5rem 0.4rem;
+  font-size: 1.35rem;
+  font-weight: 900;
+  text-align: center;
+  border: 2px solid #a78bfa;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f2328;
+}
+
+#tutorialAnswerInput:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.18);
+}
+
+.tutorial-answer-unit {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #5b21b6;
+}
+
+.tutorial-check-btn {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  border-radius: 999px;
+  border-width: 2px;
+}
+
+.tutorial-reveal-btn {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.7rem;
+}
+
+.tutorial-feedback {
+  margin-top: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  font-size: clamp(0.95rem, 3vw, 1.1rem);
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.tutorial-feedback.is-correct {
+  background: #eef9f0;
+  border: 1px solid #4ac26b;
+  color: #1a7f37;
+}
+
+.tutorial-feedback.is-wrong {
+  background: #fff1f0;
+  border: 1px solid #f97583;
+  color: #b91c1c;
+}
+
+.tutorial-feedback.is-reveal {
+  background: #fff8c5;
+  border: 1px solid #d4a72c;
+  color: #1f2328;
 }
 
 .tutorial-actions {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+/* ─── 天の声イントロ ─── */
+.game-intro-hero {
+  background: linear-gradient(165deg, #0d1838 0%, #1a2b5c 55%, #0f2347 100%);
+  border: 3px solid #c9a227;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(201,162,39,0.25);
+  padding: 1.5rem 1.25rem 1.75rem;
+  text-align: center;
+  color: #f0e6c8;
+}
+
+.heaven-badge {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #c9a227;
+  text-shadow: 0 0 12px rgba(201,162,39,0.6);
+}
+
+.heaven-decree {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.4rem, 5vw, 2.2rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(201,162,39,0.5);
+}
+
+.heaven-params {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0 0 1.25rem;
+}
+
+.heaven-param-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.heaven-param-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #b8c4e8;
+  text-transform: uppercase;
+}
+
+.heaven-param-value {
+  font-size: clamp(1.75rem, 7vw, 2.75rem);
+  font-weight: 900;
+  color: #ffe082;
+  line-height: 1.15;
+  text-shadow: 0 2px 8px rgba(255,224,130,0.4);
+}
+
+.heaven-param-unit {
+  font-size: 0.55em;
+  font-weight: 700;
+  color: #b8c4e8;
+  margin-left: 0.2em;
+}
+
+.heaven-drug {
+  font-size: clamp(1.2rem, 4.5vw, 1.9rem) !important;
+  color: #90caf9 !important;
+  text-shadow: 0 2px 8px rgba(144,202,249,0.4) !important;
+}
+
+.heaven-hint {
+  margin: 0 0 1rem;
+  font-size: 0.88rem;
+  color: #b8c4e8;
+}
+
+.heaven-go-btn {
+  background: linear-gradient(180deg, #f5e6a8 0%, #d4a82a 45%, #b8891a 100%) !important;
+  color: #1f1404 !important;
+  border: 2px solid #8b6914 !important;
+  font-size: clamp(1rem, 3.5vw, 1.3rem) !important;
+  padding: 0.9rem 2rem !important;
+  border-radius: 999px !important;
+  font-weight: 900 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 3px 0 #6b5210, 0 6px 18px rgba(139,105,20,0.4) !important;
+  letter-spacing: 0.04em;
+}
+
+.heaven-go-btn:hover {
+  filter: brightness(1.06);
+}
+
+/* intro-rounding-badge は天の声テーマ内で上書き */
+.game-intro-hero .intro-rounding-badge {
+  color: #1f1404;
+  margin: 0 0 0.9rem;
 }
 
 .round-result-big {
@@ -707,9 +951,11 @@ body.airway-active {
 
 .game-main {
   display: grid;
-  grid-template-columns: 1fr minmax(240px, 320px);
+  grid-template-columns: 1fr;
   gap: 1rem;
   align-items: start;
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 .game-intro-hero {
@@ -963,23 +1209,31 @@ body.airway-active {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.35rem 0.55rem;
+  padding: 0.4rem 0.7rem;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.95);
-  border: 3px dashed #f59e0b;
+  border: 3px solid #f59e0b;
+  box-shadow: 0 2px 0 #b45309;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.answer-pop-inputwrap:focus-within {
+  border-color: #7c3aed;
+  box-shadow: 0 2px 0 #5b21b6, 0 0 0 3px rgba(124, 58, 237, 0.18);
 }
 
 .answer-input--pop {
-  width: 5.5rem;
-  max-width: 40vw;
-  padding: 0.35rem 0.25rem;
-  font-size: clamp(1.35rem, 5vw, 1.85rem);
+  width: 7rem;
+  max-width: 50vw;
+  padding: 0.4rem 0.35rem;
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
   font-weight: 900;
   text-align: center;
   border: none;
   border-radius: 8px;
   background: transparent;
   color: #0d1b2a;
+  caret-color: #7c3aed;
 }
 
 .answer-input--pop:focus {
@@ -998,9 +1252,9 @@ body.airway-active {
 }
 
 .submit-answer--pop {
-  min-width: min(100%, 220px);
-  padding: 0.75rem 1.5rem;
-  font-size: 1.15rem;
+  min-width: min(100%, 280px);
+  padding: 0.9rem 1.5rem;
+  font-size: 1.25rem;
   font-weight: 900;
   border-radius: 999px;
   border-width: 3px;
@@ -1062,55 +1316,6 @@ body.airway-active {
   padding: 1rem;
 }
 
-.game-calculator h3 {
-  margin-top: 0;
-  font-size: 1rem;
-}
-
-.calc-display {
-  background: #1f2328;
-  color: #e6edf3;
-  font-family: ui-monospace, monospace;
-  font-size: 1.25rem;
-  padding: 0.6rem 0.75rem;
-  border-radius: 6px;
-  text-align: right;
-  margin-bottom: 0.75rem;
-  min-height: 2.5rem;
-  word-break: break-all;
-}
-
-.calc-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.35rem;
-}
-
-.calc-btn {
-  padding: 0.55rem;
-  border-radius: 6px;
-  border: 1px solid #d0d7de;
-  background: #fff;
-  color: #1f2328;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.calc-btn:hover {
-  background: #f6f8fa;
-}
-
-.calc-tall {
-  grid-row: span 2;
-}
-
-.calc-wide {
-  grid-column: span 2;
-}
-
-.calc-actions {
-  margin-top: 0.75rem;
-}
 
 button.secondary {
   background: #fff;
@@ -1129,11 +1334,6 @@ button.secondary:hover {
   text-align: center;
 }
 
-@media (max-width: 900px) {
-  .game-main {
-    grid-template-columns: 1fr;
-  }
-}
 
 /* スマホ運用向け: 開始時に画面調整なしで使えるよう最適化 */
 @media (max-width: 640px) {
@@ -1191,16 +1391,6 @@ button.secondary:hover {
     flex-basis: 64px;
     width: 64px;
     height: 64px;
-  }
-
-  .calc-display {
-    font-size: 1.2rem;
-    min-height: 2.75rem;
-  }
-
-  .calc-btn {
-    min-height: 46px;
-    font-size: 1.05rem;
   }
 
   .airway-fullscreen {
