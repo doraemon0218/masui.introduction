@@ -4440,3 +4440,411 @@ els.gameCloseBtn.addEventListener("click", () => {
 renderLeaderboard();
 renderDashboard();
 renderGammaRpgOnContentPage();
+
+// ============================================================
+// 口頭試問練習モード
+// ============================================================
+
+const KOUTO_STORAGE_KEY = "masui_kouto_progress_v1";
+
+const KOUTO_QUESTIONS = [
+  // ── 術前評価・麻酔計画 ──────────────────────────────────────
+  {
+    id: "k001", category: "術前評価・麻酔計画",
+    q: "ASA分類（米国麻酔科学会身体状態分類）について説明してください。",
+    a: "ASA1：健常人\nASA2：軽度全身疾患（コントロール良好な高血圧・糖尿病等）\nASA3：重度全身疾患（機能制限あるが生命の危険なし）\nASA4：生命を脅かす重度全身疾患\nASA5：手術なしでは24時間以内死亡が予測される\nASA6：脳死状態（臓器摘出）\n「E」を付けると緊急手術を意味する（例：ASA3E）。",
+    keywords: ["ASA1〜6", "E=緊急", "術前リスク層別化"]
+  },
+  {
+    id: "k002", category: "術前評価・麻酔計画",
+    q: "成人の術前絶食・絶飲（NPO）の標準ガイドライン（ASA 2017）を述べてください。",
+    a: "固形食・脂肪分の多い食事：8時間以上\n軽食（トースト等）：6時間以上\n母乳：4時間以上\n清澄水・果汁（果肉なし）：2時間以上\n処方薬は少量の水で内服可（担当医の指示に従う）\n\n※ 誤嚥リスクの高い患者（肥満・糖尿病・GERD等）では延長を検討。",
+    keywords: ["固形8h", "軽食6h", "清澄水2h", "誤嚥予防"]
+  },
+  {
+    id: "k003", category: "術前評価・麻酔計画",
+    q: "抗血小板薬（アスピリン・クロピドグレル）の術前休薬について説明してください。",
+    a: "アスピリン：\n・止血リスクの高い手術：7〜10日前に休薬\n・冠動脈ステント留置後や心血管ハイリスク例では継続を検討\n\nクロピドグレル（プラビックス）：\n・5〜7日前に休薬\n・DES（薬剤溶出ステント）留置後12ヶ月以内の休薬は原則不可（ステント血栓症リスク）\n\n方針は循環器科・心臓血管外科と協議して決定する。",
+    keywords: ["アスピリン7〜10日", "クロピドグレル5〜7日", "ステント血栓症", "多科協議"]
+  },
+  {
+    id: "k004", category: "術前評価・麻酔計画",
+    q: "高度肥満患者（BMI≥40）に対する麻酔計画上の注意点を述べてください。",
+    a: "気道：挿管困難・マスク換気困難のリスク（OBESE評価）。ビデオ喉頭鏡の準備、覚醒挿管の選択肢を検討。\n\n呼吸：FRC低下→酸素化時間短縮。ヘッドアップ（ランプ）体位でプレオキシゲネーション。\n\n循環：OSA合併、肺高血圧、右心負荷に注意。\n\n薬物：脂溶性薬（プロポフォール等）はLBW基準で増量検討。筋弛緩は除脂肪体重（LBW）を基準。\n\n体位：横隔膜圧迫に注意。砕石位でのコンパートメント症候群。",
+    keywords: ["挿管困難", "ランプ体位", "FRC低下", "LBW", "OSA"]
+  },
+  {
+    id: "k005", category: "術前評価・麻酔計画",
+    q: "術前に確認すべき服薬のうち、麻酔管理に影響する主な薬剤を挙げてください。",
+    a: "継続が推奨されるもの：\n・降圧薬（βブロッカー・Ca拮抗薬）—術当日まで継続（ACE阻害薬/ARBは当日休薬も施設により異なる）\n・抗てんかん薬、甲状腺薬、コルチコステロイド\n\n術前休薬が必要なもの：\n・抗凝固薬（ワルファリン→PT-INR確認、DOACは24〜48h前）\n・抗血小板薬（前述）\n・MAO阻害薬（カテコラミン危機）\n・経口糖尿病薬（当日休薬、SGLT2阻害薬はDKAリスク）\n\nインスリン：基礎インスリンは半量継続が一般的。",
+    keywords: ["βブロッカー継続", "抗凝固休薬", "SGLT2禁忌", "MAO阻害薬危機"]
+  },
+
+  // ── 気道管理 ──────────────────────────────────────────────
+  {
+    id: "k010", category: "気道管理",
+    q: "挿管困難の予測評価法LEMONについて説明してください。",
+    a: "L — Look externally（外観）：顔面外傷、大きな口ひげ、肥満、小顎など\nE — Evaluate 3-3-2 rule：口を3指開く・オトガイ〜舌骨3指・舌骨〜甲状軟骨切痕2指\nM — Mallampati分類：1〜4（開口・舌根露出度）\nO — Obstruction（気道閉塞）：会厭炎、腫瘍、血腫など\nN — Neck mobility（頸部可動域）：頸椎固定・強直性脊椎炎など\n\n各項目1点、合計≥3で困難気道の可能性大。",
+    keywords: ["LEMON", "Mallampati", "3-3-2ルール", "困難気道予測"]
+  },
+  {
+    id: "k011", category: "気道管理",
+    q: "迅速導入（RSI: Rapid Sequence Induction）の適応と手順を説明してください。",
+    a: "適応：誤嚥リスクの高い患者（絶飲食不十分、腸閉塞、GERD、妊婦、肥満、意識障害）\n\n手順：\n1. プレオキシゲネーション（高流量酸素3分またはVCx8回）\n2. ヘッドアップ体位\n3. 助手が輪状甲状軟骨圧迫（Sellick法）—賛否あり\n4. 催眠薬投与（プロポフォール or ケタミン or エトミデート）\n5. 同時にスキサメトニウム（1.5mg/kg）or ロクロニウム（1.2mg/kg）高用量\n6. 換気せずに気管挿管→カフ膨らませる\n7. カプノグラフィーで確認",
+    keywords: ["RSI", "誤嚥予防", "スキサメトニウム", "ロクロニウム1.2mg/kg", "輪状甲状骨圧迫"]
+  },
+  {
+    id: "k012", category: "気道管理",
+    q: "日本麻酔科学会の困難気道管理ガイドライン（DAA）の概要を説明してください。",
+    a: "困難気道の定義：挿管困難 or マスク換気困難の状況。\n\n主要フロー（予期しない困難気道）：\n1. 換気できる→挿管を3回以内で再試行→失敗なら声門上器具（SGA）に切り替え\n2. 換気できない・挿管できない（CVCI）→SGAを試みる\n3. SGAも失敗→輪状甲状靭帯切開（緊急外科的気道確保）\n\nCAN'T INTUBATE CAN'T OXYGENATE（CICO）は直ちに外科的気道確保。\n\n重要：早期に助けを呼ぶ、挿管試行は3回以内。",
+    keywords: ["DAA", "CVCI", "CICO", "声門上器具", "輪状甲状靭帯切開", "3回以内"]
+  },
+  {
+    id: "k013", category: "気道管理",
+    q: "声門上器具（SGA：LMAなど）の適応と禁忌を述べてください。",
+    a: "適応：\n・選択的手術（絶飲食が守られている）\n・短時間の表在手術\n・困難気道でのレスキュー（ILMA: Fastrach）\n\n禁忌・相対禁忌：\n・誤嚥リスク（GERD、腸閉塞、妊婦、肥満等）\n・高気道内圧が必要な手術（腹腔鏡・腹臥位手術）\n・口腔・咽頭・頭頸部手術\n・長時間手術\n・気道分泌物多量\n\n第2世代SGA（ProSeal LMA等）は誤嚥リスク軽減のため胃管ポートあり。",
+    keywords: ["LMA", "ILMA", "第2世代SGA", "誤嚥禁忌", "困難気道レスキュー"]
+  },
+
+  // ── 吸入麻酔薬 ──────────────────────────────────────────────
+  {
+    id: "k020", category: "吸入麻酔薬",
+    q: "MACとは何か。MACに影響する因子を説明してください。",
+    a: "MAC（Minimum Alveolar Concentration）：\n50%の患者で体動（皮切刺激）を抑制できる最小肺胞内濃度。\n\nMAC低下（麻酔効果増強）する因子：\n・高齢、低体温（体温1°Cで約5%低下）、低血圧・低酸素・貧血\n・妊娠、甲状腺機能低下症\n・プレメディケーション（オピオイド、ベンゾジアゼピン）\n・亜酸化窒素の併用\n\nMAC上昇（麻酔薬必要量増加）する因子：\n・小児（2歳が最高）、高体温、慢性アルコール多飲\n・甲状腺機能亢進症",
+    keywords: ["MAC", "高齢→低下", "高体温→上昇", "2歳が最高", "亜酸化窒素加算"]
+  },
+  {
+    id: "k021", category: "吸入麻酔薬",
+    q: "悪性高体温（MH）の診断基準と初期治療を説明してください。",
+    a: "誘因：揮発性吸入麻酔薬（主にハロタン・セボフルラン等）またはスキサメトニウム投与後\n\n症状・所見：\n・体温急上昇（>38.5°C、毎分0.5°C以上）\n・PetCO₂急上昇（最も早期の徴候）\n・筋強直・横紋筋融解（CPK著高、ミオグロビン尿）\n・代謝性アシドーシス・高カリウム血症\n・Grading Scale≥25点で強く疑う\n\n初期治療：\n1. 誘因薬剤の即座中止\n2. ダントロレン静注：2.5mg/kgをボーラス（最大10mg/kg）\n3. 冷却（体表冷却、冷生食輸液）\n4. 高流量酸素、過換気（CO₂排出）\n5. HCO₃- でアシドーシス補正、Ca投与で高K血症管理",
+    keywords: ["MH", "PetCO2上昇が最初", "ダントロレン2.5mg/kg", "スキサメトニウム", "Grading Scale"]
+  },
+  {
+    id: "k022", category: "吸入麻酔薬",
+    q: "亜酸化窒素（笑気：N₂O）の麻酔薬としての特徴と禁忌を述べてください。",
+    a: "特徴：\n・MAC105（単独では麻酔維持不能、0.5〜0.7MACの補助として使用）\n・強力な鎮痛効果・催眠効果あり\n・血液/ガス分配係数が低い（0.47）→導入・覚醒が速い\n・第二ガス効果・拡散低酸素（覚醒時）\n・ビタミンB12依存性メチオニン合成酵素を不活性化（長時間使用で骨髄抑制）\n・閉鎖腔内のガスを膨張させる\n\n禁忌：\n・気胸、中耳手術（閉鎖腔膨張）\n・腸閉塞、空気塞栓疑い\n・ビタミンB12欠乏症\n・眼内ガス（SF₆）注入直後（失明リスク）",
+    keywords: ["MAC105", "血液/ガス分配係数0.47", "閉鎖腔膨張禁忌", "B12不活性化", "眼内ガス禁忌"]
+  },
+
+  // ── 静脈麻酔薬 ──────────────────────────────────────────────
+  {
+    id: "k030", category: "静脈麻酔薬",
+    q: "プロポフォール注入症候群（PRIS）について説明してください。",
+    a: "長時間・高用量のプロポフォール持続投与（特に>4mg/kg/h を>48h）で発症する重篤な合併症。\n\n症状：\n・代謝性アシドーシス（AG増加型）\n・横紋筋融解症（CPK著高）\n・高カリウム血症、高トリグリセリド血症\n・心筋障害（新規の心ブロック、ST変化）\n・腎障害、肝腫大\n・死亡率50〜80%\n\nリスク因子：小児、高用量、長時間、低炭水化物食（糖質補給不足）\n\n治療：直ちにプロポフォール中止、透析、心補助装置（ECMO）",
+    keywords: ["PRIS", ">4mg/kg/h", ">48h", "代謝性アシドーシス", "横紋筋融解", "小児高リスク"]
+  },
+  {
+    id: "k031", category: "静脈麻酔薬",
+    q: "ケタミンの特徴・適応・禁忌を述べてください。",
+    a: "特徴：\n・NMDA受容体拮抗薬による解離性麻酔\n・強力な鎮痛・催眠・健忘効果\n・交感神経刺激→心拍数・血圧・心拍出量増加（循環支持作用）\n・気管支拡張作用（喘息・気道過敏に有用）\n・咽頭反射を比較的保持（完全ではない）\n・唾液・気道分泌増加（アトロピン前投与を検討）\n・覚醒時幻覚（emergence delirium）—ベンゾジアゼピン併用で軽減\n\n適応：\n・循環不安定な緊急麻酔（外傷、出血性ショック）\n・小児の短時間手技\n・喘息発作中の麻酔導入\n\n禁忌：\n・頭蓋内圧亢進（議論あり、最近否定的エビデンスも）\n・コントロール不良の高血圧、虚血性心疾患",
+    keywords: ["NMDA拮抗", "解離性麻酔", "循環支持", "気管支拡張", "Emergence delirium"]
+  },
+  {
+    id: "k032", category: "静脈麻酔薬",
+    q: "エトミデートの特徴・利点・欠点を述べてください。",
+    a: "特徴：\n・イミダゾール系鎮静薬、GABA受容体作動\n・催眠作用のみ（鎮痛・筋弛緩なし）\n・循環抑制が非常に少ない（心不全・循環不安定患者に有用）\n・脳代謝・ICP低下\n\n利点：\n・カテコラミン依存の患者や心臓手術に適する\n・血圧変動が小さい\n\n欠点・問題点：\n・副腎皮質抑制（単回投与でも24〜48h抑制）—敗血症患者では注意\n・ミオクローヌス（筋不随意運動）が多い\n・オピオイドを事前投与するとミオクローヌス軽減\n\n日本では現在流通していない施設もある。",
+    keywords: ["副腎皮質抑制", "循環安定", "ミオクローヌス", "心不全・ショック導入"]
+  },
+
+  // ── 筋弛緩薬 ──────────────────────────────────────────────
+  {
+    id: "k040", category: "筋弛緩薬",
+    q: "脱分極性筋弛緩薬（スキサメトニウム）と非脱分極性筋弛緩薬の違いを説明してください。",
+    a: "スキサメトニウム（脱分極性）：\n・NMJ でAChと同様にNm受容体を持続的に刺激→I相ブロック（脱分極ブロック）\n・発現5秒〜1分、持続5〜10分（偽性コリンエステラーゼで分解）\n・筋束収縮（fasciculation）あり→術後筋肉痛\n・抗コリンエステラーゼで拮抗不可（むしろ延長）\n・禁忌：熱傷・挫滅・脊髄損傷（高K血症）、MH素因、偽性コリンエステラーゼ欠乏\n\n非脱分極性（ロクロニウム等）：\n・NmR の競合阻害→過分極は起こさない→筋束収縮なし\n・スガマデクス・抗コリンエステラーゼで拮抗可能",
+    keywords: ["脱分極ブロック", "筋束収縮", "偽性コリンエステラーゼ", "拮抗不可", "高K血症禁忌"]
+  },
+  {
+    id: "k041", category: "筋弛緩薬",
+    q: "スガマデクス（ブリディオン）の作用機序・適応・注意点を述べてください。",
+    a: "作用機序：シクロデキストリン誘導体がロクロニウム/ベクロニウムを包接（カプセル化）→血漿中濃度低下→NMJから解放→拮抗\n\n用量：\n・TOF比 0.5未満（深度遮断）：ロクロニウム1.2mg/kgのRSI後即時拮抗：16mg/kg\n・TOF比 1-2カウント（深遮断）：4mg/kg\n・TOF比 T2以降（中等度）：2mg/kg\n\n特徴：\n・ネオスチグミンと異なりムスカリン性副作用なし（アトロピン不要）\n・4mg/kgなら深遮断でも完全拮抗\n\n注意：\n・再クラーレ化（特に大量使用後）\n・ホルモン系薬剤（避妊薬）の血中濃度低下→バックアップ避妊を7日間\n・腎不全では排泄遅延",
+    keywords: ["包接", "16mg/kg（RSI即時）", "4mg/kg（深遮断）", "2mg/kg（中等度）", "再クラーレ化", "避妊薬相互作用"]
+  },
+  {
+    id: "k042", category: "筋弛緩薬",
+    q: "TOF（Train Of Four）モニタリングについて説明してください。",
+    a: "神経筋遮断のモニタリング法。尺骨神経に2Hz（0.5秒間隔）で4発の超最大刺激を与え、拇指内転筋の収縮を計測。\n\nTOF比（T4/T1）：\n・0.9以上：十分な回復（抜管可能の目安）\n・0.7〜0.9：軽度残存（嚥下機能低下）\n・0.5未満：中等度〜深度遮断\n\nカウント（TOF-count）：\n・4/4：中等度遮断\n・1〜3/4：深度遮断\n・0/4：PTC（後放電テタヌス刺激後単収縮数）で評価\n\n抜管の目安：TOF比≥0.9を定量的モニター（加速度筋弛緩モニター等）で確認。主観的判断は過信しない。",
+    keywords: ["TOF比0.9以上で抜管", "尺骨神経", "拇指内転筋", "PTC", "定量的モニター"]
+  },
+
+  // ── 局所麻酔・区域麻酔 ──────────────────────────────────────
+  {
+    id: "k050", category: "局所麻酔・区域麻酔",
+    q: "局所麻酔薬全身毒性（LAST）の症状と治療を説明してください。",
+    a: "症状（CNS症状が心臓症状に先行することが多い）：\n\nCNS：口周囲のしびれ・金属味→興奮性（けいれん）→抑制（意識消失・呼吸停止）\n心臓：不整脈（VT/VF）→心停止（ブピバカインで起こりやすい）\n\n治療（ASRA 2023ガイドライン）：\n1. 薬剤投与中止、助けを呼ぶ\n2. 気道確保・100%酸素、ベンゾジアゼピン（けいれん）\n3. 脂肪乳剤（Intralipid 20%）：ボーラス1.5ml/kg静注→持続0.25ml/kg/min\n4. 心停止→CPR（アドレナリンは低用量1μg/kg 以下が推奨）\n5. 難治性はECMO\n\n注意：プロポフォールは脂肪乳剤の代替にならない（循環抑制リスク）",
+    keywords: ["LAST", "Intralipid20%", "ボーラス1.5ml/kg", "ベンゾジアゼピン", "アドレナリン低用量", "ECMO"]
+  },
+  {
+    id: "k051", category: "局所麻酔・区域麻酔",
+    q: "脊髄くも膜下麻酔（脊椎麻酔）の絶対禁忌を述べてください。",
+    a: "絶対禁忌：\n・患者の拒否\n・穿刺部位の感染（局所感染）\n・菌血症・敗血症（相対禁忌とする施設もある）\n・抗凝固薬使用（ASRA基準：ワルファリン→INR≤1.4、LMWH→12〜24h前中止など）\n・頭蓋内圧亢進（脳ヘルニアリスク）\n・脊髄への圧迫（脊髄圧迫症）\n\n相対禁忌：\n・脊柱変形・脊椎手術既往\n・低血圧・循環不安定\n・神経疾患（既存病変との鑑別困難）\n・出血性素因",
+    keywords: ["穿刺部感染", "抗凝固薬", "ASRA基準", "ICP亢進", "患者拒否"]
+  },
+  {
+    id: "k052", category: "局所麻酔・区域麻酔",
+    q: "硬膜外麻酔の合併症と対処法を述べてください。",
+    a: "合併症：\n\n1. 硬膜穿破（accidental dural puncture）：1〜3%、頭痛（PDPH）→安静・水分、コーヒー、血液パッチ\n\n2. 局所麻酔薬の過量・血管内投与（前述LAST参照）\n\n3. 高位脊髄麻酔・全脊麻：薬液が過剰に広がり呼吸停止→陽圧換気・循環補助\n\n4. 硬膜外血腫：抗凝固薬使用中の穿刺→脊髄圧迫症状（背部痛・下肢麻痺）→緊急MRI・除圧術\n\n5. 硬膜外膿瘍：発熱・背部痛・神経症状→MRI・抗菌薬・排膿\n\n6. 低血圧：交感神経遮断→輸液・エフェドリン/フェニレフリン\n\n7. 尿閉：仙骨部麻酔→尿道カテーテル",
+    keywords: ["硬膜穿破→PDPH", "血液パッチ", "硬膜外血腫", "全脊麻→気道確保", "緊急MRI"]
+  },
+
+  // ── 循環管理・輸血 ──────────────────────────────────────────
+  {
+    id: "k060", category: "循環管理・輸血",
+    q: "術中・周術期の輸血トリガー（輸血開始のHb閾値）について説明してください。",
+    a: "制限的輸血戦略（リベラル輸血より予後良好、または同等）：\n\n一般周術期患者：\n・Hb<7g/dL で輸血を考慮（Hb>10g/dLの輸血は根拠薄弱）\n\n心臓手術・術前貧血例：\n・Hb<8g/dL を目安（心筋酸素需要が高い）\n\n補正すべき要因を考慮：\n・SvO₂低下、乳酸上昇、ST変化、心拍出量低下があれば閾値より高くても輸血を検討\n\n1単位の濃厚赤血球（RBC）でHbは約1g/dL上昇（体重60kgの成人の目安）。\n\n大量輸血時はFFP:PLT:RBC = 1:1:1 の平衡輸血（MTP）を考慮。",
+    keywords: ["Hb<7輸血考慮", "心臓手術Hb<8", "制限的輸血", "MTP", "1単位=+1g/dL"]
+  },
+  {
+    id: "k061", category: "循環管理・輸血",
+    q: "術中の急性低血圧への対応アルゴリズムを説明してください。",
+    a: "まず原因検索と並行して初期対応：\n\n初期対応：\n・体位変換（脚挙上）、麻酔薬減量、酸素確認\n\n原因分類とアプローチ：\n1. 前負荷低下（出血・血管拡張）→輸液ボーラス200〜500ml、昇圧薬\n2. 後負荷低下（麻酔薬・神経軸麻酔）→α刺激薬（フェニレフリン・ノルアドレナリン）\n3. 心ポンプ機能低下（虚血・心不全）→強心薬（ドブタミン）、冠灌流圧確保\n4. 徐脈性低血圧→アトロピン・エフェドリン\n5. アナフィラキシー→アドレナリン0.01mg/kg\n\n重篤例：TEE（経食道エコー）で原因精査。",
+    keywords: ["前負荷・後負荷・収縮力", "フェニレフリン", "ノルアドレナリン", "ドブタミン", "アドレナリン（アナフィラキシー）", "TEE"]
+  },
+
+  // ── 術後管理・疼痛管理 ──────────────────────────────────────
+  {
+    id: "k070", category: "術後管理・疼痛管理",
+    q: "術後悪心嘔吐（PONV）のApfel scoreとリスク因子・予防について述べてください。",
+    a: "Apfel score（成人）の4因子：\n1. 女性\n2. 非喫煙者\n3. PONV・乗り物酔いの既往\n4. 術後オピオイド使用予定\n各1点、合計0〜4点→リスク10%/20%/40%/80%\n\n高リスク（3〜4点）への予防：\n・2種類以上の予防薬を組み合わせ（5-HT₃拮抗薬 + デキサメタゾン等）\n・オピオイドを最小限にしたNSAIDs主体の鎮痛\n・プロポフォールTIVA（吸入麻酔回避）\n・輸液を適切に維持（相対的脱水がPONV増悪）\n\n治療薬：オンダンセトロン、ドロペリドール、デキサメタゾン、スコポラミン",
+    keywords: ["Apfel score", "5-HT3拮抗薬", "デキサメタゾン", "TIVA", "4因子"]
+  },
+  {
+    id: "k071", category: "術後管理・疼痛管理",
+    q: "術後鎮痛のマルチモーダルアプローチについて説明してください。",
+    a: "複数の鎮痛メカニズムを組み合わせることでオピオイド使用量を削減し、副作用を軽減する戦略。\n\n主要な鎮痛薬・手技：\n1. NSAIDs / COX-2阻害薬：炎症性メディエーター抑制（消化管・腎・凝固に注意）\n2. アセトアミノフェン：脊髄・中枢での鎮痛（NSAIDsと相補的）\n3. 局所麻酔薬：神経ブロック・硬膜外・傷口浸潤（ローカルアネステジア）\n4. オピオイド（最小化）：PCA・PRN投与\n5. ガバペンチン/プレガバリン：神経障害性痛・術後遷延痛予防\n6. ケタミン低用量：慢性疼痛症例での術中・術後投与\n7. α₂アゴニスト（デクスメデトミジン）：鎮静・鎮痛・抗不安\n\nOpioid-sparing analgesia が現代の標準。",
+    keywords: ["マルチモーダル", "NSAIDs+アセトアミノフェン", "神経ブロック", "オピオイド節減", "ガバペンチン"]
+  },
+
+  // ── 合併症・緊急対応 ──────────────────────────────────────────
+  {
+    id: "k080", category: "合併症・緊急対応",
+    q: "周術期アナフィラキシーの診断基準と初期対応を述べてください。",
+    a: "原因：筋弛緩薬（特にスキサメトニウム、ロクロニウム）が最多。次いでラテックス、抗菌薬、造影剤。\n\n診断基準（WAO 2020）：\n・急激発症の皮膚/粘膜症状 + 呼吸症状または循環症状\n・または血圧低下 + アレルゲン曝露歴\n\nGrade：1〜4（4=心停止）\n\n初期対応（Grade2以上）：\n1. トリガー中止\n2. アドレナリン 0.01mg/kg（最大0.5mg）筋注（外側大腿部）—大腿静脈でも可\n3. 大量輸液（生食500〜1000ml）\n4. 気道確保（浮腫が急速進行する可能性）\n5. 抗ヒスタミン薬・ステロイドは二次薬（アドレナリンが第一選択）\n\nトリプターゼ採血（1〜2h後）で確定補助。",
+    keywords: ["アドレナリン第一選択", "0.01mg/kg筋注", "筋弛緩薬が最多", "気道浮腫", "トリプターゼ"]
+  },
+  {
+    id: "k081", category: "合併症・緊急対応",
+    q: "術中大量気道出血（肺出血）への対応を述べてください。",
+    a: "原因：肺膿瘍・結核・気管支拡張症・肺動静脈奇形・大血管損傷等\n\n初期対応：\n1. 100%酸素・気道確保の確実化\n2. 出血側を下にした側臥位（健肺の汚染防止）\n3. 片肺挿管（ダブルルーメンチューブ or ブロンキャルブロッカー）で患側隔離\n4. 気管支鏡（ファイバー）での出血部位確認・止血（局所エピネフリン注入、凝固止血）\n5. 循環維持（輸液・輸血・昇圧薬）\n6. 気管支動脈塞栓術（BAE）or 緊急外科手術",
+    keywords: ["出血側を下に", "ダブルルーメンチューブ", "片肺換気", "気管支鏡", "BAE"]
+  },
+  {
+    id: "k082", category: "合併症・緊急対応",
+    q: "術中の気管支痙攣（ブロンコスパズム）の対応を述べてください。",
+    a: "徴候：呼気延長、笛様呼吸音、換気圧上昇（Ppeak上昇）、CO₂波形の「シャーク型」、SpO₂低下\n\n鑑別：挿管位置異常（片肺挿管）、緊張性気胸、チューブ閉塞→まず確認\n\n治療：\n1. 吸入麻酔薬増量（セボフルランは気管支拡張作用あり）\n2. β₂刺激薬吸入（サルブタモール MDI 4〜8吸入、回路内投与可）\n3. アドレナリン（重症例：1〜5μg/kg IV）\n4. アミノフィリン点滴（0.9mg/kg→0.5mg/kg/h）\n5. ヒドロコルチゾン（100〜200mg）—効果発現に時間\n6. 誘因（挿管刺激・気道内分泌物）の解消\n\n挿管前に気管支拡張薬吸入・リドカイン投与が予防的に有効。",
+    keywords: ["吸入麻酔薬増量", "β2吸入薬", "アドレナリン", "Ppeak上昇", "緊張性気胸と鑑別"]
+  },
+
+  // ── 小児麻酔 ──────────────────────────────────────────────
+  {
+    id: "k090", category: "小児麻酔",
+    q: "小児（乳幼児）の気道の解剖学的特徴と麻酔管理への影響を述べてください。",
+    a: "特徴：\n・後頭部が大きい→スニッフィングポジションに中立位近くでよい（肩枕不要なことも）\n・喉頭が高位（C3-4）かつ前方・舌が大きい→マスク換気・喉頭展開が難しい\n・会厭が長くて軟らかい→喉頭鏡はストレートブレード（Miller）が視野良好\n・声門下が最狭窄部（輪状軟骨）→カフなし気管チューブで軽い空気漏れを確認（<25cmH₂O）\n・気管が短い（新生児4cm）→片肺挿管・意図せぬ抜管に注意\n・FRC/酸素消費比が低い→急速に低酸素になりやすい\n\n管理：\n・プレオキシゲネーション重要\n・気管チューブサイズ：(年齢/4)+4（カフなし）または(年齢/4)+3.5（カフあり）",
+    keywords: ["後頭部大→枕不要", "最狭窄は輪状軟骨", "Miller喉頭鏡", "FRC低い", "チューブサイズ式"]
+  },
+  {
+    id: "k091", category: "小児麻酔",
+    q: "小児のセボフルラン麻酔後の興奮（Emergence Agitation/Delirium）について説明してください。",
+    a: "定義：麻酔覚醒後の興奮、混乱、落ち着きのなさ（意識混濁状態）。\n\n特徴：\n・2〜8歳に多い（主に2〜3歳）\n・セボフルラン≫プロポフォールTIVA\n・術前不安、痛み、尿閉が増悪因子\n・通常15〜30分で自然消退\n\n鑑別：疼痛（痛みによる泣き）との区別が重要。\n\n予防・治療：\n・フェンタニル（1〜2μg/kg）やデクスメデトミジン（0.5〜1μg/kg）予防的投与\n・プロポフォール少量（0.5〜1mg/kg）でのスムーズな覚醒誘導\n・術中にプロポフォール持続\n・術後早期に保護者と接触\n・安全確保：自己抜管・転落の防止",
+    keywords: ["2〜8歳", "セボフルラン", "デクスメデトミジン予防", "疼痛との鑑別", "15〜30分で消退"]
+  },
+
+  // ── 産科麻酔 ──────────────────────────────────────────────
+  {
+    id: "k100", category: "産科麻酔",
+    q: "帝王切開の脊椎麻酔後低血圧の機序と管理を述べてください。",
+    a: "機序：交感神経遮断による血管拡張＋静脈還流量低下（大きな子宮の下大静脈圧迫）\n\n発生率：脊椎麻酔後60〜80%（予防なしの場合）\n\n予防：\n・左子宮変位（15〜30°）またはウェッジ枕\n・予防的輸液（コロイド500〜1000ml またはCS前急速輸液）\n・予防的昇圧薬：フェニレフリン100〜200μg/min持続 or フェニレフリン100μg bolusが推奨\n  ※ エフェドリンはメタボリック（胎児アシドーシスリスク）のため現在は第2選択\n\n治療：\n・フェニレフリン 100μg ボーラス（徐脈がある場合はエフェドリン）\n・輸液\n・酸素投与",
+    keywords: ["左子宮変位", "フェニレフリン第一選択", "エフェドリンは胎児アシドーシスリスク", "予防的投与"]
+  },
+  {
+    id: "k101", category: "産科麻酔",
+    q: "産科出血（子宮弛緩出血）への麻酔科の関わりと初期対応を述べてください。",
+    a: "子宮弛緩（トニン）が最多原因（産後出血の80%）。\n\n麻酔科の役割：循環管理・輸血・凝固異常対応が主体。\n\n初期対応（MOET原則）：\n1. マッサージ・用手圧迫\n2. 子宮収縮薬：オキシトシン（緩徐IV）→エルゴメトリン→カルボプロスト（PGF2α）→ミソプロストール\n3. 輸液・輸血（RBC・FFP・血小板）→MTP起動（出血>1000ml、DIC兆候）\n4. TXA（トラネキサム酸）1g IV→1g反復（産後3h以内に投与で有効）\n5. 子宮内タンポナーデ（バルーン）・手術（B-Lynch縫合、子宮動脈塞栓術）\n6. DIC管理：フィブリノゲン補充（>2g/L目標）、FFP\n\n消費性凝固障害に早期から備える。",
+    keywords: ["子宮弛緩が最多", "オキシトシン", "TXA1g（3h以内）", "MTP", "DIC管理", "フィブリノゲン"]
+  },
+  {
+    id: "k102", category: "産科麻酔",
+    q: "仰臥位低血圧症候群（Supine Hypotensive Syndrome）について説明してください。",
+    a: "妊娠後期（20週以降）に仰臥位をとると、大きな子宮が下大静脈を圧迫し静脈還流量が低下。\n\n症状：悪心・嘔吐・めまい・顔面蒼白・低血圧（収縮期BP<100mmHg、または基準値から20%以上低下）\n\n胎児への影響：胎盤血流低下→胎児心拍数低下・アシドーシス\n\n管理：\n・左側臥位（15〜30°）または左子宮変位\n・急速輸液（予防的）\n・麻酔中：昇圧薬（フェニレフリン/エフェドリン）\n\n帝王切開時の脊椎麻酔はさらに低血圧が顕著になるため、上記の予防が不可欠。",
+    keywords: ["20週以降", "下大静脈圧迫", "左側臥位", "胎盤血流低下", "脊椎麻酔で顕著"]
+  }
+];
+
+// ── kouto state ──────────────────────────────────────────────
+let koutoState = {
+  queue: [],
+  currentIdx: 0,
+  results: [],
+  revealed: false,
+};
+
+function koutoLoadProgress() {
+  try { return JSON.parse(localStorage.getItem(KOUTO_STORAGE_KEY)) || {}; }
+  catch { return {}; }
+}
+
+function koutoSaveResult(id, evalResult) {
+  const p = koutoLoadProgress();
+  if (!p[id]) p[id] = { attempts: 0 };
+  p[id].attempts++;
+  p[id].lastEval = evalResult;
+  p[id].lastDate = new Date().toISOString().slice(0, 10);
+  localStorage.setItem(KOUTO_STORAGE_KEY, JSON.stringify(p));
+}
+
+function openKoutoFullscreen() {
+  document.getElementById("koutoFullscreen").classList.remove("hidden");
+  document.getElementById("contentPage").classList.add("hidden");
+  renderKoutoList();
+}
+
+function closeKoutoFullscreen() {
+  document.getElementById("koutoFullscreen").classList.add("hidden");
+  document.getElementById("contentPage").classList.remove("hidden");
+}
+
+function renderKoutoList() {
+  const progress = koutoLoadProgress();
+  const categories = [...new Set(KOUTO_QUESTIONS.map(q => q.category))];
+  const root = document.getElementById("koutoListRoot");
+  root.innerHTML = "";
+
+  categories.forEach(cat => {
+    const qs = KOUTO_QUESTIONS.filter(q => q.category === cat);
+    const okCount = qs.filter(q => progress[q.id]?.lastEval === "ok").length;
+    const div = document.createElement("div");
+    div.className = "mishap-list-item";
+    div.innerHTML = `
+      <div class="mishap-list-item__body">
+        <span class="mishap-list-item__title">${cat}</span>
+        <span class="mishap-list-item__meta">${qs.length}問 · 習得 ${okCount}/${qs.length}</span>
+      </div>
+      <button class="mishap-list-item__start-btn" type="button">練習</button>
+    `;
+    div.querySelector("button").addEventListener("click", () => startKoutoSession(cat));
+    root.appendChild(div);
+  });
+
+  document.getElementById("koutoListArea").classList.remove("hidden");
+  document.getElementById("koutoQuizArea").classList.add("hidden");
+  document.getElementById("koutoEndArea").classList.add("hidden");
+  document.getElementById("koutoMeta").textContent = "カテゴリを選んでください";
+  document.getElementById("koutoTitle").textContent = "口頭試問練習";
+}
+
+function startKoutoSession(category) {
+  let pool = category
+    ? KOUTO_QUESTIONS.filter(q => q.category === category)
+    : [...KOUTO_QUESTIONS];
+  pool = pool.slice().sort(() => Math.random() - 0.5);
+  koutoState.queue = pool;
+  koutoState.currentIdx = 0;
+  koutoState.results = [];
+  koutoState.revealed = false;
+
+  document.getElementById("koutoListArea").classList.add("hidden");
+  document.getElementById("koutoQuizArea").classList.remove("hidden");
+  document.getElementById("koutoEndArea").classList.add("hidden");
+  document.getElementById("koutoTitle").textContent = category || "全カテゴリ";
+  renderKoutoQuestion();
+}
+
+function renderKoutoQuestion() {
+  const q = koutoState.queue[koutoState.currentIdx];
+  if (!q) { renderKoutoEnd(); return; }
+  koutoState.revealed = false;
+
+  document.getElementById("koutoCategory").textContent = q.category;
+  document.getElementById("koutoQuizProgress").textContent =
+    `${koutoState.currentIdx + 1} / ${koutoState.queue.length}`;
+  document.getElementById("koutoQuestion").textContent = q.q;
+  document.getElementById("koutoAnswer").textContent = q.a;
+  document.getElementById("koutoKeywords").innerHTML = q.keywords?.length
+    ? `<strong>キーワード：</strong>${q.keywords.join(" ・ ")}`
+    : "";
+
+  document.getElementById("koutoAnswerArea").classList.add("hidden");
+  document.getElementById("koutoThinkArea").classList.remove("hidden");
+  document.getElementById("koutoSelfEvalArea").classList.add("hidden");
+  document.getElementById("koutoNextBtn").classList.add("hidden");
+  document.getElementById("koutoMeta").textContent =
+    `${koutoState.currentIdx + 1} / ${koutoState.queue.length}問`;
+}
+
+function revealKoutoAnswer() {
+  koutoState.revealed = true;
+  document.getElementById("koutoAnswerArea").classList.remove("hidden");
+  document.getElementById("koutoThinkArea").classList.add("hidden");
+  document.getElementById("koutoSelfEvalArea").classList.remove("hidden");
+}
+
+function submitKoutoEval(evalResult) {
+  const q = koutoState.queue[koutoState.currentIdx];
+  koutoState.results.push({ id: q.id, eval: evalResult });
+  koutoSaveResult(q.id, evalResult);
+  document.getElementById("koutoSelfEvalArea").classList.add("hidden");
+  const nextBtn = document.getElementById("koutoNextBtn");
+  nextBtn.classList.remove("hidden");
+  const isLast = koutoState.currentIdx >= koutoState.queue.length - 1;
+  nextBtn.textContent = isLast ? "結果を見る" : "次の問題";
+}
+
+function renderKoutoEnd() {
+  document.getElementById("koutoQuizArea").classList.add("hidden");
+  document.getElementById("koutoEndArea").classList.remove("hidden");
+
+  const total = koutoState.results.length;
+  const okCount = koutoState.results.filter(r => r.eval === "ok").length;
+  const partialCount = koutoState.results.filter(r => r.eval === "partial").length;
+  const ngCount = koutoState.results.filter(r => r.eval === "ng").length;
+
+  document.getElementById("koutoResultSummary").textContent =
+    `${total}問　○ ${okCount}問 · △ ${partialCount}問 · × ${ngCount}問`;
+
+  const detail = document.getElementById("koutoResultDetail");
+  const reviewItems = koutoState.results.filter(r => r.eval !== "ok");
+  if (reviewItems.length > 0) {
+    detail.innerHTML = "<p class='hint' style='margin:0 0 0.5rem'>要復習：</p>" +
+      reviewItems.map(r => {
+        const q = KOUTO_QUESTIONS.find(qq => qq.id === r.id);
+        const badge = r.eval === "partial" ? "△" : "×";
+        const cls = r.eval === "partial" ? "partial" : "ng";
+        return `<div class="kouto-ng-item"><span class="kouto-eval-badge ${cls}">${badge}</span>${q?.q || r.id}</div>`;
+      }).join("");
+  } else {
+    detail.innerHTML = "<p class='hint' style='color:#1a6b00;font-weight:700'>全問 ○ — 素晴らしい！</p>";
+  }
+
+  const retryPool = koutoState.results
+    .filter(r => r.eval !== "ok")
+    .map(r => KOUTO_QUESTIONS.find(q => q.id === r.id))
+    .filter(Boolean);
+  const retryBtn = document.getElementById("koutoRetryNgBtn");
+  retryBtn.style.display = retryPool.length > 0 ? "" : "none";
+  retryBtn.onclick = () => {
+    koutoState.queue = retryPool.slice().sort(() => Math.random() - 0.5);
+    koutoState.currentIdx = 0;
+    koutoState.results = [];
+    document.getElementById("koutoEndArea").classList.add("hidden");
+    document.getElementById("koutoQuizArea").classList.remove("hidden");
+    renderKoutoQuestion();
+  };
+}
+
+// ── event listeners ──────────────────────────────────────────
+document.getElementById("startKoutoBtn").addEventListener("click", openKoutoFullscreen);
+document.getElementById("koutoCloseBtn").addEventListener("click", closeKoutoFullscreen);
+document.getElementById("koutoShuffleAllBtn").addEventListener("click", () => startKoutoSession(null));
+document.getElementById("koutoRevealBtn").addEventListener("click", revealKoutoAnswer);
+document.getElementById("koutoEvalOk").addEventListener("click", () => submitKoutoEval("ok"));
+document.getElementById("koutoEvalPartial").addEventListener("click", () => submitKoutoEval("partial"));
+document.getElementById("koutoEvalNg").addEventListener("click", () => submitKoutoEval("ng"));
+document.getElementById("koutoNextBtn").addEventListener("click", () => {
+  koutoState.currentIdx++;
+  if (koutoState.currentIdx >= koutoState.queue.length) {
+    renderKoutoEnd();
+  } else {
+    renderKoutoQuestion();
+  }
+});
+document.getElementById("koutoBackToListBtn").addEventListener("click", renderKoutoList);
+document.getElementById("koutoEndBackBtn").addEventListener("click", renderKoutoList);

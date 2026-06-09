@@ -88,6 +88,16 @@
         </div>
       </section>
 
+      <section class="panel kouto-panel">
+        <h3>コンテンツ4: 麻酔科専門医口頭試問練習</h3>
+        <p class="hint">
+          専門医試験の口頭試問を想定した問答集です。問題を読んで頭の中で答えを整理し、解答例を開いて自己評価します。<strong>△・×</strong> の問題だけ再挑戦できます。
+        </p>
+        <div class="actions">
+          <button id="startKoutoBtn" type="button">口頭試問練習を開く</button>
+        </div>
+      </section>
+
       <section class="panel full">
         <h2>3. プレイ中</h2>
         <p class="hint">無限γ計算トレーニングは全画面です。各モードボタンを押すと表示されます。</p>
@@ -407,6 +417,72 @@
             <button id="checkRestartBtn" type="button" class="secondary hidden">モジュール一覧へ</button>
           </div>
         </section>
+      </div>
+    </div>
+
+    <div id="koutoFullscreen" class="airway-fullscreen kouto-fullscreen hidden" aria-hidden="true">
+      <div class="airway-fullscreen-inner">
+        <header class="airway-top">
+          <p id="koutoTitle" class="airway-scenario-title">口頭試問練習</p>
+          <p id="koutoMeta" class="meta">カテゴリを選んでください</p>
+          <button id="koutoCloseBtn" type="button" class="secondary">閉じる</button>
+        </header>
+
+        <div id="koutoListArea" class="mishap-list-area airway-scenario">
+          <p class="hint">カテゴリを選ぶか、全問シャッフルで練習できます。進捗はローカルに保存されます。</p>
+          <div id="koutoListRoot" class="mishap-list-root" role="list"></div>
+          <div class="actions kouto-shuffle-action">
+            <button id="koutoShuffleAllBtn" type="button">全カテゴリシャッフル</button>
+          </div>
+        </div>
+
+        <div id="koutoQuizArea" class="airway-scenario hidden">
+          <div class="kouto-card">
+            <div class="kouto-card-header">
+              <span class="kouto-category-badge" id="koutoCategory">—</span>
+              <span class="kouto-progress" id="koutoQuizProgress">1/1</span>
+            </div>
+            <p class="kouto-question" id="koutoQuestion"></p>
+
+            <div id="koutoThinkArea">
+              <p class="kouto-think-hint">↑ まず自分で答えを整理してから「解答を確認」</p>
+              <div class="actions kouto-reveal-action">
+                <button id="koutoRevealBtn" type="button">解答を確認する</button>
+              </div>
+            </div>
+
+            <div id="koutoAnswerArea" class="kouto-answer-area hidden">
+              <div class="kouto-answer-body" id="koutoAnswer"></div>
+              <div class="kouto-keywords" id="koutoKeywords"></div>
+            </div>
+
+            <div id="koutoSelfEvalArea" class="kouto-eval-area hidden">
+              <p class="kouto-eval-label">自己評価</p>
+              <div class="kouto-eval-btns">
+                <button class="kouto-eval-btn kouto-eval-ok" id="koutoEvalOk" type="button">○ 答えられた</button>
+                <button class="kouto-eval-btn kouto-eval-partial" id="koutoEvalPartial" type="button">△ 部分的に</button>
+                <button class="kouto-eval-btn kouto-eval-ng" id="koutoEvalNg" type="button">× 難しかった</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions mishap-quiz-actions">
+            <button id="koutoNextBtn" type="button" class="hidden">次の問題</button>
+            <button id="koutoBackToListBtn" type="button" class="secondary">一覧に戻る</button>
+          </div>
+        </div>
+
+        <div id="koutoEndArea" class="airway-scenario hidden">
+          <div class="kouto-result-box">
+            <h3 class="kouto-result-title">セッション終了</h3>
+            <p id="koutoResultSummary" class="kouto-result-summary"></p>
+            <div id="koutoResultDetail" class="kouto-result-detail"></div>
+          </div>
+          <div class="actions">
+            <button id="koutoRetryNgBtn" type="button">△・×のみ再挑戦</button>
+            <button id="koutoEndBackBtn" type="button" class="secondary">一覧に戻る</button>
+          </div>
+        </div>
       </div>
     </div>
 
