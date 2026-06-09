@@ -191,25 +191,33 @@
         </header>
 
         <div id="gameMain" class="game-main">
-          <section id="gameIntro" class="game-intro game-intro-hero hidden">
-            <p class="heaven-badge">☁️ 天の声 ☁️</p>
-            <p class="heaven-decree">神託が下された</p>
-            <div class="heaven-params">
-              <div class="heaven-param-row">
-                <span class="heaven-param-label">患者の体重</span>
-                <span class="heaven-param-value"><span id="introWeight">—</span><span class="heaven-param-unit">kg</span></span>
+          <section id="gameIntro" class="game-intro hidden">
+            <p class="intro-label">指導医からの指示</p>
+            <div class="intro-doctor-row">
+              <div class="doctor-avatar intro-doctor-avatar" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" class="doctor-avatar__svg">
+                  <circle cx="48" cy="48" r="46" fill="#7ec8ff" stroke="#1f6feb" stroke-width="3" />
+                  <ellipse cx="48" cy="38" rx="22" ry="24" fill="#ffd4a8" />
+                  <path d="M28 44c2-14 40-14 42 0" fill="none" stroke="#c97a4a" stroke-width="2" stroke-linecap="round" />
+                  <circle cx="40" cy="36" r="3" fill="#1f2328" />
+                  <circle cx="56" cy="36" r="3" fill="#1f2328" />
+                  <path d="M42 46c4 4 8 4 12 0" fill="none" stroke="#1f2328" stroke-width="2" stroke-linecap="round" />
+                  <rect x="22" y="58" width="52" height="28" rx="6" fill="#fff" stroke="#1f6feb" stroke-width="2" />
+                  <rect x="26" y="62" width="44" height="8" rx="2" fill="#0969da" opacity="0.15" />
+                  <path d="M34 78h28" stroke="#1f6feb" stroke-width="2" stroke-linecap="round" />
+                </svg>
               </div>
-              <div class="heaven-param-row">
-                <span class="heaven-param-label">指示薬剤</span>
-                <span class="heaven-param-value heaven-drug" id="introDrug">—</span>
+              <div class="intro-bubble">
+                <p class="intro-order-text" id="introDrug">—</p>
+                <p class="intro-weight-text">体重 <strong><span id="introWeight">—</span> kg</strong></p>
               </div>
             </div>
             <p class="intro-rounding-badge" role="note">
               小数第1位までOK
               <span class="intro-rounding-sub">（切り上げ・切り捨てどちらでもOK）</span>
             </p>
-            <p class="heaven-hint">残り <span id="introRemainQuestions">—</span> 問 · GOまたはEnterで開始</p>
-            <button id="goBtn" type="button" class="go-btn heaven-go-btn">GO — 神託を受け取れ</button>
+            <p class="intro-remain-hint">残り <span id="introRemainQuestions">—</span> 問 · GOまたはEnterで開始</p>
+            <button id="goBtn" type="button" class="go-btn intro-go-btn">GO！</button>
           </section>
 
           <section class="game-question card-block">
@@ -455,6 +463,8 @@
               <div class="kouto-answer-body" id="koutoAnswer"></div>
               <div class="kouto-keywords" id="koutoKeywords"></div>
             </div>
+
+            <div id="koutoRefs" class="kouto-refs hidden"></div>
 
             <div id="koutoSelfEvalArea" class="kouto-eval-area hidden">
               <p class="kouto-eval-label">自己評価</p>

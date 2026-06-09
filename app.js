@@ -4748,6 +4748,60 @@ function startKoutoSession(category) {
   renderKoutoQuestion();
 }
 
+const KOUTO_REFS = {
+  "術前評価・麻酔計画": [
+    { label: "麻酔", url: "https://webview.isho.jp/journal/toc/current/00214892" },
+    { label: "LiSA", url: "https://webview.isho.jp/journal/toc/current/13408836" },
+  ],
+  "気道管理": [
+    { label: "麻酔", url: "https://webview.isho.jp/journal/toc/current/00214892" },
+    { label: "LiSA", url: "https://webview.isho.jp/journal/toc/current/13408836" },
+    { label: "INTENSIVIST", url: "https://webview.isho.jp/journal/toc/current/18834833" },
+  ],
+  "吸入麻酔薬": [
+    { label: "麻酔", url: "https://webview.isho.jp/journal/toc/current/00214892" },
+    { label: "LiSA", url: "https://webview.isho.jp/journal/toc/current/13408836" },
+    { label: "INTENSIVIST 麻酔薬総論号", url: "https://webview.isho.jp/journal/toc/18834833/13/4" },
+  ],
+  "静脈麻酔薬": [
+    { label: "麻酔", url: "https://webview.isho.jp/journal/toc/current/00214892" },
+    { label: "LiSA", url: "https://webview.isho.jp/journal/toc/current/13408836" },
+    { label: "INTENSIVIST 麻酔薬総論号", url: "https://webview.isho.jp/journal/toc/18834833/13/4" },
+  ],
+  "筋弛緩薬": [
+    { label: "麻酔", url: "https://webview.isho.jp/journal/toc/current/00214892" },
+    { label: "LiSA", url: "https://webview.isho.jp/journal/toc/current/13408836" },
+    { label: "INTENSIVIST 筋弛緩号", url: "https://webview.isho.jp/journal/toc/18834833/8/3" },
+  ],
+  "局所麻酔・区域麻酔": [
+    { label: "麻酔", url: "https://webview.isho.jp/journal/toc/current/00214892" },
+    { label: "LiSA", url: "https://webview.isho.jp/journal/toc/current/13408836" },
+  ],
+  "循環管理・輸血": [
+    { label: "麻酔", url: "https://webview.isho.jp/journal/toc/current/00214892" },
+    { label: "INTENSIVIST", url: "https://webview.isho.jp/journal/toc/current/18834833" },
+    { label: "Hospitalist", url: "https://webview.isho.jp/journal/toc/current/21880409" },
+  ],
+  "術後管理・疼痛管理": [
+    { label: "麻酔", url: "https://webview.isho.jp/journal/toc/current/00214892" },
+    { label: "LiSA", url: "https://webview.isho.jp/journal/toc/current/13408836" },
+    { label: "INTENSIVIST", url: "https://webview.isho.jp/journal/toc/current/18834833" },
+  ],
+  "合併症・緊急対応": [
+    { label: "麻酔", url: "https://webview.isho.jp/journal/toc/current/00214892" },
+    { label: "LiSA", url: "https://webview.isho.jp/journal/toc/current/13408836" },
+    { label: "INTENSIVIST", url: "https://webview.isho.jp/journal/toc/current/18834833" },
+  ],
+  "小児麻酔": [
+    { label: "麻酔", url: "https://webview.isho.jp/journal/toc/current/00214892" },
+    { label: "LiSA", url: "https://webview.isho.jp/journal/toc/current/13408836" },
+  ],
+  "産科麻酔": [
+    { label: "麻酔", url: "https://webview.isho.jp/journal/toc/current/00214892" },
+    { label: "LiSA", url: "https://webview.isho.jp/journal/toc/current/13408836" },
+  ],
+};
+
 function renderKoutoQuestion() {
   const q = koutoState.queue[koutoState.currentIdx];
   if (!q) { renderKoutoEnd(); return; }
@@ -4761,6 +4815,19 @@ function renderKoutoQuestion() {
   document.getElementById("koutoKeywords").innerHTML = q.keywords?.length
     ? `<strong>キーワード：</strong>${q.keywords.join(" ・ ")}`
     : "";
+
+  // refs
+  const refs = KOUTO_REFS[q.category] || [];
+  const refsEl = document.getElementById("koutoRefs");
+  if (refs.length > 0) {
+    refsEl.innerHTML = `<p class="kouto-refs-label">参考文献を探す</p>
+      <div class="kouto-refs-links">${refs.map(r =>
+        `<a class="kouto-ref-link" href="${r.url}" target="_blank" rel="noopener">${r.label}</a>`
+      ).join("")}</div>`;
+    refsEl.classList.remove("hidden");
+  } else {
+    refsEl.classList.add("hidden");
+  }
 
   document.getElementById("koutoAnswerArea").classList.add("hidden");
   document.getElementById("koutoThinkArea").classList.remove("hidden");

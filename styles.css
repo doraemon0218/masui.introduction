@@ -1676,3 +1676,127 @@ button.secondary:hover {
 }
 .kouto-eval-badge.partial { color: #7d4e00; }
 .kouto-eval-badge.ng      { color: #7d0000; }
+
+/* ── 指導医イントロ (旧天の声スタイル置き換え) ── */
+.game-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem 1rem;
+  text-align: center;
+}
+
+.intro-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #656d76;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.intro-doctor-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  max-width: 440px;
+  width: 100%;
+}
+
+.intro-doctor-avatar {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+}
+
+.intro-bubble {
+  background: #fff;
+  border: 2px solid #1f6feb;
+  border-radius: 0 12px 12px 12px;
+  padding: 0.65rem 0.9rem;
+  text-align: left;
+  flex: 1;
+  position: relative;
+}
+.intro-bubble::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -12px;
+  border: 6px solid transparent;
+  border-right-color: #1f6feb;
+  border-top-color: #1f6feb;
+}
+
+.intro-order-text {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0550ae;
+  margin: 0 0 0.3rem;
+  line-height: 1.4;
+}
+
+.intro-weight-text {
+  font-size: 0.88rem;
+  color: #1f2328;
+  margin: 0;
+}
+
+.intro-remain-hint {
+  font-size: 0.8rem;
+  color: #656d76;
+  margin: 0;
+}
+
+.intro-go-btn {
+  font-size: 1.15rem;
+  font-weight: 900;
+  padding: 0.65rem 2.5rem;
+  background: #0969da;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+}
+.intro-go-btn:hover { background: #0550ae; }
+
+/* ── 口頭試問 参考リンク ── */
+.kouto-refs {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.6rem 0.75rem;
+  background: #f0f6ff;
+  border: 1px solid #c8d8f8;
+  border-radius: 6px;
+}
+
+.kouto-refs-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0550ae;
+  margin: 0 0 0.35rem;
+}
+
+.kouto-refs-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.kouto-ref-link {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #0550ae;
+  background: #fff;
+  border: 1px solid #c8d8f8;
+  border-radius: 999px;
+  padding: 0.2em 0.75em;
+  text-decoration: none;
+}
+.kouto-ref-link:hover {
+  background: #0969da;
+  color: #fff;
+  border-color: #0969da;
+}
